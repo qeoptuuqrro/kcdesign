@@ -68,9 +68,9 @@ function ProjectCard({ project, onProjectSelect }) {
   const transformSrcSet = (srcSet) => {
     if (!srcSet) return srcSet;
     return srcSet
-      .split(/,\s*/)
+      .split(", ")
       .map(entry => {
-        const [path, size] = entry.trim().split(/\s+/, 2);
+        const [path, size] = entry.trim().split(" ");
         return `${getAssetPath(path)} ${size}`;
       })
       .join(", ");

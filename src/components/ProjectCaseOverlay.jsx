@@ -12,9 +12,9 @@ const getAssetSrcSet = (srcSet) => {
   }
 
   return srcSet
-    .split(/,\s*/)
+    .split(", ")
     .map((entry) => {
-      const [path, size] = entry.trim().split(/\s+/, 2);
+      const [path, size] = entry.trim().split(" ");
       return `${getAssetPath(path)} ${size}`;
     })
     .join(", ");
@@ -67,7 +67,7 @@ const productOverviewCards = [
 
 const jpmorganProductPreview = {
   image: getAssetPath("/optimized/peak-rock-dashboard-1200.png"),
-  imageSrcSet: `${getAssetPath('/optimized/peak-rock-dashboard-1200.png')} 1200w, ${getAssetPath('/optimized/peak-rock-dashboard-2200.png')} 2200w`,
+  imageSrcSet: `${getAssetPath('/optimized/peak-rock-dashboard-1200.png')} ${getAssetPath('/optimized/peak-rock-dashboard-2200.png')}`,
   imageSizes: "(max-width: 760px) calc(100vw - 40px), 970px",
   imageAlt: "Sanitized sponsor intelligence workspace.",
 };
