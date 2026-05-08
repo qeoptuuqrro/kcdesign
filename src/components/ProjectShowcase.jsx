@@ -49,6 +49,18 @@ function ProjectCard({ project, onProjectSelect }) {
     event.currentTarget.setAttribute("aria-hidden", "true");
   };
 
+  // Helper function to transform srcSet with getAssetPath
+  const transformSrcSet = (srcSet) => {
+    if (!srcSet) return srcSet;
+    return srcSet
+      .split(", ")
+      .map(entry => {
+        const [path, size] = entry.trim().split(" ");
+        return `${getAssetPath(path)} ${size}`;
+      })
+      .join(", ");
+  };
+
   return (
     <article className="project-showcase-card">
       <a
@@ -60,7 +72,7 @@ function ProjectCard({ project, onProjectSelect }) {
         <img
           className="project-showcase-bg"
           src={getAssetPath(project.image)}
-          srcSet={project.imageSrcSet?.split(', ').map(entry => { const [path, size] = entry.trim().split(' '); return `${getAssetPath(path)} ${size}`; }).join(', ')}
+          srcSet={transformSrcSet(project.imageSrcSet)}
           sizes={project.imageSizes}
           alt={project.imageAlt}
           loading="lazy"
@@ -82,9 +94,9 @@ function ProjectCard({ project, onProjectSelect }) {
       <div className="project-showcase-copy">
         <p className="project-showcase-eyebrow">{project.eyebrow}</p>
         <h2 className="project-showcase-title">{project.title}</h2>
-        <ul className="project-showcase-points">
-          {project.bullets.map((bullet) => (
-            <li key={bullet}>{bullet}</li>
+        <ul className="project-showcase-bullets">
+          {project.bullets.map((bullet, index) => (
+            <li key={index}>{bullet}</li>
           ))}
         </ul>
       </div>
@@ -94,11 +106,20 @@ function ProjectCard({ project, onProjectSelect }) {
 
 export default function ProjectShowcase({ onProjectSelect }) {
   return (
-    <section className="project-showcase-section" id="work" aria-label="Selected work">
-      <div className="project-showcase-list">
-        {featuredProjects.map((project) => (
-          <ProjectCard key={project.id} project={project} onProjectSelect={onProjectSelect} />
-        ))}
+    <section className="landing-projects-section" id="work" aria-label="Featured work">
+      <div className="landing-projects-frame">
+        <div className="landing-projects-header">
+          <h1 className="landing-projects-title">Featured work</h1>
+        </div>
+        <div className="landing-projects-showcase">
+          {featuredProjects.map((project) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              onProjectSelect={onProjectSelect}
+            />
+          ))}
+        </div>
       </div>
     </section>
   );
