@@ -1,3 +1,5 @@
+import { getAssetPath } from "../utils/paths";
+
 export const featuredProjects = [
   {
     id: "jpmorgan-ai",
@@ -57,8 +59,8 @@ function ProjectCard({ project, onProjectSelect }) {
       >
         <img
           className="project-showcase-bg"
-          src={project.image}
-          srcSet={project.imageSrcSet}
+          src={getAssetPath(project.image)}
+          srcSet={project.imageSrcSet?.split(', ').map(entry => { const [path, size] = entry.trim().split(' '); return `${getAssetPath(path)} ${size}`; }).join(', ')}
           sizes={project.imageSizes}
           alt={project.imageAlt}
           loading="lazy"
