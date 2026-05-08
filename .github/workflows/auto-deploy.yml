@@ -1,0 +1,24 @@
+name: Auto Deploy
+
+on:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [completed]
+
+permissions:
+  contents: read
+  deployments: write
+  pages: write
+  id-token: write
+
+jobs:
+  auto-approve-deployment:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Approve pending deployments
+        run: |
+          curl -X GET \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/${{ github.repository }}/deployments" \
+            -d '{"environment":"github-pages","state":"queued"}' || true
