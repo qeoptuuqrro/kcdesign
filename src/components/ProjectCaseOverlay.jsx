@@ -6,6 +6,20 @@ const handleProjectImageError = (event) => {
   event.currentTarget.setAttribute("aria-hidden", "true");
 };
 
+const getAssetSrcSet = (srcSet) => {
+  if (!srcSet) {
+    return srcSet;
+  }
+
+  return srcSet
+    .split(/,\s*/)
+    .map((entry) => {
+      const [path, size] = entry.trim().split(/\s+/, 2);
+      return `${getAssetPath(path)} ${size}`;
+    })
+    .join(", ");
+};
+
 const problemCards = [
   {
     title: "Fragmented signals",
@@ -29,6 +43,7 @@ const productOverviewCards = [
     imageAlt: "Sponsor intelligence product surface.",
     caption: "A sponsor intelligence workspace showing portfolio, fund, preference, and activity signals in one reviewable surface.",
     focus: "50% 50%",
+    previewScale: 0.9,
   },
   {
     title: "AI-generated ideas",
@@ -37,6 +52,7 @@ const productOverviewCards = [
     imageAlt: "AI-generated ideas product surface.",
     caption: "A product view for generated deal ideas, rationale, fit, and review actions.",
     focus: "50% 50%",
+    previewScale: 0.94,
   },
   {
     title: "Relationship signals",
@@ -45,12 +61,13 @@ const productOverviewCards = [
     imageAlt: "Relationship signals product surface.",
     caption: "A relationship intelligence view connecting interaction history, wallet share, and outreach context for banker review.",
     focus: "50% 50%",
+    previewScale: 0.86,
   },
 ];
 
 const jpmorganProductPreview = {
   image: getAssetPath("/optimized/peak-rock-dashboard-1200.png"),
-  imageSrcSet: `${getAssetPath('/optimized/peak-rock-dashboard-1200.png')} ${getAssetPath('/optimized/peak-rock-dashboard-2200.png')}`,
+  imageSrcSet: `${getAssetPath('/optimized/peak-rock-dashboard-1200.png')} 1200w, ${getAssetPath('/optimized/peak-rock-dashboard-2200.png')} 2200w`,
   imageSizes: "(max-width: 760px) calc(100vw - 40px), 970px",
   imageAlt: "Sanitized sponsor intelligence workspace.",
 };
@@ -171,21 +188,39 @@ const aiOperatingLoopSteps = [
   "PM / design / engineering alignment",
 ];
 
-const aiMethodArtifacts = [
+const aiOperatingArtifacts = [
   {
     image: getAssetPath("/figma-artifact-wide-a.png"),
     title: "AI-assisted implementation workspace",
     caption: "Copilot-assisted prototype work with implementation notes, component decisions, and design-system translation.",
   },
   {
-    image: getAssetPath("/figma-artifact-hero.png"),
+    image: getAssetPath("/figma-to-code.png"),
     title: "Figma-to-prototype operating model",
     caption: "Design references, prototype surfaces, and workflow artifacts organized for review.",
   },
   {
-    image: getAssetPath("/figma-artifact-wide-b.png"),
+    image: getAssetPath("/reusable.png"),
     title: "Design-system review surface",
     caption: "Reusable screens, filters, drawers, and prototype states organized as reviewable product artifacts.",
+  },
+];
+
+const aiProofArtifacts = [
+  {
+    image: getAssetPath("/ai-features-tearsheet.png"),
+    title: "AI features tearsheet prototype",
+    caption: "Vibe-coded an AI feature concept from product intent into a reviewable prototype, compressing exploration time by roughly 30%.",
+  },
+  {
+    image: getAssetPath("/investor-crm-ai-prototype.png"),
+    title: "Investor CRM AI prototype",
+    caption: "Turned interview insights into a quick AI prototype for PM and engineering review, improving concept turnaround by about 20%.",
+  },
+  {
+    image: getAssetPath("/ai-enrichment-prototype.png"),
+    title: "AI enrichment interaction prototype",
+    caption: "Used the Copilot workflow, design.md, and skill guidance to prototype live AI enrichment interactions while preserving design-system consistency.",
   },
 ];
 
@@ -215,6 +250,17 @@ const impactCards = [
 ];
 
 const heroHighlights = ["0→1 AI product", "Investment Banking", "TD origination workflow", "Prototype-led collaboration"];
+
+const defaultProjectDetail = {
+  accentColor: "#6670ff",
+  accentGlow: "rgba(102, 112, 255, 0.62)",
+  company: ["J.P. Morgan — Investment Banking", "0→1 AI Origination & Idea Gen Platform"],
+  responsibility:
+    "Led end-to-end product design for a zero-to-one AI platform redefining investment banking origination and sponsor intelligence workflows.",
+  timeline: "Dec 2025 - Current",
+  role: "Product Designer",
+  roleTeam: "PM, product strategy, design, engineering",
+};
 
 function CaseSectionHeader({ label, title, children, id }) {
   return (
@@ -283,26 +329,57 @@ export default function ProjectCaseOverlay({
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
   const [activeProductPreviewIndex, setActiveProductPreviewIndex] = useState(0);
-  const [activeAiArtifactIndex, setActiveAiArtifactIndex] = useState(0);
+  const [activeAiOperatingArtifactIndex, setActiveAiOperatingArtifactIndex] = useState(0);
+  const [activeAiProofArtifactIndex, setActiveAiProofArtifactIndex] = useState(0);
   const [workflowReveal, setWorkflowReveal] = useState(50);
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
   const isFullControlActive = isFull || isExpanding;
-  const activeAiArtifact = aiMethodArtifacts[activeAiArtifactIndex];
-  const goToPreviousAiArtifact = useCallback(() => {
-    setActiveAiArtifactIndex((current) => (current - 1 + aiMethodArtifacts.length) % aiMethodArtifacts.length);
+  const projectDetail = project.detail ?? defaultProjectDetail;
+  const isCaseWip = Boolean(project.isWip);
+  const activeAiOperatingArtifact = aiOperatingArtifacts[activeAiOperatingArtifactIndex];
+  const activeAiProofArtifact = aiProofArtifacts[activeAiProofArtifactIndex];
+  const goToPreviousAiOperatingArtifact = useCallback(() => {
+    setActiveAiOperatingArtifactIndex((current) => (current - 1 + aiOperatingArtifacts.length) % aiOperatingArtifacts.length);
   }, []);
-  const goToNextAiArtifact = useCallback(() => {
-    setActiveAiArtifactIndex((current) => (current + 1) % aiMethodArtifacts.length);
+  const goToNextAiOperatingArtifact = useCallback(() => {
+    setActiveAiOperatingArtifactIndex((current) => (current + 1) % aiOperatingArtifacts.length);
   }, []);
+  const goToPreviousAiProofArtifact = useCallback(() => {
+    setActiveAiProofArtifactIndex((current) => (current - 1 + aiProofArtifacts.length) % aiProofArtifacts.length);
+  }, []);
+  const goToNextAiProofArtifact = useCallback(() => {
+    setActiveAiProofArtifactIndex((current) => (current + 1) % aiProofArtifacts.length);
+  }, []);
+  const getCursorModeFromPointer = useCallback((event) => {
+    const bounds = event.currentTarget.getBoundingClientRect();
+    const x = (event.clientX - bounds.left) / Math.max(bounds.width, 1);
+
+    if (x < 0.24) {
+      return "arrow-left";
+    }
+    if (x > 0.76) {
+      return "arrow-right";
+    }
+    return "expand";
+  }, []);
+  const handleArtifactPointerMove = useCallback((event) => {
+    setDocumentCursorMode(getCursorModeFromPointer(event));
+  }, [getCursorModeFromPointer]);
   const caseSections = useMemo(
-    () => [
-      { id: "case-intro", label: "Hero" },
-      { id: "case-overview", label: "Overview" },
-      { id: "case-value", label: "Value" },
-      { id: "case-operating", label: "AI model" },
-      { id: "case-impact", label: "Impact" },
-    ],
-    []
+    () =>
+      isCaseWip
+        ? [
+            { id: "case-intro", label: "Hero" },
+            { id: "case-wip", label: "WIP" },
+          ]
+        : [
+            { id: "case-intro", label: "Hero" },
+            { id: "case-overview", label: "Overview" },
+            { id: "case-operating", label: "AI model" },
+            { id: "case-value", label: "Value" },
+            { id: "case-impact", label: "Impact" },
+          ],
+    [isCaseWip]
   );
   const syncMenuActiveItem = useCallback((sectionId = activeSectionIdRef.current) => {
     sectionItemsRef.current.forEach((item) => {
@@ -821,21 +898,80 @@ export default function ProjectCaseOverlay({
     });
   }, []);
 
+  const setExpandedAiArtifact = useCallback((nextIndex, source = "proof") => {
+    const artifacts = source === "operating" ? aiOperatingArtifacts : aiProofArtifacts;
+    const normalizedIndex = ((nextIndex % artifacts.length) + artifacts.length) % artifacts.length;
+    const artifact = artifacts[normalizedIndex];
+
+    if (source === "operating") {
+      setActiveAiOperatingArtifactIndex(normalizedIndex);
+    } else {
+      setActiveAiProofArtifactIndex(normalizedIndex);
+    }
+    setExpandedImage({
+      type: "ai-artifact",
+      source,
+      artifactIndex: normalizedIndex,
+      image: artifact.image,
+      imageAlt: artifact.title,
+      title: artifact.title,
+      caption: artifact.caption,
+    });
+  }, []);
+
   const goToPreviousExpandedImage = useCallback(() => {
-    if (expandedImage?.type !== "product-overview") {
+    if (expandedImage?.type === "ai-artifact") {
+      const fallbackIndex = expandedImage.source === "operating" ? activeAiOperatingArtifactIndex : activeAiProofArtifactIndex;
+      setExpandedAiArtifact((expandedImage.artifactIndex ?? fallbackIndex) - 1, expandedImage.source);
       return;
     }
 
-    setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) - 1);
-  }, [activeProductPreviewIndex, expandedImage, setExpandedProductPreview]);
+    if (expandedImage?.type === "product-overview") {
+      setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) - 1);
+    }
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedProductPreview]);
 
   const goToNextExpandedImage = useCallback(() => {
-    if (expandedImage?.type !== "product-overview") {
+    if (expandedImage?.type === "ai-artifact") {
+      const fallbackIndex = expandedImage.source === "operating" ? activeAiOperatingArtifactIndex : activeAiProofArtifactIndex;
+      setExpandedAiArtifact((expandedImage.artifactIndex ?? fallbackIndex) + 1, expandedImage.source);
       return;
     }
 
-    setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) + 1);
-  }, [activeProductPreviewIndex, expandedImage, setExpandedProductPreview]);
+    if (expandedImage?.type === "product-overview") {
+      setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) + 1);
+    }
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedProductPreview]);
+
+  const handleAiOperatingArtifactStageClick = useCallback((event) => {
+    const mode = getCursorModeFromPointer(event);
+
+    if (mode === "arrow-left") {
+      goToPreviousAiOperatingArtifact();
+      return;
+    }
+    if (mode === "arrow-right") {
+      goToNextAiOperatingArtifact();
+      return;
+    }
+
+    setExpandedAiArtifact(activeAiOperatingArtifactIndex, "operating");
+  }, [activeAiOperatingArtifactIndex, getCursorModeFromPointer, goToNextAiOperatingArtifact, goToPreviousAiOperatingArtifact, setExpandedAiArtifact]);
+
+  const handleAiProofArtifactStageClick = useCallback((event) => {
+    const mode = getCursorModeFromPointer(event);
+
+    if (mode === "arrow-left") {
+      goToPreviousAiProofArtifact();
+      return;
+    }
+    if (mode === "arrow-right") {
+      goToNextAiProofArtifact();
+      return;
+    }
+
+    setExpandedAiArtifact(activeAiProofArtifactIndex, "proof");
+  }, [activeAiProofArtifactIndex, getCursorModeFromPointer, goToNextAiProofArtifact, goToPreviousAiProofArtifact, setExpandedAiArtifact]);
 
   const goToPreviousProductPreview = () => {
     const lastIndex = productOverviewCards.length - 1;
@@ -877,10 +1013,14 @@ export default function ProjectCaseOverlay({
 
   return (
     <div
-      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}`}
+      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isCaseWip ? " is-wip-case" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
+      style={{
+        "--case-accent": projectDetail.accentColor,
+        "--case-accent-glow": projectDetail.accentGlow,
+      }}
     >
       <div className="case-overlay-backdrop" onClick={isExpanding || isFull || isShrinking ? undefined : onClose} />
       <section className="case-overlay-panel" onTransitionEnd={handlePanelTransitionEnd}>
@@ -935,8 +1075,8 @@ export default function ProjectCaseOverlay({
               <div className={`project-detail-media project-showcase-media${project.showLockup === false ? " is-image-only" : ""}`}>
                 <img
                   className="project-showcase-bg"
-                  src={project.image}
-                  srcSet={project.imageSrcSet}
+                  src={getAssetPath(project.image)}
+                  srcSet={getAssetSrcSet(project.imageSrcSet)}
                   sizes={project.imageSizes}
                   alt={project.imageAlt}
                   loading="eager"
@@ -961,27 +1101,52 @@ export default function ProjectCaseOverlay({
               <article className="project-detail-info-block">
                 <h2>Company</h2>
                 <p>
-                  J.P. Morgan — Investment Banking
-                  <br />
-                  0→1 AI Origination & Idea Gen Platform
+                  {projectDetail.company.map((line, index) => (
+                    <span key={line}>
+                      {line}
+                      {index < projectDetail.company.length - 1 ? <br /> : null}
+                    </span>
+                  ))}
                 </p>
               </article>
 
               <article className="project-detail-info-block">
                 <h2>Timeline</h2>
-                <p>Dec 2025 - Current</p>
+                <p>{projectDetail.timeline}</p>
               </article>
 
               <article className="project-detail-info-block">
-                <h2>Role</h2>
-                <p>Product Designer</p>
+                <h2>{projectDetail.responsibility ? "Responsibility" : "Role"}</h2>
+                <p>{projectDetail.responsibility ?? projectDetail.role}</p>
               </article>
 
               <article className="project-detail-info-block">
                 <h2>Role & Team</h2>
-                <p>PM, product strategy, design, engineering</p>
+                <p>{projectDetail.roleTeam}</p>
               </article>
             </section>
+
+            {isCaseWip ? (
+              <section className="case-study-section case-wip-section" id="case-wip" aria-labelledby={`${project.id}-wip`}>
+                <CaseSectionHeader
+                  label="Case study in progress"
+                  title="This workflow story is on the way."
+                  id={`${project.id}-wip`}
+                >
+                  The hero and project context are live now. The deeper product narrative, screens, and outcomes will be added once the case study is ready.
+                </CaseSectionHeader>
+                <div className="case-wip-card">
+                  <span aria-hidden="true" />
+                  <div>
+                    <h3>WIP case study</h3>
+                    <p>
+                      Keeping this preview intentionally lightweight for now so the homepage can show the work, while the full story stays clean until the
+                      visuals and narrative are finalized.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            ) : null}
 
             <section className="case-study-section" id="case-overview" aria-labelledby={`${project.id}-overview`}>
               <CaseSectionHeader
@@ -1004,7 +1169,7 @@ export default function ProjectCaseOverlay({
                     aria-hidden={index === activeProductPreviewIndex ? undefined : "true"}
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
-                    style={{ objectPosition: card.focus }}
+                    style={{ objectPosition: card.focus, "--preview-scale": card.previewScale }}
                     onError={handleProjectImageError}
                   />
                 ))}
@@ -1162,54 +1327,42 @@ export default function ProjectCaseOverlay({
                   <button
                     className="case-ai-method-artifact-feature"
                     type="button"
-                    onClick={() =>
-                      setExpandedImage({
-                        image: activeAiArtifact.image,
-                        imageAlt: activeAiArtifact.title,
-                        title: activeAiArtifact.title,
-                        caption: activeAiArtifact.caption,
-                      })
-                    }
-                    onPointerEnter={() => setDocumentCursorMode("expand")}
+                    onClick={handleAiOperatingArtifactStageClick}
+                    onPointerMove={handleArtifactPointerMove}
+                    onPointerEnter={handleArtifactPointerMove}
                     onPointerLeave={clearDocumentCursorMode}
                     onFocus={() => setDocumentCursorMode("expand")}
                     onBlur={clearDocumentCursorMode}
-                    aria-label={`Open ${activeAiArtifact.title}`}
+                    aria-label={`Open ${activeAiOperatingArtifact.title}`}
                   >
-                    <img src={activeAiArtifact.image} alt={activeAiArtifact.title} onError={handleProjectImageError} />
+                    <img src={activeAiOperatingArtifact.image} alt={activeAiOperatingArtifact.title} onError={handleProjectImageError} />
                     <span className="case-ai-method-artifact-caption">
-                      <strong>{activeAiArtifact.title}</strong>
-                      <em>{activeAiArtifact.caption}</em>
+                      <strong>{activeAiOperatingArtifact.title}</strong>
+                      <em>{activeAiOperatingArtifact.caption}</em>
                     </span>
                     <span className="case-ai-method-artifact-count">
-                      {String(activeAiArtifactIndex + 1).padStart(2, "0")} / {String(aiMethodArtifacts.length).padStart(2, "0")}
+                      {String(activeAiOperatingArtifactIndex + 1).padStart(2, "0")} / {String(aiOperatingArtifacts.length).padStart(2, "0")}
                     </span>
                   </button>
                   <div className="case-ai-method-artifact-controls" aria-label="Change AI workflow artifact">
-                    <button type="button" onClick={goToPreviousAiArtifact} aria-label="Previous AI workflow artifact">
-                      ←
-                    </button>
                     <div>
-                      {aiMethodArtifacts.map((artifact, index) => (
+                      {aiOperatingArtifacts.map((artifact, index) => (
                         <button
                           type="button"
                           key={artifact.title}
-                          className={index === activeAiArtifactIndex ? "is-active" : ""}
-                          onClick={() => setActiveAiArtifactIndex(index)}
+                          className={index === activeAiOperatingArtifactIndex ? "is-active" : ""}
+                          onClick={() => setActiveAiOperatingArtifactIndex(index)}
                           aria-label={`Show ${artifact.title}`}
-                          aria-current={index === activeAiArtifactIndex ? "true" : undefined}
+                          aria-current={index === activeAiOperatingArtifactIndex ? "true" : undefined}
                         >
                           <span>{artifact.title}</span>
                         </button>
                       ))}
                     </div>
-                    <button type="button" onClick={goToNextAiArtifact} aria-label="Next AI workflow artifact">
-                      →
-                    </button>
                   </div>
                   <div className="case-ai-method-artifact-strip" aria-hidden="true">
-                    {aiMethodArtifacts.map((artifact, index) => (
-                      <span key={artifact.title} className={index === activeAiArtifactIndex ? "is-active" : ""} />
+                    {aiOperatingArtifacts.map((artifact, index) => (
+                      <span key={artifact.title} className={index === activeAiOperatingArtifactIndex ? "is-active" : ""} />
                     ))}
                   </div>
                 </div>
@@ -1376,41 +1529,29 @@ export default function ProjectCaseOverlay({
                 <button
                   className="case-ai-proof-carousel-stage"
                   type="button"
-                  onClick={() =>
-                    setExpandedImage({
-                      image: activeAiArtifact.image,
-                      imageAlt: activeAiArtifact.title,
-                      title: activeAiArtifact.title,
-                      caption: activeAiArtifact.caption,
-                    })
-                  }
-                  onPointerEnter={() => setDocumentCursorMode("expand")}
+                  onClick={handleAiProofArtifactStageClick}
+                  onPointerMove={handleArtifactPointerMove}
+                  onPointerEnter={handleArtifactPointerMove}
                   onPointerLeave={clearDocumentCursorMode}
                   onFocus={() => setDocumentCursorMode("expand")}
                   onBlur={clearDocumentCursorMode}
-                  aria-label={`Open ${activeAiArtifact.title}`}
+                  aria-label={`Open ${activeAiProofArtifact.title}`}
                 >
-                  <img src={activeAiArtifact.image} alt={activeAiArtifact.title} onError={handleProjectImageError} />
+                  <img src={activeAiProofArtifact.image} alt={activeAiProofArtifact.title} onError={handleProjectImageError} />
                   <span className="case-ai-proof-carousel-count">
-                    {String(activeAiArtifactIndex + 1).padStart(2, "0")} / {String(aiMethodArtifacts.length).padStart(2, "0")}
+                    {String(activeAiProofArtifactIndex + 1).padStart(2, "0")} / {String(aiProofArtifacts.length).padStart(2, "0")}
                   </span>
                   <span className="case-ai-proof-carousel-caption">
-                    <strong>{activeAiArtifact.title}</strong>
-                    <em>{activeAiArtifact.caption}</em>
+                    <strong>{activeAiProofArtifact.title}</strong>
+                    <em>{activeAiProofArtifact.caption}</em>
                   </span>
                 </button>
                 <div className="case-ai-proof-carousel-controls" aria-label="Change proof artifact">
-                  <button type="button" onClick={goToPreviousAiArtifact} aria-label="Previous proof artifact">
-                    ←
-                  </button>
                   <div aria-hidden="true">
-                    {aiMethodArtifacts.map((artifact, index) => (
-                      <span key={artifact.title} className={index === activeAiArtifactIndex ? "is-active" : ""} />
+                    {aiProofArtifacts.map((artifact, index) => (
+                      <span key={artifact.title} className={index === activeAiProofArtifactIndex ? "is-active" : ""} />
                     ))}
                   </div>
-                  <button type="button" onClick={goToNextAiArtifact} aria-label="Next proof artifact">
-                    →
-                  </button>
                 </div>
               </div>
 
@@ -1547,7 +1688,7 @@ export default function ProjectCaseOverlay({
                 alt={expandedImage.imageAlt}
                 decoding="async"
               />
-              {expandedImage.type === "product-overview" ? (
+              {expandedImage.type === "product-overview" || expandedImage.type === "ai-artifact" ? (
                 <div className="case-image-lightbox-hit-zones" aria-label="Expanded image navigation">
                   <button
                     className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-left"

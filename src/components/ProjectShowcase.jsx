@@ -6,8 +6,8 @@ export const featuredProjects = [
     eyebrow: "JP Morgan",
     title: "Reimagining the future of investment banking origination through zero-to-one AI-powered idea generation.",
     bullets: [
-      "Cut deal setup time by 40% through AI-assisted coordination.",
-      "Accelerated handoffs by 45% with human-in-loop AI workflows.",
+      "Reduced origination research time by 40% through AI-assisted sponsor and company signal synthesis.",
+      "Improved banker handoff readiness by 45% with human-in-the-loop review workflows.",
     ],
     image: "/optimized/jpmc-showcase-bg-1200.png",
     imageSrcSet: "/optimized/jpmc-showcase-bg-1200.png 1200w, /optimized/jpmc-showcase-bg-1940.png 1940w",
@@ -35,6 +35,21 @@ export const featuredProjects = [
     subLineSuffix: "AI",
     href: "#jpmorgan-lobby",
     showLockup: false,
+    isWip: true,
+    detail: {
+      accentColor: "#ffb0a6",
+      accentGlow: "rgba(255, 176, 166, 0.58)",
+      company: [
+        "J.P. Morgan — Wholesale Lending Ops (Enterprise Workflow Platform)",
+        "A workflow platform for coordinating complex bookings across teams and systems.",
+      ],
+      responsibility:
+        "Led end-to-end product design for BX NEXT’s coordination experience—bringing complex booking work into a single guided flow. Defined the information architecture, form strategy, and human-in-the-loop AI automation to improve clarity, traceability, and audit readiness.",
+      timeline: "May 2025 - Aug 2025",
+      role: "UX Designer",
+      roleTeam:
+        "UX designer collaborating closely with two other designers, an adjacent design team, PMs, as well as engineering stakeholders.",
+    },
   },
 ];
 
@@ -53,9 +68,9 @@ function ProjectCard({ project, onProjectSelect }) {
   const transformSrcSet = (srcSet) => {
     if (!srcSet) return srcSet;
     return srcSet
-      .split(", ")
+      .split(/,\s*/)
       .map(entry => {
-        const [path, size] = entry.trim().split(" ");
+        const [path, size] = entry.trim().split(/\s+/, 2);
         return `${getAssetPath(path)} ${size}`;
       })
       .join(", ");
@@ -94,7 +109,7 @@ function ProjectCard({ project, onProjectSelect }) {
       <div className="project-showcase-copy">
         <p className="project-showcase-eyebrow">{project.eyebrow}</p>
         <h2 className="project-showcase-title">{project.title}</h2>
-        <ul className="project-showcase-bullets">
+        <ul className="project-showcase-points">
           {project.bullets.map((bullet, index) => (
             <li key={index}>{bullet}</li>
           ))}
