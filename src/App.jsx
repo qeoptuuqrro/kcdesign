@@ -1,3 +1,4 @@
+import { getAssetPath } from "./utils/paths";
 import ProjectShowcase, { featuredProjects } from "./components/ProjectShowcase";
 import DesignSystemInspector from "./components/DesignSystemInspector";
 import { useEffect, useState } from "react";
@@ -36,8 +37,8 @@ export default function App() {
     const preloadImages = () => {
       const imageUrls = new Set([
         ...featuredProjects.flatMap((project) => [project.image, ...(project.imageSrcSet?.split(",").map((entry) => entry.trim().split(" ")[0]) ?? [])]),
-        "/optimized/peak-rock-dashboard-1200.png",
-        "/optimized/peak-rock-dashboard-2200.png",
+        getAssetPath("/optimized/peak-rock-dashboard-1200.png"),
+        getAssetPath("/optimized/peak-rock-dashboard-2200.png"),
       ]);
 
       imageUrls.forEach((url) => {

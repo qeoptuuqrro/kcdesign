@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { getAssetPath } from "../utils/paths";
 
 const handleProjectImageError = (event) => {
   event.currentTarget.classList.add("is-missing");
@@ -24,7 +25,7 @@ const productOverviewCards = [
   {
     title: "Sponsor intelligence",
     body: "Portfolio, fund, preference, and activity signals.",
-    image: "/product-sponsor-intelligence.png",
+    image: getAssetPath("/product-sponsor-intelligence.png"),
     imageAlt: "Sponsor intelligence product surface.",
     caption: "A sponsor intelligence workspace showing portfolio, fund, preference, and activity signals in one reviewable surface.",
     focus: "50% 50%",
@@ -32,7 +33,7 @@ const productOverviewCards = [
   {
     title: "AI-generated ideas",
     body: "Ranked ideas with rationale, fit, and next actions.",
-    image: "/product-ai-generated-ideas.png",
+    image: getAssetPath("/product-ai-generated-ideas.png"),
     imageAlt: "AI-generated ideas product surface.",
     caption: "A product view for generated deal ideas, rationale, fit, and review actions.",
     focus: "50% 50%",
@@ -40,7 +41,7 @@ const productOverviewCards = [
   {
     title: "Relationship signals",
     body: "Interaction history and outreach context for banker review.",
-    image: "/product-relationship-signals.png",
+    image: getAssetPath("/product-relationship-signals.png"),
     imageAlt: "Relationship signals product surface.",
     caption: "A relationship intelligence view connecting interaction history, wallet share, and outreach context for banker review.",
     focus: "50% 50%",
@@ -48,8 +49,8 @@ const productOverviewCards = [
 ];
 
 const jpmorganProductPreview = {
-  image: "/optimized/peak-rock-dashboard-1200.png",
-  imageSrcSet: "/optimized/peak-rock-dashboard-1200.png 873w, /optimized/peak-rock-dashboard-2200.png 1600w",
+  image: getAssetPath("/optimized/peak-rock-dashboard-1200.png"),
+  imageSrcSet: `${getAssetPath('/optimized/peak-rock-dashboard-1200.png')} ${getAssetPath('/optimized/peak-rock-dashboard-2200.png')}`,
   imageSizes: "(max-width: 760px) calc(100vw - 40px), 970px",
   imageAlt: "Sanitized sponsor intelligence workspace.",
 };
@@ -172,17 +173,17 @@ const aiOperatingLoopSteps = [
 
 const aiMethodArtifacts = [
   {
-    image: "/figma-artifact-wide-a.png",
+    image: getAssetPath("/figma-artifact-wide-a.png"),
     title: "AI-assisted implementation workspace",
     caption: "Copilot-assisted prototype work with implementation notes, component decisions, and design-system translation.",
   },
   {
-    image: "/figma-artifact-hero.png",
+    image: getAssetPath("/figma-artifact-hero.png"),
     title: "Figma-to-prototype operating model",
     caption: "Design references, prototype surfaces, and workflow artifacts organized for review.",
   },
   {
-    image: "/figma-artifact-wide-b.png",
+    image: getAssetPath("/figma-artifact-wide-b.png"),
     title: "Design-system review surface",
     caption: "Reusable screens, filters, drawers, and prototype states organized as reviewable product artifacts.",
   },
@@ -1254,7 +1255,7 @@ export default function ProjectCaseOverlay({
               <div className="case-ai-operating-loop" aria-label="Repeatable AI-native product operating loop">
                 <img
                   className="case-ai-loop-artifact"
-                  src="/figma-artifact-wide-a.png"
+                  src={getAssetPath("/figma-artifact-wide-a.png")}
                   alt=""
                   aria-hidden="true"
                   onError={handleProjectImageError}

@@ -1,10 +1,12 @@
+import { getAssetPath } from "../utils/paths";
+
 export default function LandingMedia() {
   return (
     <section className="landing-media-section" id="work" aria-label="Landing media">
       <div className="landing-media-frame">
         <video
           className="landing-media-video"
-          src="/project-preview.mp4"
+          src={getAssetPath("/project-preview.mp4")}
           autoPlay
           loop
           muted
