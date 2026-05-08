@@ -78,7 +78,7 @@ const typographySamples = [
     selector: ".project-showcase-title",
     text: "Building human-in-the-loop agentic AI workflow experiences.",
   },
-  { name: "Project Bullets", selector: ".project-showcase-points", text: "Cut deal setup time by 40%." },
+  { name: "Project Bullets", selector: ".project-showcase-points", text: "Reduced origination research time by 40%." },
 ];
 
 const spacingSamples = [

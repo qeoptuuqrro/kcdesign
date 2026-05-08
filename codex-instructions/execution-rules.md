@@ -13,6 +13,14 @@ Use these rules after the prompt has been interpreted, clarified if needed, and 
 - Keep implementation aligned with the rewritten prompt.
 - Avoid unrelated cleanup.
 
+## Local Development Source Of Truth
+
+- Use `npm run dev` as the only local dev command for this project.
+- Treat `http://127.0.0.1:5174/` as the canonical local preview URL.
+- Do not run multiple Vite dev servers for this project at the same time.
+- If a visual change appears stale or inconsistent, check for duplicate listeners on ports `5173` and `5174` before changing UI code.
+- The `npm run dev` script intentionally stops older same-project listeners on ports `5173` and `5174` before starting the canonical server.
+
 ## UI Work
 
 - Use existing design tokens and components when available.

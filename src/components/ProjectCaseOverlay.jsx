@@ -44,6 +44,7 @@ const productOverviewCards = [
     caption: "A sponsor intelligence workspace showing portfolio, fund, preference, and activity signals in one reviewable surface.",
     focus: "50% 50%",
     previewScale: 0.9,
+    previewOffsetY: "-8px",
   },
   {
     title: "AI-generated ideas",
@@ -53,6 +54,7 @@ const productOverviewCards = [
     caption: "A product view for generated deal ideas, rationale, fit, and review actions.",
     focus: "50% 50%",
     previewScale: 0.94,
+    previewOffsetY: "-6px",
   },
   {
     title: "Relationship signals",
@@ -61,7 +63,8 @@ const productOverviewCards = [
     imageAlt: "Relationship signals product surface.",
     caption: "A relationship intelligence view connecting interaction history, wallet share, and outreach context for banker review.",
     focus: "50% 50%",
-    previewScale: 0.86,
+    previewScale: 0.92,
+    previewOffsetY: "-24px",
   },
 ];
 
@@ -139,34 +142,28 @@ const operatingImpactChips = [
 
 const operatingOutcomeCards = [
   {
-    value: "~3x faster",
-    label: "Prototype iteration speed",
-    note: "Directional estimate for faster product-to-prototype exploration.",
+    value: "~3x faster exploration",
+    note: "Moved from static screens to working prototypes so teams could evaluate behavior earlier.",
   },
   {
     value: "18 files / 3,165 lines",
-    label: "Structured AI knowledge system",
-    note: "Gave Copilot project memory through instructions, skills, and references.",
+    note: "Built reusable Copilot instructions, skills, and references for product and design-system context.",
   },
   {
-    value: "12 DS refs + verification",
-    label: "Salt-aligned output governance",
-    note: "AI output was checked against enterprise design-system rules.",
+    value: "12 Salt refs + verification",
+    note: "Checked AI output against enterprise components, tokens, and interaction patterns.",
   },
   {
-    value: "3 disciplines / 1 artifact",
-    label: "PM × Design × Engineering",
-    note: "Teams aligned around one working prototype instead of separate interpretations.",
+    value: "3 teams / 1 artifact",
+    note: "Aligned PM, design, and engineering around one working prototype.",
   },
   {
     value: "Prototype → spec → Jira",
-    label: "Delivery-ready handoff",
-    note: "Design direction moved closer to engineering execution.",
+    note: "Turned product direction into clearer specs and delivery tickets.",
   },
   {
-    value: "Reduced translation loss",
-    label: "Executable product direction",
-    note: "Teams reviewed behavior and product states, not just static screens.",
+    value: "Less translation loss",
+    note: "Teams reviewed workflows, states, and behavior before build.",
   },
 ];
 
@@ -210,12 +207,12 @@ const aiProofArtifacts = [
   {
     image: getAssetPath("/ai-features-tearsheet.png"),
     title: "AI features tearsheet prototype",
-    caption: "Vibe-coded an AI feature concept from product intent into a reviewable prototype, compressing exploration time by roughly 30%.",
+    caption: "Vibe-coded an AI feature concept from product intent into a reviewable prototype, compressing early exploration time.",
   },
   {
     image: getAssetPath("/investor-crm-ai-prototype.png"),
     title: "Investor CRM AI prototype",
-    caption: "Turned interview insights into a quick AI prototype for PM and engineering review, improving concept turnaround by about 20%.",
+    caption: "Turned interview insights into a quick AI prototype for PM and engineering review.",
   },
   {
     image: getAssetPath("/ai-enrichment-prototype.png"),
@@ -1130,18 +1127,17 @@ export default function ProjectCaseOverlay({
               <section className="case-study-section case-wip-section" id="case-wip" aria-labelledby={`${project.id}-wip`}>
                 <CaseSectionHeader
                   label="Case study in progress"
-                  title="This workflow story is on the way."
+                  title="Wholesale Lending Ops case study"
                   id={`${project.id}-wip`}
                 >
-                  The hero and project context are live now. The deeper product narrative, screens, and outcomes will be added once the case study is ready.
+                  The hero and project context are live now while the deeper narrative is being finalized.
                 </CaseSectionHeader>
                 <div className="case-wip-card">
                   <span aria-hidden="true" />
                   <div>
                     <h3>WIP case study</h3>
                     <p>
-                      Keeping this preview intentionally lightweight for now so the homepage can show the work, while the full story stays clean until the
-                      visuals and narrative are finalized.
+                      The full narrative, screens, and outcomes are still being refined.
                     </p>
                   </div>
                 </div>
@@ -1169,7 +1165,7 @@ export default function ProjectCaseOverlay({
                     aria-hidden={index === activeProductPreviewIndex ? undefined : "true"}
                     loading={index === 0 ? "eager" : "lazy"}
                     decoding="async"
-                    style={{ objectPosition: card.focus, "--preview-scale": card.previewScale }}
+                    style={{ objectPosition: card.focus, "--preview-scale": card.previewScale, "--preview-y": card.previewOffsetY ?? "0px" }}
                     onError={handleProjectImageError}
                   />
                 ))}
@@ -1557,19 +1553,18 @@ export default function ProjectCaseOverlay({
 
               <div className="case-ai-layer-heading is-outcomes">
                 <p className="case-operating-card-eyebrow">Layer 04 · Outcomes</p>
-                <h3>Design moved closer to production.</h3>
+                <h3>Static handoff became executable product direction.</h3>
               </div>
               <div className="case-ai-outcome-grid" aria-label="AI-native operating model outcomes">
                 {operatingOutcomeCards.map((outcome) => (
-                  <article className="case-ai-outcome-card" key={outcome.label}>
-                    <p>{outcome.label}</p>
+                  <article className="case-ai-outcome-card" key={outcome.value}>
                     <strong>{outcome.value}</strong>
                     <span>{outcome.note}</span>
                   </article>
                 ))}
               </div>
               <p className="case-operating-closing-line">
-                AI-native design is not just about generating screens. It is about making product intent faster to explore, safer to systemize, and easier to hand off.
+                The value was not faster screen generation. It was turning product intent into a shared, executable artifact before engineering investment.
               </p>
             </section>
 
@@ -1592,7 +1587,16 @@ export default function ProjectCaseOverlay({
               <blockquote className="case-closing-thought">
                 AI in banking is not just about generation. It is about context, control, review, and trust.
               </blockquote>
-              <p className="case-confidentiality-note">Certain workflows and visuals are abstracted or sanitized for confidentiality. Sensitive internal details have been omitted.</p>
+              <aside className="case-confidentiality-card" aria-label="Confidentiality note">
+                <span aria-hidden="true" />
+                <div>
+                  <h3>Confidentiality note</h3>
+                  <p>
+                    Selected workflows, data, and product screens have been recreated or sanitized for confidentiality. I can share more context on the
+                    design decisions, collaboration model, and product impact in conversation.
+                  </p>
+                </div>
+              </aside>
             </section>
           </div>
         </div>

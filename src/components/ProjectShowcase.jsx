@@ -6,8 +6,8 @@ export const featuredProjects = [
     eyebrow: "JP Morgan",
     title: "Reimagining the future of investment banking origination through zero-to-one AI-powered idea generation.",
     bullets: [
-      "Reduced origination research time by 40% through AI-assisted sponsor and company signal synthesis.",
-      "Improved banker handoff readiness by 45% with human-in-the-loop review workflows.",
+      "Unified 1,400+ investor profiles and 8,400+ corporate records into a sponsor intelligence workflow for screening, matching, and idea generation.",
+      "Reduced manual origination workflow steps by 35% and cut early idea preparation time by 50%+ through AI-supported rationale, sponsor-fit context, and reusable idea structures.",
     ],
     image: "/optimized/jpmc-showcase-bg-1200.png",
     imageSrcSet: "/optimized/jpmc-showcase-bg-1200.png 1200w, /optimized/jpmc-showcase-bg-1940.png 1940w",
