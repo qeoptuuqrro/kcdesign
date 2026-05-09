@@ -11,6 +11,7 @@ on:
 permissions:
   pull-requests: write
   contents: write
+  actions: write
 
 jobs:
   auto-approve-pr:
@@ -32,3 +33,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         continue-on-error: true
+
+  auto-approve-workflow-run:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto approve workflow run
+        run: |
+          gh api --method POST /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/approve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
