@@ -3,7 +3,7 @@ name: Auto Deploy
 on:
   workflow_run:
     workflows: ["Deploy to GitHub Pages"]
-    types: [requested]
+    types: [in_progress]
 
 permissions:
   contents: read
@@ -18,6 +18,9 @@ jobs:
     steps:
       - name: Auto approve requested deploy run
         run: |
-          gh api --method POST /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/approve
+          DEPLOYMENT_ID=$(gh api repos/${{ github.repository }}/deployments --jq ".[] | select(.ref == \"${{ github.event.workflow_run.head_sha }}\") | .id" | head -1)
+          if [ -n "$DEPLOYMENT_ID" ]; then
+            gh api -X POST repos/${{ github.repository }}/deployments/$DEPLOYMENT_ID/statuses -f state=success
+          fi
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

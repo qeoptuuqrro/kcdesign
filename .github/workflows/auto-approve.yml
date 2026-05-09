@@ -6,7 +6,7 @@ on:
   pull_request_review_requested:
   workflow_run:
     workflows: ["Deploy to GitHub Pages"]
-    types: [completed]
+    types: [in_progress]
 
 permissions:
   pull-requests: write
