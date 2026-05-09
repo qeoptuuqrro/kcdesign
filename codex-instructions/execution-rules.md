@@ -25,6 +25,8 @@ Use these rules after the prompt has been interpreted, clarified if needed, and 
 
 - Use existing design tokens and components when available.
 - Preserve established visual language unless the user asks for a new direction.
+- Do not change design, motion, spacing, typography, color, glass effects, imagery, or animations while fixing performance or bugs unless the user explicitly approves that visual tradeoff.
+- Performance optimization must preserve the existing visual output. Prefer non-visual fixes such as measurement, memoization, asset sizing, event handling, containment, preloading, DOM isolation, or render scheduling before touching any style values.
 - Make spacing, alignment, typography, color, and motion decisions explicit.
 - Consider responsive behavior.
 - Keep hover, focus, active, disabled, loading, and empty states consistent with nearby UI.

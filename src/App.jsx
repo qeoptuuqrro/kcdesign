@@ -19,6 +19,7 @@ export default function App() {
   const [activeMenuId, setActiveMenuId] = useState("home");
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectView, setProjectView] = useState(null);
+  const [isClosingProject, setIsClosingProject] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -58,15 +59,24 @@ export default function App() {
   }, []);
 
   const handleProjectSelect = (project) => {
+    setIsClosingProject(false);
     setSelectedProject(project);
     setProjectView("overlay");
     setActiveMenuId("work");
   };
 
   const handleBack = () => {
-    setSelectedProject(null);
-    setProjectView(null);
-    setActiveMenuId("home");
+    if (!selectedProject || isClosingProject) {
+      return;
+    }
+
+    setIsClosingProject(true);
+    window.setTimeout(() => {
+      setSelectedProject(null);
+      setProjectView(null);
+      setActiveMenuId("home");
+      setIsClosingProject(false);
+    }, 220);
   };
 
   const handleOpenFullProject = () => {
@@ -149,6 +159,7 @@ export default function App() {
           isExpanding={projectView === "expanding"}
           isFull={projectView === "full"}
           isShrinking={projectView === "shrinking"}
+          isClosing={isClosingProject}
           onExpandComplete={handleExpandComplete}
           onShrinkComplete={handleShrinkComplete}
           onNextProject={handleNextProject}

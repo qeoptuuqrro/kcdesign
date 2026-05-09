@@ -43,8 +43,8 @@ const productOverviewCards = [
     imageAlt: "Sponsor intelligence product surface.",
     caption: "A sponsor intelligence workspace showing portfolio, fund, preference, and activity signals in one reviewable surface.",
     focus: "50% 50%",
-    previewScale: 0.9,
-    previewOffsetY: "-8px",
+    previewScale: 1,
+    previewOffsetY: "0px",
   },
   {
     title: "AI-generated ideas",
@@ -53,8 +53,8 @@ const productOverviewCards = [
     imageAlt: "AI-generated ideas product surface.",
     caption: "A product view for generated deal ideas, rationale, fit, and review actions.",
     focus: "50% 50%",
-    previewScale: 0.94,
-    previewOffsetY: "-6px",
+    previewScale: 1,
+    previewOffsetY: "0px",
   },
   {
     title: "Relationship signals",
@@ -63,8 +63,8 @@ const productOverviewCards = [
     imageAlt: "Relationship signals product surface.",
     caption: "A relationship intelligence view connecting interaction history, wallet share, and outreach context for banker review.",
     focus: "50% 50%",
-    previewScale: 0.92,
-    previewOffsetY: "-24px",
+    previewScale: 1,
+    previewOffsetY: "0px",
   },
 ];
 
@@ -294,6 +294,7 @@ export default function ProjectCaseOverlay({
   isExpanding = false,
   isFull = false,
   isShrinking = false,
+  isClosing = false,
   onExpandComplete,
   onShrinkComplete,
   onNextProject,
@@ -323,14 +324,18 @@ export default function ProjectCaseOverlay({
   const shrinkCompleteRef = useRef(onShrinkComplete);
   const isIndexOpenRef = useRef(false);
   const isOverlayWarmingRef = useRef(true);
+  const projectNavTimerRef = useRef(null);
+  const pendingProjectDirectionRef = useRef(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
+  const [projectNavPhase, setProjectNavPhase] = useState("");
   const [activeProductPreviewIndex, setActiveProductPreviewIndex] = useState(0);
   const [activeAiOperatingArtifactIndex, setActiveAiOperatingArtifactIndex] = useState(0);
   const [activeAiProofArtifactIndex, setActiveAiProofArtifactIndex] = useState(0);
   const [workflowReveal, setWorkflowReveal] = useState(50);
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
   const isFullControlActive = isFull || isExpanding;
+  const isProjectNavigating = projectNavPhase.startsWith("exit");
   const projectDetail = project.detail ?? defaultProjectDetail;
   const isCaseWip = Boolean(project.isWip);
   const activeAiOperatingArtifact = aiOperatingArtifacts[activeAiOperatingArtifactIndex];
@@ -510,6 +515,14 @@ export default function ProjectCaseOverlay({
   }, [isIndexOpen]);
 
   useEffect(() => {
+    return () => {
+      if (projectNavTimerRef.current != null) {
+        window.clearTimeout(projectNavTimerRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     if (!isExpanding && !isShrinking) {
       return undefined;
     }
@@ -520,7 +533,7 @@ export default function ProjectCaseOverlay({
         return;
       }
       shrinkCompleteRef.current?.();
-    }, 280);
+    }, 620);
 
     return () => window.clearTimeout(fallbackTimer);
   }, [isExpanding, isShrinking]);
@@ -539,6 +552,7 @@ export default function ProjectCaseOverlay({
     let lastProgress = -1;
     let lastScrollTop = -1;
     let lastThumbHeight = -1;
+    let lastScrollEventAt = 0;
     let scrollMetrics = {
       activationLine: 260,
       maxScroll: 0,
@@ -657,14 +671,28 @@ export default function ProjectCaseOverlay({
       }
 
       isScrollTickingRef.current = true;
-      frameId = requestAnimationFrame(() => {
-        isScrollTickingRef.current = false;
+
+      const scrollLoop = () => {
+        const actualScrollTop = scrollElement.scrollTop;
+        const movedSinceLastFrame = Math.abs(actualScrollTop - latestScrollTopRef.current) > 0.25;
+        latestScrollTopRef.current = actualScrollTop;
         processScrollPosition();
-      });
+
+        if (performance.now() - lastScrollEventAt < 160 || movedSinceLastFrame) {
+          frameId = requestAnimationFrame(scrollLoop);
+          return;
+        }
+
+        isScrollTickingRef.current = false;
+        frameId = null;
+      };
+
+      frameId = requestAnimationFrame(scrollLoop);
     };
 
     const handleScroll = () => {
       latestScrollTopRef.current = scrollElement.scrollTop;
+      lastScrollEventAt = performance.now();
       requestScrollTick();
     };
 
@@ -766,7 +794,38 @@ export default function ProjectCaseOverlay({
       progressRef.current.style.transform = "scaleX(0)";
     }
     scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
+
+    const pendingDirection = pendingProjectDirectionRef.current;
+    if (pendingDirection) {
+      pendingProjectDirectionRef.current = null;
+      setProjectNavPhase(`enter-${pendingDirection}`);
+      const enterTimer = window.setTimeout(() => setProjectNavPhase(""), 360);
+      return () => window.clearTimeout(enterTimer);
+    }
   }, [project.id, setActiveSection]);
+
+  const handleProjectNavigation = useCallback((direction) => {
+    if (isProjectNavigating || isExpanding || isShrinking) {
+      return;
+    }
+
+    const navigate = direction === "next" ? onNextProject : onPreviousProject;
+    if (!navigate) {
+      return;
+    }
+
+    pendingProjectDirectionRef.current = direction;
+    setProjectNavPhase(`exit-${direction}`);
+
+    if (projectNavTimerRef.current != null) {
+      window.clearTimeout(projectNavTimerRef.current);
+    }
+
+    projectNavTimerRef.current = window.setTimeout(() => {
+      projectNavTimerRef.current = null;
+      navigate();
+    }, 170);
+  }, [isExpanding, isProjectNavigating, isShrinking, onNextProject, onPreviousProject]);
 
   useEffect(() => {
     const preloaders = productOverviewCards.map((card) => {
@@ -1010,7 +1069,7 @@ export default function ProjectCaseOverlay({
 
   return (
     <div
-      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isCaseWip ? " is-wip-case" : ""}`}
+      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${isCaseWip ? " is-wip-case" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
@@ -1027,7 +1086,7 @@ export default function ProjectCaseOverlay({
             type="button"
             onClick={onClose}
             aria-label="Close case study"
-            disabled={isExpanding || isShrinking}
+            disabled={isExpanding || isShrinking || isClosing}
           >
             <span aria-hidden="true">←</span>
             <span>Back</span>
@@ -1644,12 +1703,12 @@ export default function ProjectCaseOverlay({
           {hasPreviousProject || hasNextProject ? (
             <div className="case-project-nav-controls" aria-label="Project navigation">
               {hasPreviousProject ? (
-                <button className="case-project-nav-button" type="button" onClick={onPreviousProject} aria-label="Previous project">
+                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("prev")} disabled={isProjectNavigating} aria-label="Previous project">
                   <span>Prev</span>
                 </button>
               ) : null}
               {hasNextProject ? (
-                <button className="case-project-nav-button" type="button" onClick={onNextProject} aria-label="Next project">
+                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("next")} disabled={isProjectNavigating} aria-label="Next project">
                   <span>Next</span>
                 </button>
               ) : null}
