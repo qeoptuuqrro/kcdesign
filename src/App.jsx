@@ -11,7 +11,6 @@ import PlatformScrollbar from "./components/PlatformScrollbar";
 const menuItems = [
   { id: "home", label: "Home", href: "#home" },
   { id: "work", label: "Work", href: "#work" },
-  { id: "play", label: "Play", href: "#play" },
   { id: "about", label: "About", href: "#about" },
 ];
 
@@ -40,7 +39,7 @@ export default function App() {
         ...featuredProjects.flatMap((project) => [project.image, ...(project.imageSrcSet?.split(",").map((entry) => entry.trim().split(" ")[0]) ?? [])]),
         getAssetPath("/optimized/peak-rock-dashboard-1200.png"),
         getAssetPath("/optimized/peak-rock-dashboard-2200.png"),
-      ]);
+      ].filter(Boolean));
 
       imageUrls.forEach((url) => {
         const image = new Image();

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAssetPath } from "../utils/paths";
+import ExecutableDirectionConsole from "./ExecutableDirectionConsole";
+import { DeepCutNightGuideThumbnail } from "./ProjectShowcase";
 
 const handleProjectImageError = (event) => {
   event.currentTarget.classList.add("is-missing");
@@ -206,8 +208,8 @@ const aiOperatingArtifacts = [
 const aiProofArtifacts = [
   {
     image: getAssetPath("/ai-features-tearsheet.png"),
-    title: "AI features tearsheet prototype",
-    caption: "Vibe-coded an AI feature concept from product intent into a reviewable prototype, compressing early exploration time.",
+    title: "Branch-backed review prototype",
+    caption: "The same branch carries module.css, scale.md, architecture.md, and store.ts into a review surface where the UI and runtime behavior are one system.",
   },
   {
     image: getAssetPath("/investor-crm-ai-prototype.png"),
@@ -338,6 +340,8 @@ export default function ProjectCaseOverlay({
   const isProjectNavigating = projectNavPhase.startsWith("exit");
   const projectDetail = project.detail ?? defaultProjectDetail;
   const isCaseWip = Boolean(project.isWip);
+  const isDeepCutNightGuide = project.customThumbnail === "deepcut-night-guide";
+  const projectHighlights = project.highlights ?? heroHighlights;
   const activeAiOperatingArtifact = aiOperatingArtifacts[activeAiOperatingArtifactIndex];
   const activeAiProofArtifact = aiProofArtifacts[activeAiProofArtifactIndex];
   const goToPreviousAiOperatingArtifact = useCallback(() => {
@@ -1067,6 +1071,191 @@ export default function ProjectCaseOverlay({
   const workflowRevealNumber = Number(workflowReveal);
   const aiWorkflowRevealNumber = Number(aiWorkflowReveal);
 
+  if (project.id === "deepcut-ai-night-guide") {
+    const deepCutOverviewCards = [
+      {
+        title: "AI video search",
+        body: "Users can ask for videos by mood, creator, source, topic, or intent instead of browsing an endless feed.",
+      },
+      {
+        title: "Ratings and saves",
+        body: "DeepCut behaves like an IMDb-style layer for long-form videos, making quality, taste, and watch intent visible.",
+      },
+      {
+        title: "Source intelligence",
+        body: "The product aggregates signals from YouTube, Bilibili, transcripts, subtitles, creator notes, and review activity.",
+      },
+      {
+        title: "Responsive discovery",
+        body: "The landing experience proves the system works across desktop research and mobile save-for-later behavior.",
+      },
+    ];
+
+    const deepCutFlowCards = [
+      {
+        title: "Find",
+        body: "Search for a long-form video with natural language and context-aware filters.",
+      },
+      {
+        title: "Decide",
+        body: "Review AI rationale, ratings, source confidence, and the best chapter before pressing play.",
+      },
+      {
+        title: "Keep",
+        body: "Like, save, and return to a personal library of videos that are worth the time investment.",
+      },
+    ];
+
+    return (
+      <div
+        className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}`}
+        role="dialog"
+        aria-modal="true"
+        aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
+        style={{
+          "--case-accent": projectDetail.accentColor,
+          "--case-accent-glow": projectDetail.accentGlow,
+        }}
+      >
+        <div className="case-overlay-backdrop" onClick={isExpanding || isFull || isShrinking ? undefined : onClose} />
+        <section className="case-overlay-panel" onTransitionEnd={handlePanelTransitionEnd}>
+          <header className="case-overlay-header">
+            <button
+              className="project-detail-back"
+              type="button"
+              onClick={onClose}
+              aria-label="Close case study"
+              disabled={isExpanding || isShrinking || isClosing}
+            >
+              <span aria-hidden="true">←</span>
+              <span>Back</span>
+            </button>
+
+            <div className={`case-overlay-actions${isFullControlActive ? " is-full-selected" : " is-preview-selected"}`}>
+              <button
+                className={`case-overlay-mode-pill case-overlay-mode-button${!isFullControlActive ? " is-active" : ""}`}
+                type="button"
+                onClick={isFull ? onOpenPreview : undefined}
+                disabled={isExpanding || isShrinking || !isFull}
+                aria-current={!isFullControlActive ? "page" : undefined}
+              >
+                Preview
+              </button>
+              <button
+                className={`case-overlay-expand${isFullControlActive ? " is-active" : ""}`}
+                type="button"
+                onClick={isFull ? undefined : onOpenFull}
+                disabled={isExpanding || isShrinking || isFull}
+                aria-current={isFullControlActive ? "page" : undefined}
+              >
+                Full
+              </button>
+            </div>
+          </header>
+
+          <div className="case-overlay-scroll">
+            <div className="case-overlay-content">
+              <section className="project-detail-hero" id="case-intro" aria-labelledby={`${project.id}-overlay-title`}>
+                <p className="project-detail-kicker">
+                  <span className="project-detail-kicker-dot" aria-hidden="true" />
+                  <span id={`${project.id}-overlay-title`}>{project.eyebrow}</span>
+                </p>
+                <p className="project-detail-subtitle">{project.title}</p>
+                <div className="case-hero-highlight-row" aria-label="Case study highlights">
+                  {projectHighlights.map((highlight) => (
+                    <span key={highlight}>{highlight}</span>
+                  ))}
+                </div>
+
+                <div className="project-detail-media project-showcase-media is-image-only is-deepcut-night-guide">
+                  <DeepCutNightGuideThumbnail />
+                </div>
+              </section>
+
+              <section className="project-detail-meta" aria-label="Project information">
+                <article className="project-detail-info-block">
+                  <h2>Company</h2>
+                  <p>
+                    {projectDetail.company.map((line) => (
+                      <span key={line}>{line}</span>
+                    ))}
+                  </p>
+                </article>
+                <article className="project-detail-info-block">
+                  <h2>Responsibility</h2>
+                  <p>{projectDetail.responsibility}</p>
+                </article>
+                <article className="project-detail-info-block">
+                  <h2>Timeline</h2>
+                  <p>{projectDetail.timeline}</p>
+                </article>
+                <article className="project-detail-info-block">
+                  <h2>Role & Team</h2>
+                  <p>{projectDetail.roleTeam}</p>
+                </article>
+              </section>
+
+              <section className="case-study-section" id="case-overview" aria-labelledby={`${project.id}-overview`}>
+                <CaseSectionHeader
+                  label="Product narrative"
+                  title="An AI-native discovery layer for videos that deserve a longer watch."
+                  id={`${project.id}-overview`}
+                >
+                  DeepCut sells the value of deciding before committing: find the right video, understand why it is worth watching, then save it into a library.
+                </CaseSectionHeader>
+                <section className="project-detail-meta" aria-label="DeepCut product pillars">
+                  {deepCutOverviewCards.map((card) => (
+                    <article className="project-detail-info-block" key={card.title}>
+                      <h2>{card.title}</h2>
+                      <p>{card.body}</p>
+                    </article>
+                  ))}
+                </section>
+              </section>
+
+              <section className="case-study-section" id="case-operating" aria-labelledby={`${project.id}-flow`}>
+                <CaseSectionHeader
+                  label="Interaction model"
+                  title="The platform turns discovery into a clear watch decision."
+                  id={`${project.id}-flow`}
+                >
+                  The AI Night Guide is one expression of a larger platform system: search, compare, source-check, rate, save, and return.
+                </CaseSectionHeader>
+                <section className="project-detail-meta" aria-label="DeepCut interaction flow">
+                  {deepCutFlowCards.map((card) => (
+                    <article className="project-detail-info-block" key={card.title}>
+                      <h2>{card.title}</h2>
+                      <p>{card.body}</p>
+                    </article>
+                  ))}
+                </section>
+              </section>
+
+              <section className="case-study-section case-wip-section" id="case-coming-next" aria-labelledby={`${project.id}-coming-next`}>
+                <CaseSectionHeader
+                  label="Coming next"
+                  title="More content on the way."
+                  id={`${project.id}-coming-next`}
+                >
+                  The product story will keep expanding with deeper source intelligence, AI ranking logic, and saved-watch flows.
+                </CaseSectionHeader>
+                <div className="case-wip-card">
+                  <span aria-hidden="true" />
+                  <div>
+                    <h3>New DeepCut modules</h3>
+                    <p>
+                      Search modes, rating layers, save states, and source scraping views are still being prepared for the next release.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+        </section>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${isCaseWip ? " is-wip-case" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}`}
@@ -1123,32 +1312,44 @@ export default function ProjectCaseOverlay({
               </p>
               <p className="project-detail-subtitle">{project.title}</p>
               <div className="case-hero-highlight-row" aria-label="Case study highlights">
-                {heroHighlights.map((highlight) => (
+                {projectHighlights.map((highlight) => (
                   <span key={highlight}>{highlight}</span>
                 ))}
               </div>
 
-              <div className={`project-detail-media project-showcase-media${project.showLockup === false ? " is-image-only" : ""}`}>
-                <img
-                  className="project-showcase-bg"
-                  src={getAssetPath(project.image)}
-                  srcSet={getAssetSrcSet(project.imageSrcSet)}
-                  sizes={project.imageSizes}
-                  alt={project.imageAlt}
-                  loading="eager"
-                  decoding="async"
-                  fetchPriority="high"
-                  onError={handleProjectImageError}
-                />
-                {project.showLockup === false ? null : (
-                  <div className="project-showcase-lockup" aria-hidden="true">
-                    <p className="project-showcase-brand">{project.brandLine}</p>
-                    <p className="project-showcase-brand">
-                      <span>{project.subLinePrefix}</span>
-                      <span className="project-showcase-icon" aria-hidden="true" />
-                      <span>{project.subLineSuffix}</span>
-                    </p>
-                  </div>
+              <div className={`project-detail-media project-showcase-media${project.showLockup === false || isDeepCutNightGuide ? " is-image-only" : ""}${project.id === "jpmorgan-ai" ? " is-jpmorgan-ai" : ""}${isDeepCutNightGuide ? " is-deepcut-night-guide" : ""}`}>
+                {isDeepCutNightGuide ? (
+                  <DeepCutNightGuideThumbnail />
+                ) : (
+                  <>
+                    <img
+                      className="project-showcase-bg"
+                      src={getAssetPath(project.image)}
+                      srcSet={getAssetSrcSet(project.imageSrcSet)}
+                      sizes={project.imageSizes}
+                      alt={project.imageAlt}
+                      loading="eager"
+                      decoding="async"
+                      fetchPriority="high"
+                      onError={handleProjectImageError}
+                    />
+                    {project.id === "jpmorgan-ai" && (
+                      <div className="jpmorgan-ai-motion" aria-hidden="true">
+                        <span className="jpmorgan-ai-grid" />
+                        <span className="jpmorgan-ai-beam" />
+                      </div>
+                    )}
+                    {project.showLockup === false ? null : (
+                      <div className="project-showcase-lockup" aria-hidden="true">
+                        <p className="project-showcase-brand">{project.brandLine}</p>
+                        <p className="project-showcase-brand">
+                          <span>{project.subLinePrefix}</span>
+                          <span className="project-showcase-icon" aria-hidden="true" />
+                          <span>{project.subLineSuffix}</span>
+                        </p>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
             </section>
@@ -1186,17 +1387,17 @@ export default function ProjectCaseOverlay({
               <section className="case-study-section case-wip-section" id="case-wip" aria-labelledby={`${project.id}-wip`}>
                 <CaseSectionHeader
                   label="Case study in progress"
-                  title="Wholesale Lending Ops case study"
+                  title={project.wipTitle ?? "Wholesale Lending Ops case study"}
                   id={`${project.id}-wip`}
                 >
-                  The hero and project context are live now while the deeper narrative is being finalized.
+                  {project.wipBody ?? "The hero and project context are live now while the deeper narrative is being finalized."}
                 </CaseSectionHeader>
                 <div className="case-wip-card">
                   <span aria-hidden="true" />
                   <div>
-                    <h3>WIP case study</h3>
+                    <h3>{project.wipCardTitle ?? "WIP case study"}</h3>
                     <p>
-                      The full narrative, screens, and outcomes are still being refined.
+                      {project.wipCardBody ?? "The full narrative, screens, and outcomes are still being refined."}
                     </p>
                   </div>
                 </div>
@@ -1359,240 +1560,32 @@ export default function ProjectCaseOverlay({
 
             <section className="case-study-section case-operating-section" id="case-operating" aria-labelledby={`${project.id}-operating`}>
               <CaseSectionHeader label="AI-native workflow" title="Compressing product intent into engineering-ready direction" id={`${project.id}-operating`}>
-                I created a faster, governed workflow that turned product intent into AI-explored, Salt-aligned, reviewable prototypes — giving AI project
-                memory, quality guardrails, and a shared review model for PM, design, and engineering.
+                I created a faster, governed workflow that turned product intent into AI-explored, Salt-aligned, reviewable prototypes, with file-backed
+                platform rules and runtime behavior visible for PM, design, and engineering review.
               </CaseSectionHeader>
-              <div className="case-ai-method-hero">
-                <div className="case-ai-method-copy">
-                  <p className="case-operating-card-eyebrow">Operating model</p>
-                  <h3>Making AI reliable for enterprise product design.</h3>
-                  <strong className="case-ai-selling-line">
-                    The value was not just faster prototyping. It was a faster, governed path from product intent to engineering-ready direction.
-                  </strong>
-                  <div className="case-ai-method-metrics" aria-label="AI-native workflow evidence">
-                    {aiMethodHeroMetrics.map((metric) => (
-                      <span key={metric.label}>
-                        <strong>{metric.value}</strong>
-                        {metric.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-                <div className="case-ai-method-artifacts" aria-label="AI workflow artifact preview">
-                  <button
-                    className="case-ai-method-artifact-feature"
-                    type="button"
-                    onClick={handleAiOperatingArtifactStageClick}
-                    onPointerMove={handleArtifactPointerMove}
-                    onPointerEnter={handleArtifactPointerMove}
-                    onPointerLeave={clearDocumentCursorMode}
-                    onFocus={() => setDocumentCursorMode("expand")}
-                    onBlur={clearDocumentCursorMode}
-                    aria-label={`Open ${activeAiOperatingArtifact.title}`}
-                  >
-                    <img src={activeAiOperatingArtifact.image} alt={activeAiOperatingArtifact.title} onError={handleProjectImageError} />
-                    <span className="case-ai-method-artifact-caption">
-                      <strong>{activeAiOperatingArtifact.title}</strong>
-                      <em>{activeAiOperatingArtifact.caption}</em>
-                    </span>
-                    <span className="case-ai-method-artifact-count">
-                      {String(activeAiOperatingArtifactIndex + 1).padStart(2, "0")} / {String(aiOperatingArtifacts.length).padStart(2, "0")}
-                    </span>
-                  </button>
-                  <div className="case-ai-method-artifact-controls" aria-label="Change AI workflow artifact">
-                    <div>
-                      {aiOperatingArtifacts.map((artifact, index) => (
-                        <button
-                          type="button"
-                          key={artifact.title}
-                          className={index === activeAiOperatingArtifactIndex ? "is-active" : ""}
-                          onClick={() => setActiveAiOperatingArtifactIndex(index)}
-                          aria-label={`Show ${artifact.title}`}
-                          aria-current={index === activeAiOperatingArtifactIndex ? "true" : undefined}
-                        >
-                          <span>{artifact.title}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                  <div className="case-ai-method-artifact-strip" aria-hidden="true">
-                    {aiOperatingArtifacts.map((artifact, index) => (
-                      <span key={artifact.title} className={index === activeAiOperatingArtifactIndex ? "is-active" : ""} />
-                    ))}
-                  </div>
-                </div>
+              <ExecutableDirectionConsole />
+              <div className="case-ai-proof-bridge" aria-hidden="true">
+                <span>same branch</span>
+                <i />
+                <span>different proof surface</span>
+                <i />
+                <span>one review system</span>
               </div>
-
-              <div className="case-ai-layer-heading">
-                <p className="case-operating-card-eyebrow">Layer 01 · Transformation</p>
-                <h3>From static handoff to AI-native product building.</h3>
-              </div>
-              <div className="case-ai-transformation" aria-label="Before and after AI-native workflow transformation">
-                <article className="case-ai-transformation-card is-before">
-                  <p className="case-operating-card-eyebrow">Before</p>
-                  <h3>Static design handoff</h3>
-                  <p>Design intent lived in Figma, then had to be interpreted, rebuilt, and re-checked across teams.</p>
-                  <div>
-                    <span>Translation loss</span>
-                    <span>Rebuild work</span>
-                    <span>Static review</span>
-                  </div>
-                </article>
-                <div className="case-ai-transformation-bridge" aria-hidden="true">
-                  <span>translation loss</span>
-                  <strong>→</strong>
-                  <span>governed speed</span>
-                </div>
-                <article className="case-ai-transformation-card is-after">
-                  <p className="case-operating-card-eyebrow">After</p>
-                  <h3>Executable product direction</h3>
-                  <p>Product intent became a working prototype path: AI-explored, Salt-aligned, verified, branch-reviewed, and easier to evaluate.</p>
-                  <div>
-                    <span>Working prototype</span>
-                    <span>Governed output</span>
-                    <span>Shared review</span>
-                    <span>Closer to engineering</span>
-                  </div>
-                </article>
-              </div>
-
-              <div className="case-ai-layer-heading">
-                <p className="case-operating-card-eyebrow">Layer 02 · Operating loop</p>
-                <h3>The workflow behind the workflow.</h3>
-              </div>
-              <div className="case-ai-operating-loop" aria-label="Repeatable AI-native product operating loop">
-                <img
-                  className="case-ai-loop-artifact"
-                  src={getAssetPath("/figma-artifact-wide-a.png")}
-                  alt=""
-                  aria-hidden="true"
-                  onError={handleProjectImageError}
-                />
-                <div className="case-ai-loop-orbit" aria-hidden="true" />
-                {aiOperatingLoopSteps.map((step, index) => (
-                  <span key={step} style={{ "--loop-index": index }}>
-                    {step}
-                  </span>
-                ))}
-                <strong>Engineering-ready direction</strong>
-              </div>
-
-              <div className="case-ai-layer-heading">
-                <p className="case-operating-card-eyebrow">Layer 03 · Proof stack</p>
-                <h3>The mechanisms that made AI output reliable and executable.</h3>
-              </div>
-              <div className="case-ai-proof-stack">
-                <article className="case-ai-proof-card is-intake">
-                  <div>
-                    <p className="case-operating-card-eyebrow">01 · Accelerated exploration</p>
-                    <h3>From product ask to prototype direction</h3>
-                    <p>Used product tickets as input to understand scope, brainstorm directions, and move into prototype exploration quickly.</p>
-                  </div>
-                  <div className="case-ai-intake-flow" aria-label="Product intent intake to prototype direction">
-                    <span>Jira / product intent</span>
-                    <span>AI brainstorm</span>
-                    <span>Flow options</span>
-                    <strong>Prototype direction</strong>
-                  </div>
-                  <div className="case-operating-chip-cloud">
-                    <span>Jira MCP</span>
-                    <span>Product intent</span>
-                    <span>Feature brainstorm</span>
-                    <span>Prototype direction</span>
-                  </div>
-                </article>
-
-                <article className="case-ai-proof-card is-memory">
-                  <div>
-                    <p className="case-operating-card-eyebrow">02 · AI project memory</p>
-                    <h3>Copilot knew the project before generating UI</h3>
-                    <p>Instructions and skills gave Copilot memory for components, ownership, interaction patterns, state rules, and verification.</p>
-                  </div>
-                  <div className="case-ai-proof-metric-row" aria-label="AI project memory metrics">
-                    <span>18 AI knowledge files</span>
-                    <span>3,165 instruction lines</span>
-                    <span>5 domain skill files</span>
-                    <span>12 design-system refs</span>
-                  </div>
-                  <div className="case-operating-file-tree is-compact" aria-label="AI knowledge file tree">
-                    {operatingFileTree.map((line, index) => (
-                      <code key={`${line}-${index}`}>{line}</code>
-                    ))}
-                  </div>
-                  <div className="case-operating-hard-stop">
-                    <strong>HARD STOP.</strong>
-                    <span>Read skill files before generating code.</span>
-                    <span>Do not rely on stale Salt, React, or CSS knowledge.</span>
-                    <span>Run verification after writing code.</span>
-                  </div>
-                </article>
-
-                <article className="case-ai-proof-card is-quality">
-                  <div>
-                    <p className="case-operating-card-eyebrow">03 · Governed design-system output</p>
-                    <h3>Raw AI output became Salt-aligned UI</h3>
-                    <p>Raw generated UI was translated into Salt tokens, reusable patterns, and design-system components.</p>
-                  </div>
-                  <div className="case-ai-token-translation" aria-label="Hardcoded CSS translated into enterprise design system tokens">
-                    {aiMethodTokenRows.map(([raw, governed]) => (
-                      <div key={raw}>
-                        <code>{raw}</code>
-                        <span />
-                        <code>{governed}</code>
-                      </div>
-                    ))}
-                  </div>
-                  <div className="case-operating-chip-cloud">
-                    {operatingQualityChips.map((chip) => (
-                      <span key={chip}>{chip}</span>
-                    ))}
-                  </div>
-                </article>
-
-                <article className="case-ai-proof-card is-handoff">
-                  <div>
-                    <p className="case-operating-card-eyebrow">04 · Delivery-ready handoff</p>
-                    <h3>Prototype direction became reviewable work</h3>
-                    <p>SDD-style specs, verification output, and branch reviews made prototype directions easier to compare and move toward engineering.</p>
-                  </div>
-                  <div className="case-ai-handoff-grid">
-                    <div className="case-operating-market-flow is-compact" aria-label="Spec-ready handoff flow">
-                      <span>Prototype direction</span>
-                      <span>Design-focused spec</span>
-                      <span>Jira-ready task breakdown</span>
-                      <strong>Engineering review</strong>
-                    </div>
-                    <div className="case-operating-branch-map">
-                      <strong>main / develop</strong>
-                      {operatingBranchSteps.map((step) => (
-                        <span key={step}>├── {step}</span>
-                      ))}
-                      <em>↓ PM + Design + Engineering review</em>
-                      <b>shared prototype direction</b>
-                    </div>
-                    <div className="case-operating-terminal">
-                      <strong>Salt verification</strong>
-                      <span>3 violations → token fixes</span>
-                      <code>Hardcoded font-size → var(--salt-text-*)</code>
-                      <code>Hardcoded line-height → var(--salt-text-*)</code>
-                      <b>passed · 0 violations</b>
-                    </div>
-                  </div>
-                </article>
-              </div>
-              <div className="case-ai-proof-carousel" aria-label="AI workflow proof artifact showcase">
+              <div className="case-ai-proof-carousel" aria-label="AI prototype proof carousel">
                 <button
                   className="case-ai-proof-carousel-stage"
                   type="button"
                   onClick={handleAiProofArtifactStageClick}
                   onPointerMove={handleArtifactPointerMove}
-                  onPointerEnter={handleArtifactPointerMove}
                   onPointerLeave={clearDocumentCursorMode}
-                  onFocus={() => setDocumentCursorMode("expand")}
-                  onBlur={clearDocumentCursorMode}
                   aria-label={`Open ${activeAiProofArtifact.title}`}
                 >
-                  <img src={activeAiProofArtifact.image} alt={activeAiProofArtifact.title} onError={handleProjectImageError} />
+                  <img
+                    src={activeAiProofArtifact.image}
+                    alt={activeAiProofArtifact.title}
+                    loading="lazy"
+                    decoding="async"
+                  />
                   <span className="case-ai-proof-carousel-count">
                     {String(activeAiProofArtifactIndex + 1).padStart(2, "0")} / {String(aiProofArtifacts.length).padStart(2, "0")}
                   </span>
@@ -1601,30 +1594,14 @@ export default function ProjectCaseOverlay({
                     <em>{activeAiProofArtifact.caption}</em>
                   </span>
                 </button>
-                <div className="case-ai-proof-carousel-controls" aria-label="Change proof artifact">
-                  <div aria-hidden="true">
+                <div className="case-ai-proof-carousel-controls" aria-hidden="true">
+                  <div>
                     {aiProofArtifacts.map((artifact, index) => (
-                      <span key={artifact.title} className={index === activeAiProofArtifactIndex ? "is-active" : ""} />
+                      <span className={index === activeAiProofArtifactIndex ? "is-active" : ""} key={artifact.title} />
                     ))}
                   </div>
                 </div>
               </div>
-
-              <div className="case-ai-layer-heading is-outcomes">
-                <p className="case-operating-card-eyebrow">Layer 04 · Outcomes</p>
-                <h3>Static handoff became executable product direction.</h3>
-              </div>
-              <div className="case-ai-outcome-grid" aria-label="AI-native operating model outcomes">
-                {operatingOutcomeCards.map((outcome) => (
-                  <article className="case-ai-outcome-card" key={outcome.value}>
-                    <strong>{outcome.value}</strong>
-                    <span>{outcome.note}</span>
-                  </article>
-                ))}
-              </div>
-              <p className="case-operating-closing-line">
-                The value was not faster screen generation. It was turning product intent into a shared, executable artifact before engineering investment.
-              </p>
             </section>
 
             <section className="case-study-section case-impact-section" id="case-impact" aria-labelledby={`${project.id}-impact`}>

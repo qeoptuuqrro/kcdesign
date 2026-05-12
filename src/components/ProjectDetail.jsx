@@ -30,7 +30,7 @@ export default function ProjectDetail({ project, onBack, onOpenPreview }) {
           </p>
           <p className="project-detail-subtitle">{project.title}</p>
 
-          <div className={`project-detail-media project-showcase-media${project.showLockup === false ? " is-image-only" : ""}`}>
+          <div className={`project-detail-media project-showcase-media${project.showLockup === false ? " is-image-only" : ""}${project.id === "jpmorgan-ai" ? " is-jpmorgan-ai" : ""}`}>
             <img
               className="project-showcase-bg"
               src={project.image}
@@ -40,6 +40,12 @@ export default function ProjectDetail({ project, onBack, onOpenPreview }) {
               decoding="async"
               onError={handleProjectImageError}
             />
+            {project.id === "jpmorgan-ai" && (
+              <div className="jpmorgan-ai-motion" aria-hidden="true">
+                <span className="jpmorgan-ai-grid" />
+                <span className="jpmorgan-ai-beam" />
+              </div>
+            )}
             {project.showLockup === false ? null : (
               <div className="project-showcase-lockup" aria-hidden="true">
                 <p className="project-showcase-brand">{project.brandLine}</p>
