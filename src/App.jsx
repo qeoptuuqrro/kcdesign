@@ -7,6 +7,7 @@ import HeroStatement from "./components/HeroStatement";
 import Navbar from "./components/Navbar";
 import ProjectCaseOverlay from "./components/ProjectCaseOverlay";
 import PlatformScrollbar from "./components/PlatformScrollbar";
+import { trackEvent } from "./utils/analytics";
 
 const menuItems = [
   { id: "home", label: "Home", href: "#home" },
@@ -62,6 +63,10 @@ export default function App() {
     setSelectedProject(project);
     setProjectView("overlay");
     setActiveMenuId("work");
+    trackEvent("project_open", {
+      project_id: project.id,
+      project_title: project.title,
+    });
   };
 
   const handleBack = () => {
@@ -69,6 +74,11 @@ export default function App() {
       return;
     }
 
+    trackEvent("project_close", {
+      project_id: selectedProject.id,
+      project_title: selectedProject.title,
+      project_view: projectView,
+    });
     setIsClosingProject(true);
     window.setTimeout(() => {
       setSelectedProject(null);
@@ -84,6 +94,10 @@ export default function App() {
     }
 
     setProjectView("expanding");
+    trackEvent("project_full_view_open", {
+      project_id: selectedProject.id,
+      project_title: selectedProject.title,
+    });
   };
 
   const handleOpenPreviewProject = () => {
@@ -91,6 +105,10 @@ export default function App() {
       return;
     }
     setProjectView("shrinking");
+    trackEvent("project_full_view_close", {
+      project_id: selectedProject.id,
+      project_title: selectedProject.title,
+    });
   };
 
   const handleExpandComplete = () => {
@@ -110,7 +128,12 @@ export default function App() {
       return;
     }
 
-    setSelectedProject(featuredProjects[selectedProjectIndex + 1]);
+    const nextProject = featuredProjects[selectedProjectIndex + 1];
+    setSelectedProject(nextProject);
+    trackEvent("project_next", {
+      from_project_id: selectedProject.id,
+      to_project_id: nextProject.id,
+    });
   };
 
   const handlePreviousProject = () => {
@@ -118,11 +141,20 @@ export default function App() {
       return;
     }
 
-    setSelectedProject(featuredProjects[selectedProjectIndex - 1]);
+    const previousProject = featuredProjects[selectedProjectIndex - 1];
+    setSelectedProject(previousProject);
+    trackEvent("project_previous", {
+      from_project_id: selectedProject.id,
+      to_project_id: previousProject.id,
+    });
   };
 
   const handleMenuSelect = (id, href, event) => {
     setActiveMenuId(id);
+    trackEvent("navigation_select", {
+      navigation_id: id,
+      navigation_href: href,
+    });
 
     if (!href?.startsWith("#")) {
       return;

@@ -32,6 +32,8 @@ jobs:
         run: npm ci
 
       - name: Build site
+        env:
+          VITE_CLARITY_PROJECT_ID: wq88gfkc76
         run: npm run build
 
       - name: Upload artifact
