@@ -15,6 +15,27 @@ const menuItems = [
   { id: "about", label: "About", href: "#about" },
 ];
 
+function getProjectUrl(project, view = "preview") {
+  if (!project?.href?.startsWith("#")) {
+    return null;
+  }
+
+  return view === "full" ? `${project.href}-full` : project.href;
+}
+
+function updateProjectUrl(project, view = "preview") {
+  const nextUrl = getProjectUrl(project, view);
+  if (!nextUrl) {
+    return;
+  }
+
+  window.history.pushState(null, "", nextUrl);
+}
+
+function resetProjectUrl() {
+  window.history.pushState(null, "", window.location.pathname + window.location.search);
+}
+
 export default function App() {
   const [activeMenuId, setActiveMenuId] = useState("home");
   const [selectedProject, setSelectedProject] = useState(null);
@@ -63,9 +84,7 @@ export default function App() {
     setSelectedProject(project);
     setProjectView("overlay");
     setActiveMenuId("work");
-    if (project.href?.startsWith("#")) {
-      window.history.pushState(null, "", project.href);
-    }
+    updateProjectUrl(project);
     setAnalyticsTag("project_id", project.id);
     setAnalyticsTag("project_title", project.title);
     trackEvent("project_open", {
@@ -90,7 +109,7 @@ export default function App() {
       setProjectView(null);
       setActiveMenuId("home");
       setIsClosingProject(false);
-      window.history.pushState(null, "", window.location.pathname + window.location.search);
+      resetProjectUrl();
     }, 220);
   };
 
@@ -100,6 +119,7 @@ export default function App() {
     }
 
     setProjectView("expanding");
+    updateProjectUrl(selectedProject, "full");
     trackEvent("project_full_view_open", {
       project_id: selectedProject.id,
       project_title: selectedProject.title,
@@ -111,6 +131,7 @@ export default function App() {
       return;
     }
     setProjectView("shrinking");
+    updateProjectUrl(selectedProject);
     trackEvent("project_full_view_close", {
       project_id: selectedProject.id,
       project_title: selectedProject.title,
@@ -136,9 +157,7 @@ export default function App() {
 
     const nextProject = featuredProjects[selectedProjectIndex + 1];
     setSelectedProject(nextProject);
-    if (nextProject.href?.startsWith("#")) {
-      window.history.pushState(null, "", nextProject.href);
-    }
+    updateProjectUrl(nextProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", nextProject.id);
     setAnalyticsTag("project_title", nextProject.title);
     trackEvent("project_next", {
@@ -154,9 +173,7 @@ export default function App() {
 
     const previousProject = featuredProjects[selectedProjectIndex - 1];
     setSelectedProject(previousProject);
-    if (previousProject.href?.startsWith("#")) {
-      window.history.pushState(null, "", previousProject.href);
-    }
+    updateProjectUrl(previousProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", previousProject.id);
     setAnalyticsTag("project_title", previousProject.title);
     trackEvent("project_previous", {
