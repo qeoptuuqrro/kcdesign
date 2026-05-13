@@ -67,3 +67,11 @@ export function trackEvent(name, params = {}) {
   window.gtag?.("event", name, params);
   window.clarity?.("event", name);
 }
+
+export function setAnalyticsTag(key, value) {
+  if (typeof window === "undefined" || value == null) {
+    return;
+  }
+
+  window.clarity?.("set", key, String(value));
+}

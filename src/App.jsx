@@ -7,7 +7,7 @@ import HeroStatement from "./components/HeroStatement";
 import Navbar from "./components/Navbar";
 import ProjectCaseOverlay from "./components/ProjectCaseOverlay";
 import PlatformScrollbar from "./components/PlatformScrollbar";
-import { trackEvent } from "./utils/analytics";
+import { setAnalyticsTag, trackEvent } from "./utils/analytics";
 
 const menuItems = [
   { id: "home", label: "Home", href: "#home" },
@@ -63,6 +63,11 @@ export default function App() {
     setSelectedProject(project);
     setProjectView("overlay");
     setActiveMenuId("work");
+    if (project.href?.startsWith("#")) {
+      window.history.pushState(null, "", project.href);
+    }
+    setAnalyticsTag("project_id", project.id);
+    setAnalyticsTag("project_title", project.title);
     trackEvent("project_open", {
       project_id: project.id,
       project_title: project.title,
@@ -85,6 +90,7 @@ export default function App() {
       setProjectView(null);
       setActiveMenuId("home");
       setIsClosingProject(false);
+      window.history.pushState(null, "", window.location.pathname + window.location.search);
     }, 220);
   };
 
@@ -130,6 +136,11 @@ export default function App() {
 
     const nextProject = featuredProjects[selectedProjectIndex + 1];
     setSelectedProject(nextProject);
+    if (nextProject.href?.startsWith("#")) {
+      window.history.pushState(null, "", nextProject.href);
+    }
+    setAnalyticsTag("project_id", nextProject.id);
+    setAnalyticsTag("project_title", nextProject.title);
     trackEvent("project_next", {
       from_project_id: selectedProject.id,
       to_project_id: nextProject.id,
@@ -143,6 +154,11 @@ export default function App() {
 
     const previousProject = featuredProjects[selectedProjectIndex - 1];
     setSelectedProject(previousProject);
+    if (previousProject.href?.startsWith("#")) {
+      window.history.pushState(null, "", previousProject.href);
+    }
+    setAnalyticsTag("project_id", previousProject.id);
+    setAnalyticsTag("project_title", previousProject.title);
     trackEvent("project_previous", {
       from_project_id: selectedProject.id,
       to_project_id: previousProject.id,
