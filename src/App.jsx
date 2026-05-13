@@ -20,7 +20,7 @@ function getProjectUrl(project, view = "preview") {
     return null;
   }
 
-  return view === "full" ? `${project.href}-full` : project.href;
+  return `${project.href}-${view}`;
 }
 
 function updateProjectUrl(project, view = "preview") {
