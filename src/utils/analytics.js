@@ -1,7 +1,63 @@
 const gaMeasurementId = import.meta.env.VITE_GA_MEASUREMENT_ID;
 const clarityProjectId = import.meta.env.VITE_CLARITY_PROJECT_ID;
+const analyticsOptOutKey = "portfolioAnalyticsOptOut";
 
 let isInitialized = false;
+
+function getStoredAnalyticsOptOut() {
+  try {
+    return window.localStorage.getItem(analyticsOptOutKey) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function setStoredAnalyticsOptOut(isOptedOut) {
+  try {
+    if (isOptedOut) {
+      window.localStorage.setItem(analyticsOptOutKey, "true");
+      return;
+    }
+
+    window.localStorage.removeItem(analyticsOptOutKey);
+  } catch {
+    // Browsers can block storage in strict privacy modes.
+  }
+}
+
+function applyAnalyticsQueryPreference() {
+  const analyticsPreference = new URLSearchParams(window.location.search).get("analytics");
+
+  if (analyticsPreference === "off") {
+    setStoredAnalyticsOptOut(true);
+    return true;
+  }
+
+  if (analyticsPreference === "on") {
+    setStoredAnalyticsOptOut(false);
+  }
+
+  return getStoredAnalyticsOptOut();
+}
+
+function isLocalAnalyticsHost(hostname) {
+  return (
+    hostname === "localhost" ||
+    hostname === "127.0.0.1" ||
+    hostname === "::1" ||
+    hostname.endsWith(".local")
+  );
+}
+
+function shouldDisableAnalytics() {
+  return (
+    typeof window === "undefined" ||
+    import.meta.env.DEV ||
+    isLocalAnalyticsHost(window.location.hostname) ||
+    navigator.doNotTrack === "1" ||
+    applyAnalyticsQueryPreference()
+  );
+}
 
 function appendScript(src, attributes = {}) {
   const script = document.createElement("script");
@@ -50,7 +106,7 @@ function initializeClarity() {
 }
 
 export function initializeAnalytics() {
-  if (isInitialized || typeof window === "undefined") {
+  if (isInitialized || shouldDisableAnalytics()) {
     return;
   }
 

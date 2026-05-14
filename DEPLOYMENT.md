@@ -13,4 +13,6 @@ VITE_GA_MEASUREMENT_ID=G-XXXXXXXXXX
 VITE_CLARITY_PROJECT_ID=XXXXXXXXXX
 ```
 
-For local testing, create a `.env.local` file with those values. For GitHub Pages deployments, the deploy workflow already passes the Clarity project ID into the build.
+Analytics are disabled automatically in Vite dev mode and on local hosts like `localhost`, `127.0.0.1`, and `::1`, even when `.env.local` contains those values. To opt a personal browser out on the live site, visit the site once with `?analytics=off`; the preference is saved in `localStorage`. Visit once with `?analytics=on` to clear the opt-out. Browsers with Do Not Track enabled are also skipped.
+
+For GitHub Pages deployments, the deploy workflow already passes the Clarity project ID into the build.
