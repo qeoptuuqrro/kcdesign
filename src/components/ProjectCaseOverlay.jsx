@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAssetPath } from "../utils/paths";
+import { getAnalyticsEventName, trackEvent } from "../utils/analytics";
 import ExecutableDirectionConsole from "./ExecutableDirectionConsole";
 import { DeepCutNightGuideThumbnail } from "./ProjectShowcase";
 
@@ -328,6 +329,7 @@ export default function ProjectCaseOverlay({
   const isOverlayWarmingRef = useRef(true);
   const projectNavTimerRef = useRef(null);
   const pendingProjectDirectionRef = useRef(null);
+  const viewedSectionsRef = useRef(new Set());
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
   const [projectNavPhase, setProjectNavPhase] = useState("");
@@ -413,7 +415,26 @@ export default function ProjectCaseOverlay({
     if (syncMenu) {
       syncMenuActiveItem(sectionId);
     }
-  }, [caseSections, syncMenuActiveItem]);
+
+    const section = caseSections[nextIndex];
+    const viewKey = `${project.id}:${sectionId}`;
+    if (section && !viewedSectionsRef.current.has(viewKey)) {
+      viewedSectionsRef.current.add(viewKey);
+      trackEvent(
+        "case_section_view",
+        {
+          project_id: project.id,
+          project_title: project.title,
+          section_id: section.id,
+          section_label: section.label,
+          source: syncMenu ? "section_nav" : "scroll",
+        },
+        {
+          clarityEventName: getAnalyticsEventName("case_section_view", project.id, section.id),
+        }
+      );
+    }
+  }, [caseSections, project.id, project.title, syncMenuActiveItem]);
 
   const revealScrollbar = useCallback((hideDelay = 980) => {
     const scrollbar = scrollbarRef.current;
@@ -786,6 +807,7 @@ export default function ProjectCaseOverlay({
     setExpandedImage(null);
     setActiveProductPreviewIndex(0);
     setWorkflowReveal(38);
+    viewedSectionsRef.current = new Set();
     activeSectionIdRef.current = "";
     activeSectionIndexRef.current = 0;
     latestActiveIndexRef.current = 0;
@@ -808,7 +830,7 @@ export default function ProjectCaseOverlay({
     }
   }, [project.id, setActiveSection]);
 
-  const handleProjectNavigation = useCallback((direction) => {
+  const handleProjectNavigation = useCallback((direction, source = "project_nav") => {
     if (isProjectNavigating || isExpanding || isShrinking) {
       return;
     }
@@ -817,6 +839,21 @@ export default function ProjectCaseOverlay({
     if (!navigate) {
       return;
     }
+
+    const eventName = source === "wip_bridge" ? "wip_bridge_click" : "project_nav_click";
+    trackEvent(
+      eventName,
+      {
+        project_id: project.id,
+        project_title: project.title,
+        direction,
+        source,
+      },
+      {
+        clarityEventName: getAnalyticsEventName(eventName, project.id, direction),
+        upgrade: source === "wip_bridge" ? "wip bridge clicked" : undefined,
+      }
+    );
 
     pendingProjectDirectionRef.current = direction;
     setProjectNavPhase(`exit-${direction}`);
@@ -829,7 +866,7 @@ export default function ProjectCaseOverlay({
       projectNavTimerRef.current = null;
       navigate();
     }, 170);
-  }, [isExpanding, isProjectNavigating, isShrinking, onNextProject, onPreviousProject]);
+  }, [isExpanding, isProjectNavigating, isShrinking, onNextProject, onPreviousProject, project.id, project.title]);
 
   useEffect(() => {
     const preloaders = productOverviewCards.map((card) => {
@@ -905,6 +942,20 @@ export default function ProjectCaseOverlay({
     }
 
     setIsIndexOpen(false);
+    const section = caseSections.find((item) => item.id === sectionId);
+    trackEvent(
+      "case_section_nav_select",
+      {
+        project_id: project.id,
+        project_title: project.title,
+        section_id: sectionId,
+        section_label: section?.label ?? sectionId,
+        source: "section_nav",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("case_section_nav_select", project.id, sectionId),
+      }
+    );
     setActiveSection(sectionId, { syncMenu: true });
     scrollElement.scrollTo({
       top: Math.max(0, sectionElement.offsetTop - getSectionActivationLine(scrollElement) + 8),
@@ -1404,7 +1455,7 @@ export default function ProjectCaseOverlay({
                     <button
                       className="case-wip-bridge-link"
                       type="button"
-                      onClick={() => handleProjectNavigation("prev")}
+                      onClick={() => handleProjectNavigation("prev", "wip_bridge")}
                       disabled={isProjectNavigating}
                       aria-label="Open the refined J.P. Morgan AI origination case study"
                     >
@@ -1738,12 +1789,12 @@ export default function ProjectCaseOverlay({
           {hasPreviousProject || hasNextProject ? (
             <div className="case-project-nav-controls" aria-label="Project navigation">
               {hasPreviousProject ? (
-                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("prev")} disabled={isProjectNavigating} aria-label="Previous project">
+                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("prev", "project_nav")} disabled={isProjectNavigating} aria-label="Previous project">
                   <span>Prev</span>
                 </button>
               ) : null}
               {hasNextProject ? (
-                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("next")} disabled={isProjectNavigating} aria-label="Next project">
+                <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("next", "project_nav")} disabled={isProjectNavigating} aria-label="Next project">
                   <span>Next</span>
                 </button>
               ) : null}

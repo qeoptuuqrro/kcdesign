@@ -4,6 +4,32 @@ const analyticsOptOutKey = "portfolioAnalyticsOptOut";
 
 let isInitialized = false;
 
+const clarityTagKeys = [
+  "project_id",
+  "project_title",
+  "section_id",
+  "section_label",
+  "navigation_id",
+  "view_mode",
+  "source",
+  "direction",
+];
+
+function normalizeEventPart(value) {
+  return String(value ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "");
+}
+
+export function getAnalyticsEventName(name, ...parts) {
+  return [name, ...parts]
+    .map(normalizeEventPart)
+    .filter(Boolean)
+    .join("_");
+}
+
 function getStoredAnalyticsOptOut() {
   try {
     return window.localStorage.getItem(analyticsOptOutKey) === "true";
@@ -115,13 +141,31 @@ export function initializeAnalytics() {
   isInitialized = true;
 }
 
-export function trackEvent(name, params = {}) {
+export function trackEvent(name, params = {}, options = {}) {
   if (typeof window === "undefined") {
     return;
   }
 
   window.gtag?.("event", name, params);
-  window.clarity?.("event", name);
+
+  const clarityEventName = options.clarityEventName ?? name;
+  const clarityEvents = new Set([name, clarityEventName].filter(Boolean));
+
+  clarityEvents.forEach((eventName) => {
+    window.clarity?.("event", eventName);
+  });
+
+  window.clarity?.("set", "last_event", clarityEventName);
+  clarityTagKeys.forEach((key) => {
+    const value = params[key];
+    if (value != null) {
+      window.clarity?.("set", `last_${key}`, String(value));
+    }
+  });
+
+  if (options.upgrade) {
+    window.clarity?.("upgrade", options.upgrade);
+  }
 }
 
 export function setAnalyticsTag(key, value) {

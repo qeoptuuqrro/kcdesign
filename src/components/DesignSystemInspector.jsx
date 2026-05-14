@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { getAnalyticsEventName, trackEvent } from "../utils/analytics";
 
 const tokenGroups = [
   { title: "Layout", match: ["width", "height", "gap", "padding", "radius"] },
@@ -510,6 +511,29 @@ export default function DesignSystemInspector() {
     components: [],
   });
 
+  const trackDesignSystemEvent = useCallback((eventName, source) => {
+    trackEvent(
+      eventName,
+      {
+        source,
+      },
+      {
+        clarityEventName: getAnalyticsEventName(eventName, source),
+        upgrade: eventName === "design_system_open" ? "design system opened" : undefined,
+      }
+    );
+  }, []);
+
+  const openDesignSystem = useCallback((source = "ds_button") => {
+    trackDesignSystemEvent("design_system_open", source);
+    setIsOpen(true);
+  }, [trackDesignSystemEvent]);
+
+  const closeDesignSystem = useCallback((source = "close_button") => {
+    trackDesignSystemEvent("design_system_close", source);
+    setIsOpen(false);
+  }, [trackDesignSystemEvent]);
+
   const refreshSnapshot = () => {
     const typography = typographySamples.map((sample) => ({
       ...sample,
@@ -545,12 +569,16 @@ export default function DesignSystemInspector() {
       }
 
       event.preventDefault();
-      setIsOpen((current) => !current);
+      setIsOpen((current) => {
+        const nextIsOpen = !current;
+        trackDesignSystemEvent(nextIsOpen ? "design_system_open" : "design_system_close", "keyboard_shortcut");
+        return nextIsOpen;
+      });
     };
 
     window.addEventListener("keydown", handleShortcut);
     return () => window.removeEventListener("keydown", handleShortcut);
-  }, []);
+  }, [trackDesignSystemEvent]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -570,13 +598,13 @@ export default function DesignSystemInspector() {
 
   return (
     <>
-      <button className="ds-trigger" type="button" onClick={() => setIsOpen(true)}>
+      <button className="ds-trigger" type="button" onClick={() => openDesignSystem("ds_button")}>
         DS
       </button>
 
       {isOpen ? (
         <div className="ds-overlay" role="dialog" aria-modal="true" aria-label="Design system">
-          <div className="ds-backdrop" onClick={() => setIsOpen(false)} />
+          <div className="ds-backdrop" onClick={() => closeDesignSystem("backdrop")} />
           <section className="ds-panel">
             <header className="ds-panel-header">
               <div>
@@ -587,7 +615,7 @@ export default function DesignSystemInspector() {
                 <button className="ds-action" type="button" onClick={refreshSnapshot}>
                   Refresh
                 </button>
-                <button className="ds-close" type="button" onClick={() => setIsOpen(false)} aria-label="Close design system">
+                <button className="ds-close" type="button" onClick={() => closeDesignSystem("close_button")} aria-label="Close design system">
                   Close
                 </button>
               </div>

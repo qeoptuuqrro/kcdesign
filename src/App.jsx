@@ -7,7 +7,7 @@ import HeroStatement from "./components/HeroStatement";
 import Navbar from "./components/Navbar";
 import ProjectCaseOverlay from "./components/ProjectCaseOverlay";
 import PlatformScrollbar from "./components/PlatformScrollbar";
-import { setAnalyticsTag, trackEvent } from "./utils/analytics";
+import { getAnalyticsEventName, setAnalyticsTag, trackEvent } from "./utils/analytics";
 
 const menuItems = [
   { id: "home", label: "Home", href: "#home" },
@@ -80,6 +80,17 @@ export default function App() {
   }, []);
 
   const handleProjectSelect = (project) => {
+    trackEvent(
+      "project_card_click",
+      {
+        project_id: project.id,
+        project_title: project.title,
+        source: "project_showcase",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_card_click", project.id),
+      }
+    );
     setIsClosingProject(false);
     setSelectedProject(project);
     setProjectView("overlay");
@@ -87,10 +98,19 @@ export default function App() {
     updateProjectUrl(project);
     setAnalyticsTag("project_id", project.id);
     setAnalyticsTag("project_title", project.title);
-    trackEvent("project_open", {
-      project_id: project.id,
-      project_title: project.title,
-    });
+    trackEvent(
+      "project_open",
+      {
+        project_id: project.id,
+        project_title: project.title,
+        source: "project_showcase",
+        view_mode: "preview",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_open", project.id),
+        upgrade: "project case opened",
+      }
+    );
   };
 
   const handleBack = () => {
@@ -98,11 +118,17 @@ export default function App() {
       return;
     }
 
-    trackEvent("project_close", {
-      project_id: selectedProject.id,
-      project_title: selectedProject.title,
-      project_view: projectView,
-    });
+    trackEvent(
+      "project_close",
+      {
+        project_id: selectedProject.id,
+        project_title: selectedProject.title,
+        view_mode: projectView,
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_close", selectedProject.id, projectView),
+      }
+    );
     setIsClosingProject(true);
     window.setTimeout(() => {
       setSelectedProject(null);
@@ -120,10 +146,18 @@ export default function App() {
 
     setProjectView("expanding");
     updateProjectUrl(selectedProject, "full");
-    trackEvent("project_full_view_open", {
-      project_id: selectedProject.id,
-      project_title: selectedProject.title,
-    });
+    trackEvent(
+      "project_full_view_open",
+      {
+        project_id: selectedProject.id,
+        project_title: selectedProject.title,
+        view_mode: "full",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_full_view_open", selectedProject.id),
+        upgrade: "case full view opened",
+      }
+    );
   };
 
   const handleOpenPreviewProject = () => {
@@ -132,10 +166,17 @@ export default function App() {
     }
     setProjectView("shrinking");
     updateProjectUrl(selectedProject);
-    trackEvent("project_full_view_close", {
-      project_id: selectedProject.id,
-      project_title: selectedProject.title,
-    });
+    trackEvent(
+      "project_full_view_close",
+      {
+        project_id: selectedProject.id,
+        project_title: selectedProject.title,
+        view_mode: "preview",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_full_view_close", selectedProject.id),
+      }
+    );
   };
 
   const handleExpandComplete = () => {
@@ -160,10 +201,20 @@ export default function App() {
     updateProjectUrl(nextProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", nextProject.id);
     setAnalyticsTag("project_title", nextProject.title);
-    trackEvent("project_next", {
-      from_project_id: selectedProject.id,
-      to_project_id: nextProject.id,
-    });
+    trackEvent(
+      "project_next",
+      {
+        project_id: nextProject.id,
+        project_title: nextProject.title,
+        from_project_id: selectedProject.id,
+        to_project_id: nextProject.id,
+        direction: "next",
+        view_mode: projectView === "full" ? "full" : "preview",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_next", selectedProject.id, nextProject.id),
+      }
+    );
   };
 
   const handlePreviousProject = () => {
@@ -176,18 +227,35 @@ export default function App() {
     updateProjectUrl(previousProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", previousProject.id);
     setAnalyticsTag("project_title", previousProject.title);
-    trackEvent("project_previous", {
-      from_project_id: selectedProject.id,
-      to_project_id: previousProject.id,
-    });
+    trackEvent(
+      "project_previous",
+      {
+        project_id: previousProject.id,
+        project_title: previousProject.title,
+        from_project_id: selectedProject.id,
+        to_project_id: previousProject.id,
+        direction: "previous",
+        view_mode: projectView === "full" ? "full" : "preview",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("project_previous", selectedProject.id, previousProject.id),
+      }
+    );
   };
 
   const handleMenuSelect = (id, href, event) => {
     setActiveMenuId(id);
-    trackEvent("navigation_select", {
-      navigation_id: id,
-      navigation_href: href,
-    });
+    trackEvent(
+      "navigation_select",
+      {
+        navigation_id: id,
+        navigation_href: href,
+        source: "navbar",
+      },
+      {
+        clarityEventName: getAnalyticsEventName("navigation_select", id),
+      }
+    );
 
     if (!href?.startsWith("#")) {
       return;
