@@ -1392,14 +1392,72 @@ export default function ProjectCaseOverlay({
                 >
                   {project.wipBody ?? "The hero and project context are live now while the deeper narrative is being finalized."}
                 </CaseSectionHeader>
-                <div className="case-wip-card">
-                  <span aria-hidden="true" />
-                  <div>
+                <div className="case-wip-card case-wip-bridge-card">
+                  <span className="case-wip-card-orb" aria-hidden="true" />
+                  <div className="case-wip-copy">
                     <h3>{project.wipCardTitle ?? "WIP case study"}</h3>
                     <p>
                       {project.wipCardBody ?? "The full narrative, screens, and outcomes are still being refined."}
                     </p>
                   </div>
+                  {hasPreviousProject ? (
+                    <button
+                      className="case-wip-bridge-link"
+                      type="button"
+                      onClick={() => handleProjectNavigation("prev")}
+                      disabled={isProjectNavigating}
+                      aria-label="Open the refined J.P. Morgan AI origination case study"
+                    >
+                      <span className="case-wip-bridge-kicker">Refined case study</span>
+                      <strong>Continue to the AI origination platform</strong>
+                      <span className="case-wip-bridge-copy">
+                        See the complete zero-to-one JPMorgan story with the deeper product architecture, workflow, and impact.
+                      </span>
+                      <span className="case-wip-bridge-preview" aria-hidden="true">
+                        <span className="case-wip-preview-grid" />
+                        <span className="case-wip-preview-beam" />
+                        <span className="case-wip-preview-header">
+                          <span>Complete case</span>
+                          <span>AI origination</span>
+                        </span>
+                        <span className="case-wip-preview-stage">
+                          <span className="case-wip-preview-orbit" />
+                          <span className="case-wip-preview-product">
+                            <span className="case-wip-preview-product-top">
+                              <span />
+                              <span />
+                              <span />
+                            </span>
+                            <span className="case-wip-preview-product-body">
+                              <span className="case-wip-preview-product-list">
+                                <span />
+                                <span />
+                                <span />
+                              </span>
+                              <span className="case-wip-preview-product-panel">
+                                <span />
+                                <span />
+                              </span>
+                            </span>
+                          </span>
+                          <span className="case-wip-preview-path">
+                            <span />
+                            <span />
+                            <span />
+                          </span>
+                        </span>
+                        <span className="case-wip-preview-metrics">
+                          <span>35% fewer steps</span>
+                          <span>50%+ faster prep</span>
+                          <span>1,400+ profiles</span>
+                        </span>
+                      </span>
+                      <span className="case-wip-bridge-cta">
+                        Open refined case
+                        <i aria-hidden="true">→</i>
+                      </span>
+                    </button>
+                  ) : null}
                 </div>
               </section>
             ) : null}
