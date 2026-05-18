@@ -175,6 +175,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut TV player experience with best-start controls, review insight, and up-next recommendations.",
     metrics: ["Start at 12:40", "Review insight", "Up next"],
     layout: "wide",
+    aspectRatio: "1672 / 941",
   },
   {
     label: "01 / Desktop browse",
@@ -184,6 +185,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut desktop browser experience showing top-rated long-form video cards and an Osaka street food recommendation.",
     metrics: ["Top picks", "Best start", "Ask DeepCut"],
     layout: "wide",
+    aspectRatio: "1535 / 1024",
   },
   {
     label: "02 / Reviews + Ask AI",
@@ -193,6 +195,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut split interface showing User Reviews and Ask AI Flow panels for an Osaka street food long-form video.",
     metrics: ["User reviews", "AI scan", "Best start"],
     layout: "wide",
+    aspectRatio: "1536 / 1024",
   },
   {
     label: "03 / Mobile saved",
@@ -202,6 +205,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut mobile saved library showing a Worth My Time collection with long-form videos, scores, progress, and best-start timestamps.",
     metrics: ["Saved queue", "Continue watching", "Best start"],
     layout: "portrait",
+    aspectRatio: "1024 / 1535",
   },
   {
     label: "04 / Review intelligence",
@@ -211,6 +215,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut review intelligence dashboard showing an Osaka street food video, score, review distribution, source context, and chapter highlights.",
     metrics: ["Pacing", "Trust", "Source context"],
     layout: "standard",
+    aspectRatio: "1535 / 1024",
   },
   {
     label: "05 / Mobile Ask AI",
@@ -220,6 +225,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut mobile Ask AI screen showing a Japanese street food recommendation with review signals, best-start timestamp, and reasons.",
     metrics: ["User intent", "Scanning", "Why this works"],
     layout: "portrait",
+    aspectRatio: "863 / 1823",
   },
   {
     label: "06 / Reviews before AI",
@@ -229,6 +235,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut split interface showing user reviews beside an Ask AI flow for a long-form Osaka street food video.",
     metrics: ["2.8k reviews", "Best start", "Ask AI"],
     layout: "wide",
+    aspectRatio: "1672 / 941",
   },
   {
     label: "07 / AI decision flow",
@@ -238,6 +245,7 @@ const deepCutCaseArtifacts = [
     alt: "DeepCut Ask AI decision flow showing user intent, review scanning, top recommendation, evidence, and follow-up prompts.",
     metrics: ["Intent", "Evidence", "Follow-up"],
     layout: "wide",
+    aspectRatio: "1590 / 989",
   },
 ];
 
@@ -1919,8 +1927,9 @@ export default function ProjectCaseOverlay({
                   onPointerLeave={clearDocumentCursorMode}
                   onPointerMove={() => setDocumentCursorMode("expand")}
                   aria-label={`Expand ${deepCutCaseArtifacts[0].title}`}
+                  style={{ "--deepcut-artifact-ratio": deepCutCaseArtifacts[0].aspectRatio }}
                 >
-                  <img src={getAssetPath(deepCutCaseArtifacts[0].image)} alt={deepCutCaseArtifacts[0].alt} loading="lazy" decoding="async" />
+                  <img src={getAssetPath(deepCutCaseArtifacts[0].image)} alt={deepCutCaseArtifacts[0].alt} loading="eager" decoding="async" />
                 </button>
               </section>
 
@@ -1980,8 +1989,9 @@ export default function ProjectCaseOverlay({
                         onPointerLeave={clearDocumentCursorMode}
                         onPointerMove={() => setDocumentCursorMode("expand")}
                         aria-label={`Expand ${frame.title}`}
+                        style={{ "--deepcut-artifact-ratio": frame.aspectRatio }}
                       >
-                        <img src={getAssetPath(frame.image)} alt={frame.alt} loading="lazy" decoding="async" />
+                        <img src={getAssetPath(frame.image)} alt={frame.alt} loading="eager" decoding="async" />
                       </button>
                       <div className="deepcut-story-caption">
                         <span>{frame.label}</span>

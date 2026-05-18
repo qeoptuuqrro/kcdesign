@@ -2,10 +2,12 @@ import { featuredProjects } from "../../content/projects";
 import { getAssetPath } from "../../utils/paths";
 
 const deepcutThumbnailReference = "/optimized/deepcut-thumbnail-reference.png";
+const deepcutLockedLogo = "/optimized/deepcut-logo-locked.png";
 const deepcutTvPreviewVideo = "https://assets.mixkit.co/videos/4451/4451-720.mp4";
 
 export function DeepCutNightGuideThumbnail() {
   const referenceImage = getAssetPath(deepcutThumbnailReference);
+  const lockedLogo = getAssetPath(deepcutLockedLogo);
 
   return (
     <div className="deepcut-case-thumb is-reference" aria-hidden="true">
@@ -45,10 +47,7 @@ export function DeepCutNightGuideThumbnail() {
       <img className="deepcut-reference-tv-frame is-right" src={referenceImage} alt="" decoding="async" />
       <img className="deepcut-reference-tv-frame is-bottom" src={referenceImage} alt="" decoding="async" />
       <div className="deepcut-reference-left-scrim" />
-      <div className="deepcut-reference-brand-lockup">
-        <span aria-hidden="true" />
-        <strong>DeepCut</strong>
-      </div>
+      <img className="deepcut-reference-brand-lockup" src={lockedLogo} alt="" decoding="async" />
       <div className="deepcut-reference-copy">
         <p>AI video discovery</p>
         <h3>Find videos<br />worth your time</h3>

@@ -2712,45 +2712,14 @@ a {
 
 .deepcut-reference-brand-lockup {
   position: absolute;
-  left: 2.9%;
-  top: 15.3%;
+  left: 2.86%;
+  top: 17.83%;
   z-index: 4;
-  display: flex;
-  align-items: center;
-  gap: clamp(7px, 0.9cqw, 10px);
-  color: #ffffff;
+  width: 11.55%;
+  height: auto;
+  display: block;
+  object-fit: contain;
   pointer-events: none;
-}
-
-.deepcut-reference-brand-lockup span {
-  position: relative;
-  width: clamp(23px, 3cqw, 34px);
-  height: clamp(23px, 3cqw, 34px);
-  flex: 0 0 auto;
-  border-radius: 999px;
-  background:
-    linear-gradient(145deg, rgba(143, 244, 189, 0.96), rgba(88, 233, 188, 0.78) 42%, rgba(8, 17, 22, 0.96) 43%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.42),
-    0 0 18px rgba(85, 230, 138, 0.16);
-}
-
-.deepcut-reference-brand-lockup span::after {
-  content: "";
-  position: absolute;
-  left: 36%;
-  top: 25%;
-  width: 41%;
-  height: 50%;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(104, 239, 188, 0.72));
-  clip-path: polygon(0 0, 100% 50%, 0 100%);
-  opacity: 0.88;
-}
-
-.deepcut-reference-brand-lockup strong {
-  font-size: clamp(14px, 2cqw, 22px);
-  font-weight: 760;
-  line-height: 1;
 }
 
 .deepcut-reference-copy {
@@ -3602,6 +3571,7 @@ a {
 
 .deepcut-story-image-button,
 .deepcut-ai-proof-card {
+  position: relative;
   appearance: none;
   -webkit-appearance: none;
   margin: 0;
@@ -3609,7 +3579,8 @@ a {
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: 12px;
-  display: block;
+  display: grid;
+  place-items: center;
   background: #03080d;
   box-shadow:
     0 28px 90px rgba(0, 0, 0, 0.38),
@@ -3643,55 +3614,59 @@ a {
 .deepcut-story-frame img,
 .deepcut-ai-proof-card img {
   display: block;
-  width: 100%;
+  object-fit: contain;
+  object-position: center center;
+}
+
+.deepcut-story-frame img,
+.deepcut-ai-proof-card img {
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.deepcut-story-image-button > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .deepcut-lead-artifact {
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: min(64svh, 720px);
+  aspect-ratio: var(--deepcut-artifact-ratio, 16 / 9);
+  max-height: min(58svh, 660px);
 }
 
 .deepcut-lead-artifact img {
+  width: 100%;
   height: 100%;
-  object-fit: contain;
+  max-width: 100%;
+  max-height: 100%;
 }
 
 .deepcut-story-image-button.is-wide,
 .deepcut-story-image-button.is-standard {
   width: 100%;
-  max-height: min(62svh, 680px);
+  max-height: min(56svh, 640px);
 }
 
 .deepcut-story-image-button.is-wide {
-  aspect-ratio: 16 / 9;
-}
-
-.deepcut-story-image-button.is-wide img {
-  height: 100%;
-  object-fit: contain;
+  aspect-ratio: var(--deepcut-artifact-ratio, 16 / 9);
 }
 
 .deepcut-story-image-button.is-standard {
-  aspect-ratio: 3 / 2;
-}
-
-.deepcut-story-image-button.is-standard img {
-  height: 100%;
-  object-fit: contain;
+  aspect-ratio: var(--deepcut-artifact-ratio, 3 / 2);
 }
 
 .deepcut-story-image-button.is-portrait {
   width: min(100%, 430px);
-  aspect-ratio: 2 / 3;
-  max-height: min(68svh, 760px);
+  aspect-ratio: var(--deepcut-artifact-ratio, 2 / 3);
+  max-height: min(62svh, 700px);
   justify-self: center;
-}
-
-.deepcut-story-image-button.is-portrait img {
-  height: 100%;
-  object-fit: contain;
 }
 
 .deepcut-story-caption {
@@ -5936,9 +5911,9 @@ a {
 }
 
 .case-product-preview-stage {
-  --product-image-top: clamp(14px, 2.2vw, 32px);
-  --product-image-side: clamp(10px, 2.2vw, 38px);
-  --product-image-bottom: clamp(140px, 11.2vw, 166px);
+  --product-image-top: clamp(12px, 1.8vw, 24px);
+  --product-image-side: clamp(10px, 1.8vw, 28px);
+  --product-image-bottom: clamp(118px, 9vw, 142px);
   position: relative;
   min-height: clamp(620px, 65vw, 790px);
   border-radius: 24px;
@@ -5995,7 +5970,7 @@ a {
   opacity: 0;
   filter: saturate(1.05) contrast(1.02) brightness(1.08) drop-shadow(0 28px 50px rgba(0, 0, 0, 0.2));
   transform-origin: center center;
-  transform: translate3d(0, var(--preview-y, 0px), 0) scale(calc(var(--preview-scale, 0.86) * 0.985));
+  transform: translate3d(0, var(--preview-y, 0px), 0) scale(calc(min(var(--preview-scale, 1), 1) * 0.985));
   transition:
     opacity 240ms cubic-bezier(0.22, 1, 0.36, 1),
     transform 320ms cubic-bezier(0.22, 1, 0.36, 1);
@@ -6004,7 +5979,7 @@ a {
 
 .case-product-preview-image.is-active {
   opacity: 1;
-  transform: translate3d(0, var(--preview-y, 0px), 0) scale(var(--preview-scale, 0.86));
+  transform: translate3d(0, var(--preview-y, 0px), 0) scale(min(var(--preview-scale, 1), 1));
 }
 
 .case-product-preview-image.is-missing {
@@ -11729,9 +11704,9 @@ a {
 }
 
 .case-ai-proof-carousel-stage {
-  --proof-image-top: clamp(14px, 2.4vw, 34px);
-  --proof-image-side: clamp(14px, 3vw, 54px);
-  --proof-image-bottom: clamp(118px, 10.2vw, 146px);
+  --proof-image-top: clamp(12px, 1.8vw, 24px);
+  --proof-image-side: clamp(12px, 2vw, 34px);
+  --proof-image-bottom: clamp(104px, 8vw, 128px);
   appearance: none;
   -webkit-appearance: none;
   position: relative;
@@ -11789,7 +11764,7 @@ a {
 .case-ai-proof-carousel-stage:hover img,
 .case-ai-proof-carousel-stage:focus-visible img {
   filter: saturate(1.07) contrast(1.03) brightness(1.12) drop-shadow(0 30px 64px rgba(0, 0, 0, 0.3));
-  transform: scale(1.012);
+  transform: scale(1);
 }
 
 .case-ai-proof-carousel-stage:hover::after,
@@ -12704,7 +12679,7 @@ a {
   box-sizing: border-box;
   display: grid;
   place-items: center;
-  padding: clamp(14px, 3vw, 42px);
+  padding: clamp(10px, 2vw, 28px);
   width: 100vw;
   height: 100svh;
 }
@@ -12724,13 +12699,14 @@ a {
 .case-image-lightbox-panel {
   position: relative;
   z-index: 1;
-  width: min(1500px, calc(100vw - clamp(28px, 6vw, 84px)));
-  height: min(90svh, 1120px);
-  border-radius: 26px;
-  padding: clamp(10px, 1.2vw, 14px);
+  width: min(1680px, calc(100vw - clamp(20px, 4vw, 56px)));
+  height: min(88svh, 1040px);
+  max-height: calc(100svh - clamp(20px, 4vw, 56px));
+  border-radius: 24px;
+  padding: clamp(8px, 0.9vw, 11px);
   display: grid;
   grid-template-rows: auto minmax(0, 1fr) auto;
-  gap: 10px;
+  gap: 8px;
   background:
     radial-gradient(circle at 12% 0%, rgba(255, 255, 255, 0.1), transparent 34%),
     linear-gradient(180deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.032)),
@@ -12742,7 +12718,7 @@ a {
 }
 
 .case-image-lightbox-header {
-  min-height: 34px;
+  min-height: 30px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -12793,6 +12769,7 @@ a {
 .case-image-lightbox-frame {
   position: relative;
   min-height: 0;
+  min-width: 0;
   border-radius: 20px;
   overflow: hidden;
   display: grid;
@@ -12803,16 +12780,20 @@ a {
   box-shadow:
     inset 0 0 0 1px rgba(255, 255, 255, 0.2),
     0 18px 60px rgba(0, 0, 0, 0.32);
+  contain: size layout paint;
 }
 
 .case-image-lightbox-frame img {
+  position: absolute;
+  inset: clamp(8px, 1vw, 14px);
   display: block;
-  width: auto;
-  height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  width: calc(100% - clamp(16px, 2vw, 28px));
+  height: calc(100% - clamp(16px, 2vw, 28px));
+  max-width: none;
+  max-height: none;
   border-radius: 16px;
   object-fit: contain;
+  object-position: center center;
   transition: opacity 180ms ease;
 }
 
@@ -12849,8 +12830,8 @@ a {
   max-width: 820px;
   padding: 0 6px 2px;
   color: rgba(255, 255, 255, 0.58);
-  font-size: 12.5px;
-  line-height: 1.38;
+  font-size: 12px;
+  line-height: 1.3;
 }
 
 @keyframes caseImageLightboxIn {
@@ -17449,7 +17430,7 @@ a {
   .case-product-preview-stage {
     --product-image-top: 10px;
     --product-image-side: 8px;
-    --product-image-bottom: 136px;
+    --product-image-bottom: 112px;
     min-height: 560px;
     border-radius: 20px;
   }
@@ -17698,8 +17679,8 @@ a {
   .case-ai-proof-carousel-stage {
     --proof-image-top: 8px;
     --proof-image-side: 8px;
-    --proof-image-bottom: 108px;
-    height: 340px;
+    --proof-image-bottom: 92px;
+    height: 380px;
     min-height: 320px;
   }
 

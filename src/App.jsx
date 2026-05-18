@@ -2,7 +2,7 @@ import { getAssetPath } from "./utils/paths";
 import { featuredProjects } from "./content/projects";
 import ProjectShowcase from "./features/project-showcase/ProjectShowcase";
 import DesignSystemInspector from "./components/DesignSystemInspector";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import FluidCursor from "./components/FluidCursor";
 import AboutPage from "./components/AboutPage";
 import HeroStatement from "./components/HeroStatement";
@@ -44,6 +44,12 @@ export default function App() {
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectView, setProjectView] = useState(null);
   const [isClosingProject, setIsClosingProject] = useState(false);
+  const activeMenuIdRef = useRef("home");
+
+  const setSyncedActiveMenuId = (nextActiveMenuId) => {
+    activeMenuIdRef.current = nextActiveMenuId;
+    setActiveMenuId(nextActiveMenuId);
+  };
 
   useEffect(() => {
     const syncActiveMenuFromHash = () => {
@@ -52,7 +58,7 @@ export default function App() {
         return;
       }
 
-      setActiveMenuId(hash);
+      setSyncedActiveMenuId(hash);
       setPageView(hash === "about" ? "about" : "home");
 
       if (hash !== "about") {
@@ -73,6 +79,52 @@ export default function App() {
     window.addEventListener("hashchange", syncActiveMenuFromHash);
     return () => window.removeEventListener("hashchange", syncActiveMenuFromHash);
   }, []);
+
+  useEffect(() => {
+    if (pageView !== "home" || projectView) {
+      return undefined;
+    }
+
+    let frameId = 0;
+
+    const syncActiveMenuFromScroll = () => {
+      frameId = 0;
+
+      const workSection = document.getElementById("work");
+      if (!workSection) {
+        return;
+      }
+
+      const activationLine = Math.min(160, window.innerHeight * 0.22);
+      const workRect = workSection.getBoundingClientRect();
+      const nextActiveMenuId = workRect.top <= activationLine && workRect.bottom > activationLine ? "work" : "home";
+
+      if (activeMenuIdRef.current !== nextActiveMenuId) {
+        setSyncedActiveMenuId(nextActiveMenuId);
+      }
+    };
+
+    const requestSync = () => {
+      if (frameId) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(syncActiveMenuFromScroll);
+    };
+
+    requestSync();
+    window.addEventListener("scroll", requestSync, { passive: true });
+    window.addEventListener("resize", requestSync);
+
+    return () => {
+      if (frameId) {
+        window.cancelAnimationFrame(frameId);
+      }
+
+      window.removeEventListener("scroll", requestSync);
+      window.removeEventListener("resize", requestSync);
+    };
+  }, [pageView, projectView]);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -126,7 +178,7 @@ export default function App() {
     setIsClosingProject(false);
     setSelectedProject(project);
     setProjectView("overlay");
-    setActiveMenuId("work");
+    setSyncedActiveMenuId("work");
     updateProjectUrl(project);
     setAnalyticsTag("project_id", project.id);
     setAnalyticsTag("project_title", project.title);
@@ -165,7 +217,7 @@ export default function App() {
     window.setTimeout(() => {
       setSelectedProject(null);
       setProjectView(null);
-      setActiveMenuId("home");
+      setSyncedActiveMenuId("home");
       setIsClosingProject(false);
       resetProjectUrl();
     }, 220);
@@ -276,7 +328,7 @@ export default function App() {
   };
 
   const handleMenuSelect = (id, href, event) => {
-    setActiveMenuId(id);
+    setSyncedActiveMenuId(id);
     setPageView(id === "about" ? "about" : "home");
     trackEvent(
       "navigation_select",
