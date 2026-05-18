@@ -29,6 +29,122 @@ const outreachAngle =
 const clamp01 = (value) => Math.max(0, Math.min(1, value));
 const progressBetween = (value, start, end) => clamp01((value - start) / Math.max(0.001, end - start));
 
+const intentCards = [
+  {
+    label: "Objective",
+    body: "Help bankers understand sponsor fit, compare evidence, and move from recommendation to next action with confidence.",
+  },
+  {
+    label: "Users",
+    body: "Product, design, and engineering teams reviewing AI-assisted origination workflows.",
+  },
+  {
+    label: "Outcomes",
+    body: "Surface meaningful sponsor signals, reduce validation time, and preserve trust with reproducible rationale.",
+  },
+  {
+    label: "Success criteria",
+    body: "Actionable recommendations, reliable data, intuitive interaction states, and performance at enterprise scale.",
+  },
+];
+
+const foundationRules = [
+  ["Color", "swatches"],
+  ["Typography", "Aa"],
+  ["Spacing", "grid"],
+  ["Radius", "rounded"],
+  ["Elevation", "stack"],
+  ["Motion", "orbit"],
+];
+
+const componentRules = ["Button", "Input", "Table", "Card", "Modal", "Tooltip"];
+const behaviorRules = ["States", "Feedback", "Empty", "Loading", "Error", "Responsive"];
+
+const verificationCards = [
+  { title: "0 violations", body: "All rules validated against the design system.", badge: "check" },
+  { title: "Branch-ready", body: "Context is traceable, versioned, and ready for the prototype.", badge: "branch", meta: "feat/idea-studio" },
+  { title: "Prototype context assembled", body: "All inputs compiled for Copilot prototype generation.", badge: "stack" },
+];
+
+const layerOneFiles = ["design.md", "module.css", "scale.md"];
+
+const layerOneFileDetails = [
+  {
+    title: "Product brief",
+    body: "Sponsor-fit goals, users, confidence criteria, and the review outcome the prototype must support.",
+    chips: ["objective", "users", "success"],
+  },
+  {
+    title: "Interface rules",
+    body: "Density, component states, motion limits, and reusable Salt-aligned CSS modules.",
+    chips: ["tables", "states", "motion"],
+  },
+  {
+    title: "Scale model",
+    body: "Responsive behavior, compact review mode, and performance rules for enterprise data surfaces.",
+    chips: ["density", "breakpoints", "latency"],
+  },
+];
+
+const layerTwoFiles = [
+  {
+    name: "architecture.md",
+    eyebrow: "Architecture",
+    lines: [
+      ["Route", "/ideas/investors"],
+      ["Purpose", "surface AI-ranked investors"],
+      ["State", "recommendations"],
+      ["Ownership", "Investors domain"],
+      ["Views", "list, detail, rationale"],
+      ["Data", "profiles, fit scores, signals"],
+      ["Prototype", "spec -> production"],
+    ],
+    note: "Views stay connected",
+  },
+  {
+    name: "module.css",
+    eyebrow: "Module rules",
+    lines: [
+      ["Shell", "rail + workspace grid"],
+      ["Cards", "radius-200 + soft border"],
+      ["Rows", "64px recommendation rows"],
+      ["Drawer", "rationale panel"],
+      ["Tokens", "Salt-aligned spacing"],
+      ["Motion", "no layout shift"],
+      ["Prototype", "visual contract"],
+    ],
+    note: "Surface resolves",
+  },
+  {
+    name: "scale.md",
+    eyebrow: "Density",
+    lines: [
+      ["Mode", "compact review"],
+      ["Hierarchy", "recommendation -> evidence"],
+      ["Tabs", "recommendations, ideabook"],
+      ["Score", "fit ring + confidence"],
+      ["Metrics", "overlap, activity, path"],
+      ["Breakpoints", "desktop first"],
+      ["Prototype", "ready to test"],
+    ],
+    note: "Density stays calm",
+  },
+  {
+    name: "store.ts",
+    eyebrow: "State",
+    lines: [
+      ["Store", "useIdeaStudioStore"],
+      ["Selected", "northbridge-partners"],
+      ["Actions", "addToIdeaBook(id)"],
+      ["Signals", "portfolio, activity"],
+      ["Drawer", "owns rationale"],
+      ["Route", "keeps context"],
+      ["Prototype", "clickable"],
+    ],
+    note: "Actions become real",
+  },
+];
+
 const buildFrames = [
   {
     tab: "design.md",
@@ -97,7 +213,7 @@ const buildFrames = [
 const prototypeSequence = [
   {
     name: "module.css",
-    label: "Visual rules shape the platform shell",
+    label: "Interface rules shape the workspace shell",
     lines: ["compact table rows", "drawer elevation", "selected states"],
     output: "Surface hierarchy resolves",
   },
@@ -205,129 +321,197 @@ function SourceArtifact({ active = true, compact = false }) {
 }
 
 function BuildSystemPoster({ scrollProgress = 0 }) {
-  const buildProgress = progressBetween(scrollProgress, 0.04, 0.96);
-  const activeFrameIndex = Math.min(buildFrames.length - 1, Math.round(buildProgress * (buildFrames.length - 1)));
-  const generatedReveal = progressBetween(scrollProgress, 0.24, 0.96);
-  const frameSegment = 1 / Math.max(1, buildFrames.length - 1);
-  const frameFadeWindow = frameSegment * 0.5;
+  const fileProgress = progressBetween(scrollProgress, 0.08, 0.74);
+  const activeFileIndex = Math.min(layerOneFiles.length - 1, Math.floor(fileProgress * layerOneFiles.length));
+  const activeFile = layerOneFileDetails[activeFileIndex] ?? layerOneFileDetails[0];
+  const verificationProgress = progressBetween(scrollProgress, 0.52, 0.94);
+  const stateProgress = progressBetween(scrollProgress, 0.34, 0.82);
 
   return (
-    <div className="workflow-build-poster" aria-label="Product intent to code-backed prototype generation">
-      <aside className="workflow-design-editor" aria-label="Platform rule source card">
-        <div className="workflow-design-tabs" aria-label="Platform rule files">
-          {["FILES", ...buildFrames.map((frame) => frame.tab)].map((tab, index) => (
-            <span className={index === activeFrameIndex + 1 ? "is-active" : ""} key={tab}>{tab}</span>
-          ))}
+    <div
+      className="ai-layer-one-artifact"
+      style={{
+        "--layer-one-progress": scrollProgress,
+        "--layer-one-file-progress": fileProgress,
+        "--layer-one-state-progress": stateProgress,
+        "--layer-one-verification-progress": verificationProgress,
+      }}
+      aria-label="Direction system artifact"
+    >
+      <header className="ai-layer-one-header">
+        <div>
+          <i aria-hidden="true" />
+          <span>01 · Direction System</span>
         </div>
-        <div className="workflow-editor-window">
-          <header>
-            <div aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-            <strong>platform rules - code-backed prototype</strong>
-            <button type="button" aria-label="Expand platform rule preview">↗</button>
-          </header>
-          <div className="workflow-intent-frame" aria-label="Animated platform rule files">
-            {buildFrames.map((frame, frameIndex) => {
-              const frameVisibility = clamp01(1 - Math.abs(buildProgress - (frameIndex * frameSegment)) / frameFadeWindow);
-              const isFrameVisible = frameVisibility > 0.035;
+        <p>The artifact that turns product intent into reliable AI context.</p>
+      </header>
 
-              return (
-                <section
-                  style={{
-                    "--frame-visibility": frameVisibility,
-                    "--frame-depth": Math.abs(activeFrameIndex - frameIndex),
-                    zIndex: Math.round(frameVisibility * 100),
-                    visibility: isFrameVisible ? "visible" : "hidden",
-                  }}
-                  aria-hidden={!isFrameVisible}
-                  key={frame.tab}
-                >
-                  <header>
-                    <strong>{frame.tab}</strong>
-                    <span>{frame.status}</span>
-                  </header>
-                  {frame.lines.map((line, lineIndex) => (
-                    <p style={{ "--line-index": lineIndex, "--line-reveal": progressBetween(frameVisibility, 0.08 + lineIndex * 0.045, 0.42 + lineIndex * 0.045) }} key={`${frame.tab}-${lineIndex}`}>
-                      <code>{line || " "}</code>
-                    </p>
-                  ))}
-                </section>
-              );
-            })}
+      <div className="ai-layer-one-grid">
+        <section className="ai-layer-one-column ai-layer-one-intent" aria-label="Product intent">
+          <div className="ai-layer-title">
+            <span aria-hidden="true">▤</span>
+            <strong>Product intent</strong>
           </div>
-        </div>
-      </aside>
-
-      <article
-        className="workflow-generated-product"
-        style={{
-          "--workflow-product-reveal": generatedReveal,
-          "--generated-list-reveal": progressBetween(scrollProgress, 0.36, 0.68),
-          "--generated-viz-reveal": progressBetween(scrollProgress, 0.58, 0.84),
-          "--generated-checks-reveal": progressBetween(scrollProgress, 0.72, 0.98),
-        }}
-        aria-label="Generated prototype artifact"
-      >
-        <header>
-          <div>
-            <strong>Generated UI</strong>
-            <span>prototype branch compiling</span>
-          </div>
-          <span>rules + runtime</span>
-        </header>
-        <div className="workflow-generation-meter">
-          {[
-            ["05%", "context"],
-            ["36%", "structure"],
-            ["70%", "states"],
-            ["100%", "reviewable"],
-          ].map(([value, label], index) => (
-            <span style={{ "--meter-progress": progressBetween(scrollProgress, 0.22 + index * 0.15, 0.42 + index * 0.15) }} key={value}>
-              <b>{value}</b>
-              {label}
-            </span>
+          {intentCards.map((card) => (
+            <article className="ai-intent-card" key={card.label}>
+              <span>{card.label}</span>
+              <p>{card.body}</p>
+            </article>
           ))}
-        </div>
-        <div className="workflow-generated-bridge" aria-label="File inputs connected to platform output">
-          <span style={{ "--bridge-reveal": progressBetween(scrollProgress, 0.24, 0.42) }}>
-            <b>module.css</b>
-            <em>component shell</em>
-          </span>
-          <i aria-hidden="true" />
-          <span style={{ "--bridge-reveal": progressBetween(scrollProgress, 0.4, 0.58) }}>
-            <b>scale.md</b>
-            <em>density + hierarchy</em>
-          </span>
-          <i aria-hidden="true" />
-          <span style={{ "--bridge-reveal": progressBetween(scrollProgress, 0.56, 0.74) }}>
-            <b>architecture.md</b>
-            <em>routes + panels</em>
-          </span>
-          <i aria-hidden="true" />
-          <span style={{ "--bridge-reveal": progressBetween(scrollProgress, 0.7, 0.9) }}>
-            <b>store.ts</b>
-            <em>state + actions</em>
-          </span>
-        </div>
-        <div className="workflow-generated-ui">
-          <small>Investor Recommendations</small>
-          <span className="is-selected"><b>Northbridge Partners</b><em>92</em></span>
-          <span><b>Harborline Capital</b><em>86</em></span>
-          <div className="workflow-generated-mini-viz" aria-hidden="true">
-            <i />
-            <i />
-            <i />
+        </section>
+
+        <section className="ai-layer-one-column ai-layer-one-system" aria-label="Design-system rules">
+          <div className="ai-layer-title">
+            <span aria-hidden="true">✣</span>
+            <strong>Design-system rules</strong>
           </div>
-          <div className="workflow-generated-checks">
-            {["Route mounted", "State connected", "Drawer ready"].map((item, index) => (
-              <span style={{ "--check-delay": `${index * 4200}ms` }} key={item}>{item}</span>
+
+          <div className="ai-rule-tabs" aria-label="Context source files">
+            {layerOneFiles.map((file, index) => (
+              <span
+                className={index === activeFileIndex ? "is-active" : ""}
+                style={{ "--tab-reveal": progressBetween(fileProgress, index * 0.24, 0.34 + index * 0.24) }}
+                key={file}
+              >
+                <i aria-hidden="true" />
+                {file}
+              </span>
             ))}
           </div>
-        </div>
-      </article>
+
+          <article className="ai-active-file-card" aria-live="polite">
+            <div>
+              <span>{layerOneFiles[activeFileIndex]}</span>
+              <strong>{activeFile.title}</strong>
+              <p>{activeFile.body}</p>
+            </div>
+            <ul>
+              {activeFile.chips.map((chip) => (
+                <li key={chip}>{chip}</li>
+              ))}
+            </ul>
+          </article>
+
+          <div className="ai-rule-matrix">
+            <section>
+              <h4>Foundations</h4>
+              {foundationRules.map(([rule, token]) => (
+                <span key={rule}>
+                  <b>{rule}</b>
+                  <em className={`is-${token}`}>{token}</em>
+                </span>
+              ))}
+            </section>
+            <section>
+              <h4>Component rules</h4>
+              {componentRules.map((rule) => (
+                <span key={rule}>
+                  <b>{rule}</b>
+                  <em>✓</em>
+                </span>
+              ))}
+            </section>
+            <section>
+              <h4>Behavior</h4>
+              {behaviorRules.map((rule) => (
+                <span key={rule}>
+                  <b>{rule}</b>
+                  <em>✓</em>
+                </span>
+              ))}
+            </section>
+          </div>
+
+          <div className="ai-rule-bottom">
+            <article className="ai-architecture-card">
+              <div className="ai-layer-title is-small">
+                <span aria-hidden="true">⌘</span>
+                <strong>Architecture</strong>
+              </div>
+              <div aria-hidden="true">
+                <span>UI Layer</span>
+                <i />
+                <p>
+                  <b>Features</b>
+                  <b>Shared</b>
+                </p>
+                <p>
+                  <b>Data</b>
+                  <b>Services</b>
+                  <b>Analytics</b>
+                </p>
+              </div>
+            </article>
+            <article className="ai-state-card">
+              <div className="ai-layer-title is-small">
+                <span aria-hidden="true">◉</span>
+                <strong>State model</strong>
+              </div>
+              <div aria-hidden="true">
+                {["idle", "loading", "loaded", "empty", "error"].map((state) => (
+                  <span className={`is-${state}`} key={state}>{state}</span>
+                ))}
+                <i className="is-a" />
+                <i className="is-b" />
+                <i className="is-c" />
+              </div>
+            </article>
+          </div>
+        </section>
+
+        <section className="ai-layer-one-column ai-layer-one-proof" aria-label="Verification">
+          <div className="ai-layer-title">
+            <span aria-hidden="true">◇</span>
+            <strong>Verification</strong>
+          </div>
+          <div className="ai-review-strip">
+            <span>PM / Design / Eng review</span>
+            <p>
+              {["PM", "DS", "ENG"].map((role) => (
+                <b key={role}>{role}<i /></b>
+              ))}
+            </p>
+          </div>
+          <div className="ai-verification-stack">
+            {verificationCards.map((card) => (
+              <article key={card.title}>
+                <i className={`is-${card.badge}`} aria-hidden="true" />
+                <div>
+                  <strong>{card.title}</strong>
+                  <p>{card.body}</p>
+                  {card.meta && <code>{card.meta}</code>}
+                </div>
+              </article>
+            ))}
+          </div>
+          <div className="ai-ui-preview" aria-label="Preview of generated UI">
+            <span>Preview of generated UI (from this context)</span>
+            <div aria-hidden="true">
+              <aside>
+                <i />
+                <i />
+                <i />
+                <i />
+              </aside>
+              <main>
+                <b />
+                <b />
+                <b />
+                <p>
+                  <i />
+                  <i />
+                </p>
+              </main>
+              <aside>
+                <i />
+                <i />
+                <i />
+                <i />
+              </aside>
+            </div>
+          </div>
+        </section>
+      </div>
     </div>
   );
 }
@@ -388,8 +572,8 @@ function ThesisSection() {
       aria-labelledby="workflow-thesis-title"
     >
       <div className="workflow-thesis-sticky">
-        <SectionIntro kicker="01 · Product intent to shipped prototype" title="Turning product intent into production-near prototypes." id="workflow-thesis-title">
-          Instead of shipping static Figma images, the workflow turned product direction into a reviewable branch where layout files, scale rules, architecture, and state could be inspected together.
+        <SectionIntro kicker="01 · Direction system" title="A governed artifact before the prototype gets built." id="workflow-thesis-title">
+          Product brief, design-system rules, state model, verification, and branch readiness are assembled before the product demo appears.
         </SectionIntro>
         <div className="workflow-transformation-poster" aria-label="Discovery source to production-near prototype transformation">
           <BuildSystemPoster scrollProgress={scrollProgress} />
@@ -410,6 +594,7 @@ function ProductMomentSection() {
   const signalsActive = scrollProgress > 0.38;
   const outreachReady = scrollProgress > 0.78;
   const isComplete = scrollProgress > 0.95;
+  const activeLayerTwoFile = layerTwoFiles[activePrototypeStepIndex];
 
   useEffect(() => {
     if (!isComplete) {
@@ -446,194 +631,93 @@ function ProductMomentSection() {
         <SectionIntro kicker="02 · Prototype in use" title="The AI-created prototype behaved like a real product." id="workflow-product-title">
           module.css and scale.md shaped the platform surface; architecture.md and store.ts carried routing, ownership, and state, so the artifact could show real interactions instead of a static mock.
         </SectionIntro>
-        <article className="workflow-product-stage" aria-label="Idea Generation Studio investor recommendation product moment">
-        <header className="workflow-appbar">
-          <div>
-            <strong>Idea Generation Studio</strong>
-            <span>Investor Recommendations</span>
-          </div>
-          <nav aria-label="Product mode">
-            <span>Source</span>
-            <span className="is-active">Recommendations</span>
-            <span>IdeaBook</span>
-          </nav>
-          <em>{packaged ? "IdeaBook-ready" : "High confidence"}</em>
-        </header>
+        <article
+          className="workflow-product-stage ai-layer-two-artifact"
+          style={{
+            "--layer-two-progress": scrollProgress,
+            "--layer-two-product-reveal": productReveal,
+            "--layer-two-signal-reveal": progressBetween(scrollProgress, 0.42, 0.82),
+          }}
+          aria-label="Prototype in use artifact"
+        >
+          <header className="ai-layer-two-header">
+            <span aria-hidden="true"><i /></span>
+            <em>02 · Prototype in use</em>
+            <strong className="ai-layer-two-progress" aria-hidden="true">
+              <i />
+            </strong>
+          </header>
 
-        <div className={`workflow-prototype-context${signalsActive ? " is-active" : ""}`} aria-label="Prototype build context">
-          {prototypeSequence.map((step, index) => {
-            const stepSegment = 1 / Math.max(1, prototypeSequence.length - 1);
-            const stepVisibility = clamp01(1 - Math.abs(prototypeProgress - (index * stepSegment)) / (stepSegment * 0.48));
-            const isStepVisible = stepVisibility > 0.035;
-
-            return (
-              <article
-                className="workflow-prototype-step"
-                style={{
-                  "--step-visibility": stepVisibility,
-                  visibility: isStepVisible ? "visible" : "hidden",
-                }}
-                aria-hidden={!isStepVisible}
-                key={step.name}
-              >
-                <div>
-                  <strong>{step.name}</strong>
-                  <span>{step.label}</span>
-                  {step.lines.map((line) => (
-                    <code key={line}>{line}</code>
-                  ))}
-                </div>
-                <i aria-hidden="true" />
-                <b>{step.output}</b>
-              </article>
-            );
-          })}
-        </div>
-
-        <div className="workflow-product-shell">
-          <aside className="workflow-product-rail" aria-label="Workspace navigation">
-            {["Inbox", "Companies", "Investors", "IdeaBooks"].map((item) => (
-              <span className={item === "Investors" ? "is-active" : ""} key={item}>
-                {item}
-              </span>
-            ))}
-          </aside>
-
-          <main className="workflow-recommendation-list">
-            <div className="workflow-list-header">
-              <span>Meridian Retail</span>
-              <strong>Recommended investors</strong>
-            </div>
-            <div className={`workflow-logo-strip${signalsActive ? " is-active" : ""}`} aria-label="Company and investor signals">
-              <span className="is-company">
-                <b>MR</b>
-                <em>Meridian Retail</em>
-              </span>
-              {investors.map((investor, index) => (
-                <span style={{ "--logo-color": investor.color, "--logo-delay": `${index * 160}ms` }} key={investor.name}>
-                  <b>{investor.logo}</b>
-                  <em>{investor.sector}</em>
-                </span>
-              ))}
-            </div>
-            <div className={`workflow-signal-dashboard${signalsActive ? " is-active" : ""}`} aria-label="Recommendation signal dashboard">
-              <div className="workflow-fit-chart">
-                <span>Fit distribution</span>
-                {investors.map((investor, index) => (
-                  <i
-                    className={index === 0 ? "is-selected" : ""}
-                    style={{ "--bar": `${investor.fit}%`, "--bar-color": investor.color, "--bar-delay": `${index * 90}ms` }}
-                    key={investor.name}
+          <div className="ai-layer-two-body">
+            <aside className="ai-code-artifact" aria-label={`${activeLayerTwoFile.name} artifact`}>
+              <nav aria-label="Prototype source files">
+                {layerTwoFiles.map((file, index) => (
+                  <span
+                    className={index === activePrototypeStepIndex ? "is-active" : ""}
+                    style={{ "--tab-reveal": progressBetween(prototypeProgress, index * 0.16, 0.28 + index * 0.16) }}
+                    key={file.name}
                   >
-                    <b>{investor.logo}</b>
-                  </i>
-                ))}
-              </div>
-              <div className="workflow-signal-matrix">
-                {[
-                  ["Overlap", "3 comps", 92],
-                  ["Appetite", "Active", 84],
-                  ["Relationship", "Warm", 88],
-                ].map(([label, value, score], index) => (
-                  <span style={{ "--meter": `${score}%`, "--meter-delay": `${index * 120}ms` }} key={label}>
-                    <b>{label}</b>
-                    <em>{value}</em>
-                    <i />
+                    {index === 0 && <i aria-hidden="true" />}
+                    {file.name}
                   </span>
                 ))}
-              </div>
-              <div className="workflow-source-evidence">
-                <span>AI evidence scan</span>
-                {[
-                  ["portfolio", 3, "overlaps"],
-                  ["consumer", 8, "recent deals"],
-                  ["warm", 2, "paths"],
-                ].map(([label, value, detail], index) => (
-                  <em style={{ "--evidence-delay": `${index * 140}ms` }} key={label}>
-                    <b>{value}</b>
-                    <small>{label}</small>
-                    <i>{detail}</i>
-                  </em>
+              </nav>
+              <div className="ai-code-lines">
+                <span>{activeLayerTwoFile.eyebrow}</span>
+                {activeLayerTwoFile.lines.map(([label, value], index) => (
+                  <p style={{ "--line-reveal": progressBetween(prototypeProgress, index * 0.08, 0.28 + index * 0.08) }} key={`${label}-${value}`}>
+                    <b>{label}:</b>
+                    <code>{value}</code>
+                  </p>
                 ))}
               </div>
-            </div>
-            <RelationshipGraph />
-            <div className="workflow-table-head" aria-hidden="true">
-              <span>Investor</span>
-              <span>Relationship</span>
-              <span>Overlap</span>
-              <span>Fit</span>
-            </div>
-            {investors.map((investor, index) => (
-              <button className={`workflow-investor-row${index === 0 ? " is-selected" : ""}`} type="button" key={investor.name}>
-                <span>
-                  <i style={{ "--logo-color": investor.color }}>{investor.logo}</i>
-                  <em>{investor.rank}</em>
-                  <strong>{investor.name}</strong>
-                </span>
-                <span>{investor.relationship}</span>
-                <span>{investor.overlap}</span>
-                <b>{investor.fit}</b>
-              </button>
-            ))}
-          </main>
+            </aside>
 
-          <aside
-            className={`workflow-rationale-drawer${signalsActive ? " has-active-signals" : ""}${outreachReady ? " is-ready" : ""}`}
-            aria-label="AI rationale drawer"
-          >
-            <div className="workflow-drawer-title">
-              <div>
-                <span>
-                  <i aria-hidden="true" /> AI rationale
-                </span>
-                <strong>Northbridge Partners</strong>
+            <div className="ai-code-bridge" aria-hidden="true">
+              <span>→</span>
+              <p>{activeLayerTwoFile.note}</p>
+            </div>
+
+            <section className="ai-product-artifact" aria-label="Idea Generation Studio product prototype">
+              <aside className="ai-product-rail" aria-hidden="true">
+                {["◇", "⌂", "♧", "▥", "▥", "⚙"].map((icon, index) => (
+                  <span className={index === 0 ? "is-active" : ""} key={`${icon}-${index}`}>{icon}</span>
+                ))}
+              </aside>
+              <div className="ai-product-screen">
+                <header>
+                  <div>
+                    <strong>Idea Generation Studio</strong>
+                    <span>Investor Recommendations</span>
+                  </div>
+                  <em>High confidence</em>
+                  <b>MR</b>
+                </header>
+                <nav>
+                  <span className="is-active">Recommendations</span>
+                  <span>Ideabook</span>
+                </nav>
+                <article className="ai-investor-card">
+                  <h4>Recommended investors</h4>
+                  <div className="ai-investor-profile">
+                    <span>NP</span>
+                    <div>
+                      <strong>Northbridge Partners</strong>
+                      <p>Private equity · Consumer · North America</p>
+                    </div>
+                    <b>92<i>fit</i></b>
+                  </div>
+                  <i className="ai-fit-bar" aria-hidden="true" />
+                  <div className="ai-investor-evidence">
+                    <span><b>3</b>portfolio overlap</span>
+                    <span><b>8</b>activity signals</span>
+                    <span><b>2</b>warm path strength</span>
+                    <p>Northbridge is a strong fit based on retail services thesis, recent activity in adjacent consumer categories, and relevant portfolio overlap.</p>
+                  </div>
+                </article>
               </div>
-              <em>{packaged ? "IdeaBook-ready" : "High confidence"}</em>
-            </div>
-            <div className="workflow-confidence-visual" aria-label="High confidence score">
-              <strong>92</strong>
-              <span>confidence</span>
-              <i />
-            </div>
-            <p>Northbridge is a strong fit based on retail services thesis, recent activity in adjacent consumer categories, and relevant portfolio overlap.</p>
-            <div className={`workflow-ai-path${signalsActive ? " is-active" : ""}`} aria-label="AI recommendation reasoning path">
-              <span>Overlap</span>
-              <i />
-              <span>Activity</span>
-              <i />
-              <span>Warm path</span>
-              <strong>92 fit</strong>
-            </div>
-            <div className="workflow-signal-list">
-              {[
-                ["Portfolio overlap", "3 relevant companies"],
-                ["Sector appetite", "Active in consumer services"],
-                ["Relationship signal", "Warm"],
-                ["Source confidence", "High"],
-              ].map(([label, value], index) => (
-                <span style={{ "--signal-delay": `${index * 130}ms` }} key={label}>
-                  <b>{label}</b>
-                  {value}
-                </span>
-              ))}
-            </div>
-            <div className="workflow-outreach-composer">
-              <span>Outreach angle</span>
-              <p>{outreachReady ? outreachAngle : "Scroll to reveal the rationale, then the outreach angle will materialize here."}</p>
-            </div>
-            {ideaBookAdded && <div className="workflow-added-confirmation">Added to IdeaBook</div>}
-            <div className="workflow-drawer-actions">
-              <button type="button" disabled={!isComplete} onClick={handleGenerateOutreach}>
-                Generate outreach angle
-              </button>
-              <button type="button" disabled={!isComplete || ideaBookAdded} onClick={addToIdeaBook}>
-                {ideaBookAdded ? "Added" : "Add to IdeaBook"}
-              </button>
-            </div>
-          </aside>
-        </div>
-        {isComplete && <ValidationBadge compact />}
+            </section>
+          </div>
         </article>
       </div>
     </section>
@@ -641,35 +725,71 @@ function ProductMomentSection() {
 }
 
 function OperatingModelSection() {
+  const sectionRef = useRef(null);
+  const scrollProgress = useSectionScrollProgress(sectionRef);
+  const operatingProgress = progressBetween(scrollProgress, 0.05, 0.96);
+  const activeStepIndex = Math.min(governanceSteps.length - 1, Math.floor(operatingProgress * governanceSteps.length));
+
   return (
-    <section className="workflow-story-section workflow-operating-section" aria-labelledby="workflow-operating-title">
-      <SectionIntro kicker="03 · Operating model + proof" title="AI-native, but governed." id="workflow-operating-title">
-        The prototype shipped faster because AI had project memory, front-end architecture, design-system mapping, and a shared review path.
-      </SectionIntro>
+    <section
+      ref={sectionRef}
+      className="workflow-story-section workflow-operating-section is-scroll-built"
+      style={{
+        "--workflow-operating-scroll": scrollProgress,
+        "--workflow-operating-reveal": operatingProgress,
+        "--workflow-operating-active": activeStepIndex,
+      }}
+      aria-labelledby="workflow-operating-title"
+    >
+      <div className="workflow-operating-sticky">
+        <SectionIntro kicker="03 · Operating model + proof" title="AI-native, but governed." id="workflow-operating-title">
+          The prototype shipped faster because AI had project memory, front-end architecture, design-system mapping, and a shared review path.
+        </SectionIntro>
 
-      <div className="workflow-governance-visual" aria-label="Governed AI operating model">
-        <div className="workflow-governance-line" aria-hidden="true" />
-        {governanceSteps.map((step, index) => (
-          <article style={{ "--step-delay": `${index * 160}ms` }} key={step.title}>
-            <em>{String(index + 1).padStart(2, "0")}</em>
-            <strong>{step.title}</strong>
-            <p>{step.detail}</p>
-            <span>{step.artifact}</span>
-          </article>
-        ))}
-        <div className="workflow-token-scan" aria-label="Design-system verification example">
-          <span>Prototype governance</span>
-          <code>static Figma frame</code>
-          <i />
-          <code>Zustand state + Salt tokens + modules.css</code>
-          <b>production-translatable</b>
+        <div className="workflow-governance-visual" aria-label="Governed AI operating model">
+          <div className="workflow-governance-line" aria-hidden="true" />
+          <div className="workflow-governance-progress" aria-hidden="true">
+            <strong>
+              <b />
+              <em>03 · Operating model + proof</em>
+            </strong>
+            <i />
+            <span>scroll locks section · artifacts assemble</span>
+          </div>
+
+          <div className="workflow-governance-lanes">
+            {governanceSteps.map((step, index) => (
+              <article
+                className={index <= activeStepIndex ? "is-active" : ""}
+                style={{
+                  "--step-delay": `${index * 160}ms`,
+                  "--step-reveal": progressBetween(operatingProgress, index * 0.16, 0.34 + index * 0.16),
+                }}
+                key={step.title}
+              >
+                <i aria-hidden="true" />
+                <em>{String(index + 1).padStart(2, "0")}</em>
+                <strong>{step.title}</strong>
+                <p>{step.detail}</p>
+                <span>{step.artifact}</span>
+              </article>
+            ))}
+          </div>
+
+          <div className="workflow-token-scan" aria-label="Design-system verification example">
+            <span>Prototype governance</span>
+            <code>static Figma frame</code>
+            <i />
+            <code>Zustand state + Salt tokens + modules.css</code>
+            <b>branch proof</b>
+          </div>
         </div>
-      </div>
 
-      <div className="workflow-outcome-metrics" aria-label="AI workflow outcome metrics">
-        {outcomeMetrics.map((metric) => (
-          <span key={metric}>{metric}</span>
-        ))}
+        <div className="workflow-outcome-metrics" aria-label="AI workflow outcome metrics">
+          {outcomeMetrics.map((metric, index) => (
+            <span style={{ "--metric-reveal": progressBetween(operatingProgress, 0.42 + index * 0.06, 0.64 + index * 0.06) }} key={metric}>{metric}</span>
+          ))}
+        </div>
       </div>
     </section>
   );

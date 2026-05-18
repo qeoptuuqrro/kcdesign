@@ -9,7 +9,7 @@ function getNewYorkTime() {
   }).format(new Date());
 }
 
-export default function HeroStatement() {
+export default function HeroStatement({ onAboutSelect }) {
   const [localTime, setLocalTime] = useState(getNewYorkTime);
 
   useEffect(() => {
@@ -66,7 +66,7 @@ export default function HeroStatement() {
           </p>
         </div>
 
-        <a className="hero-learn-more" href="#about">
+        <a className="hero-learn-more" href="#about" onClick={(event) => onAboutSelect?.(event)}>
           Learn more
         </a>
       </aside>

@@ -1,8 +1,10 @@
 import { getAssetPath } from "./utils/paths";
-import ProjectShowcase, { featuredProjects } from "./components/ProjectShowcase";
+import { featuredProjects } from "./content/projects";
+import ProjectShowcase from "./features/project-showcase/ProjectShowcase";
 import DesignSystemInspector from "./components/DesignSystemInspector";
 import { useEffect, useState } from "react";
 import FluidCursor from "./components/FluidCursor";
+import AboutPage from "./components/AboutPage";
 import HeroStatement from "./components/HeroStatement";
 import Navbar from "./components/Navbar";
 import ProjectCaseOverlay from "./components/ProjectCaseOverlay";
@@ -37,10 +39,40 @@ function resetProjectUrl() {
 }
 
 export default function App() {
+  const [pageView, setPageView] = useState(() => (window.location.hash === "#about" ? "about" : "home"));
   const [activeMenuId, setActiveMenuId] = useState("home");
   const [selectedProject, setSelectedProject] = useState(null);
   const [projectView, setProjectView] = useState(null);
   const [isClosingProject, setIsClosingProject] = useState(false);
+
+  useEffect(() => {
+    const syncActiveMenuFromHash = () => {
+      const hash = window.location.hash.replace("#", "") || "home";
+      if (!menuItems.some((item) => item.id === hash)) {
+        return;
+      }
+
+      setActiveMenuId(hash);
+      setPageView(hash === "about" ? "about" : "home");
+
+      if (hash !== "about") {
+        window.requestAnimationFrame(() => {
+          document.querySelector(`#${hash}`)?.scrollIntoView({
+            behavior: "auto",
+            block: "start",
+            inline: "nearest",
+          });
+        });
+        return;
+      }
+
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "auto" }));
+    };
+
+    syncActiveMenuFromHash();
+    window.addEventListener("hashchange", syncActiveMenuFromHash);
+    return () => window.removeEventListener("hashchange", syncActiveMenuFromHash);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -245,6 +277,7 @@ export default function App() {
 
   const handleMenuSelect = (id, href, event) => {
     setActiveMenuId(id);
+    setPageView(id === "about" ? "about" : "home");
     trackEvent(
       "navigation_select",
       {
@@ -262,24 +295,35 @@ export default function App() {
     }
 
     event?.preventDefault();
-    const target = document.querySelector(href);
-    if (!target) {
-      return;
-    }
+    window.history.pushState(null, "", href);
 
-    target.scrollIntoView({
-      behavior: "smooth",
-      block: "start",
-      inline: "nearest",
+    window.requestAnimationFrame(() => {
+      const target = document.querySelector(href);
+      if (id === "about") {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        return;
+      }
+
+      target?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
     });
   };
 
   return (
-    <div className="landing-shell" id="home">
+    <div className={`landing-shell${pageView === "about" ? " is-about-page" : ""}`} id="home">
       <div className="page-frame">
         <Navbar items={menuItems} activeId={activeMenuId} onSelect={handleMenuSelect} />
-        <HeroStatement />
-        <ProjectShowcase onProjectSelect={handleProjectSelect} />
+        {pageView === "about" ? (
+          <AboutPage onWorkSelect={(event) => handleMenuSelect("work", "#work", event)} />
+        ) : (
+          <>
+            <HeroStatement onAboutSelect={(event) => handleMenuSelect("about", "#about", event)} />
+            <ProjectShowcase onProjectSelect={handleProjectSelect} />
+          </>
+        )}
       </div>
       {selectedProject &&
       (projectView === "overlay" || projectView === "expanding" || projectView === "full" || projectView === "shrinking") ? (

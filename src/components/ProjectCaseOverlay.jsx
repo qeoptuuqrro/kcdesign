@@ -23,6 +23,453 @@ const getAssetSrcSet = (srcSet) => {
     .join(", ");
 };
 
+const auroraCaseArtifacts = [
+  {
+    label: "Artifact 01",
+    eyebrow: "Data extraction",
+    title: "Review extracted deal fields against source evidence.",
+    body: "A working view for validating AI-assisted extraction: users compare the deal form, source options, and original agreement before continuing the booking flow.",
+    image: "/optimized/aurora-data-extraction-2200.png",
+    alt: "Aurora data extraction review screen with deal fields, source selection, and a credit agreement preview.",
+    width: 2200,
+    height: 1146,
+    kind: "extraction",
+  },
+  {
+    label: "Artifact 02",
+    eyebrow: "Booking Express NEXT",
+    title: "A deal homepage that centralizes progress, tasks, and teams.",
+    body: "The homepage concept brings deal metadata, task progression, ownership, contacts, and linked systems into one operational workspace for booking teams.",
+    image: "/optimized/aurora-booking-express-home-2200.png",
+    alt: "Aurora Booking Express NEXT homepage showing deal overview, task list, progress, team, contacts, and linked systems.",
+    width: 2200,
+    height: 1577,
+    kind: "home",
+  },
+];
+
+const isEditableShortcutTarget = (target) => {
+  if (!(target instanceof HTMLElement)) {
+    return false;
+  }
+
+  return Boolean(target.closest("input, textarea, select, [contenteditable='true']"));
+};
+
+const detectMacLikePlatform = () => {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  const platformSignals = [
+    window.navigator.userAgentData?.platform,
+    window.navigator.platform,
+    window.navigator.userAgent,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return /mac|iphone|ipad|ipod/i.test(platformSignals);
+};
+
+function ShortcutHint({ label, isVisible = false, position = "after" }) {
+  return (
+    <span className={`project-detail-shortcut-group is-${position}${isVisible ? " is-visible" : ""}`} aria-hidden="true">
+      <kbd className="project-detail-shortcut">{label}</kbd>
+    </span>
+  );
+}
+
+function ButtonShortcutContent({ label, shortcut, keyLabel, shortcutPosition = "after", isShortcutVisible = false }) {
+  const visibleShortcut = isShortcutVisible ? keyLabel : shortcut;
+  const shortcutHint = <ShortcutHint label={visibleShortcut} position={shortcutPosition} isVisible={isShortcutVisible} />;
+
+  if (shortcutPosition === "before") {
+    return (
+      <>
+        {shortcutHint}
+        <span className="case-control-label">{label}</span>
+      </>
+    );
+  }
+
+  return (
+    <>
+      <span className="case-control-label">{label}</span>
+      {shortcutHint}
+    </>
+  );
+}
+
+const deepCutReviewCards = [
+  {
+    name: "Sara J.",
+    age: "2 weeks ago",
+    rating: "★★★★★",
+    body: "Incredible atmosphere. Paolo captures the soul of Tokyo after dark. I learned so much about small spots I'd never find.",
+    helpful: "24",
+    avatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80",
+  },
+  {
+    name: "Mike Chen",
+    age: "1 month ago",
+    rating: "★★★★☆",
+    body: "Loved the food stops and the storytelling. The pacing makes the 1h+ fly by.",
+    helpful: "18",
+    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80",
+  },
+  {
+    name: "Aiko Tanaka",
+    age: "2 months ago",
+    rating: "★★★★★",
+    body: "As someone from Tokyo, this is the most authentic night walk I've seen on camera. Beautiful work.",
+    helpful: "31",
+    avatar: "https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=120&q=80",
+  },
+];
+
+const deepCutRelatedCuts = [
+  {
+    title: "Shibuya Nightlife: Beyond the Lights",
+    creator: "Only in Japan",
+    duration: "2:05:42",
+    score: "9.0",
+    image: getAssetPath("/covers/shibuya-nightlife.png"),
+  },
+  {
+    title: "Japan's Lost Railway Lines",
+    creator: "Abroad in Japan",
+    duration: "1:02:11",
+    score: "8.8",
+    image: getAssetPath("/covers/japan-railway.png"),
+  },
+  {
+    title: "Osaka Street Food Night Walk",
+    creator: "Paolo fromTOKYO",
+    duration: "1:15:33",
+    score: "9.2",
+    image: getAssetPath("/covers/osaka-street-food.png"),
+  },
+  {
+    title: "The Silk Road: A Modern Journey",
+    creator: "DW Documentary",
+    duration: "1:39:08",
+    score: "8.7",
+    image: getAssetPath("/covers/silk-road.png"),
+  },
+  {
+    title: "Life Along Japan's Hidden Lines",
+    creator: "Takahiro Bessho",
+    duration: "1:24:10",
+    score: "8.6",
+    image: getAssetPath("/covers/japan-railway.png"),
+  },
+];
+
+const deepCutCaseArtifacts = [
+  {
+    label: "Lead / TV watch",
+    title: "AI becomes useful at the moment of choosing.",
+    body: "The TV surface turns review intelligence into a confident start point: watch from 12:40, understand why it is worth it, then keep the lean-back experience clean.",
+    image: "/deepcut-case-study/deepcut-tv-watch.png",
+    alt: "DeepCut TV player experience with best-start controls, review insight, and up-next recommendations.",
+    metrics: ["Start at 12:40", "Review insight", "Up next"],
+    layout: "wide",
+  },
+  {
+    label: "01 / Desktop browse",
+    title: "Browse videos worth your time.",
+    body: "Desktop is the research surface: users compare long-form picks, see review density, and decide whether a one-hour video deserves tonight.",
+    image: "/deepcut-case-study/deepcut-pc-browse.png",
+    alt: "DeepCut desktop browser experience showing top-rated long-form video cards and an Osaka street food recommendation.",
+    metrics: ["Top picks", "Best start", "Ask DeepCut"],
+    layout: "wide",
+  },
+  {
+    label: "02 / Reviews + Ask AI",
+    title: "Turn human reviews into an AI decision flow.",
+    body: "This split artifact shows the core product promise: users can read real review signals, then ask AI to scan language, pacing, platform overlap, and best-start evidence before choosing a video.",
+    image: "/deepcut-case-study/deepcut-mobile-detail.png",
+    alt: "DeepCut split interface showing User Reviews and Ask AI Flow panels for an Osaka street food long-form video.",
+    metrics: ["User reviews", "AI scan", "Best start"],
+    layout: "wide",
+  },
+  {
+    label: "03 / Mobile saved",
+    title: "Build a queue with context preserved.",
+    body: "Saved collections turn discovery into a personal long-form library where score, source, watch progress, and best-start context travel with the video.",
+    image: "/deepcut-case-study/deepcut-mobile-saved-library.png",
+    alt: "DeepCut mobile saved library showing a Worth My Time collection with long-form videos, scores, progress, and best-start timestamps.",
+    metrics: ["Saved queue", "Continue watching", "Best start"],
+    layout: "portrait",
+  },
+  {
+    label: "04 / Review intelligence",
+    title: "Make long-form reviews feel measurable.",
+    body: "The rating page translates crowd judgment into pacing, trust, rewatch value, source overlap, chapter highlights, and review consensus.",
+    image: "/deepcut-case-study/deepcut-interface-review-intelligence.png",
+    alt: "DeepCut review intelligence dashboard showing an Osaka street food video, score, review distribution, source context, and chapter highlights.",
+    metrics: ["Pacing", "Trust", "Source context"],
+    layout: "standard",
+  },
+  {
+    label: "05 / Mobile Ask AI",
+    title: "Ask when the intent is specific.",
+    body: "On mobile, the AI flow starts from a plain-language need, scans the evidence, recommends one video, and gives lightweight follow-ups.",
+    image: "/deepcut-case-study/deepcut-mobile-ask-ai.png",
+    alt: "DeepCut mobile Ask AI screen showing a Japanese street food recommendation with review signals, best-start timestamp, and reasons.",
+    metrics: ["User intent", "Scanning", "Why this works"],
+    layout: "portrait",
+  },
+  {
+    label: "06 / Reviews before AI",
+    title: "Keep human judgment at the center.",
+    body: "The product earns the AI moment by first making reviews useful: distribution, reviewer notes, platform context, and best-start timestamps stay visible.",
+    image: "/deepcut-case-study/deepcut-reviews-ai.png",
+    alt: "DeepCut split interface showing user reviews beside an Ask AI flow for a long-form Osaka street food video.",
+    metrics: ["2.8k reviews", "Best start", "Ask AI"],
+    layout: "wide",
+  },
+  {
+    label: "07 / AI decision flow",
+    title: "Show the reasoning, not just the result.",
+    body: "DeepCut breaks the recommendation into intent, scanning, candidate ranking, evidence, and follow-up prompts so users can trust the suggestion without surrendering control.",
+    image: "/deepcut-case-study/deepcut-interface-ai-decision-flow.png",
+    alt: "DeepCut Ask AI decision flow showing user intent, review scanning, top recommendation, evidence, and follow-up prompts.",
+    metrics: ["Intent", "Evidence", "Follow-up"],
+    layout: "wide",
+  },
+];
+
+function DeepCutLogoGlyph() {
+  return (
+    <svg viewBox="0 0 96 96" aria-hidden="true">
+      <defs>
+        <linearGradient id="deepcut-review-logo-gradient" x1="18" y1="13" x2="80" y2="83" gradientUnits="userSpaceOnUse">
+          <stop offset="0" stopColor="#dcfffb" />
+          <stop offset="0.48" stopColor="#68f3df" />
+          <stop offset="1" stopColor="#2bd2bf" />
+        </linearGradient>
+      </defs>
+      <rect x="13" y="13" width="70" height="70" rx="20" fill="#07100d" />
+      <rect x="14.5" y="14.5" width="67" height="67" rx="18.5" fill="none" stroke="rgba(255,255,255,0.16)" strokeWidth="3" />
+      <path d="M37 28.5 66.5 48 37 67.5V28.5Z" fill="url(#deepcut-review-logo-gradient)" />
+      <path d="M42.5 39.5 55.2 48 42.5 56.5V39.5Z" fill="#07100d" opacity="0.7" />
+    </svg>
+  );
+}
+
+function DeepCutIcon({ type }) {
+  const paths = {
+    home: "M5 10.5 12 4l7 6.5v8.8h-5v-5.8h-4v5.8H5v-8.8Z",
+    compass: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm3.2-12.2-1.8 4.6-4.6 1.8 1.8-4.6 4.6-1.8Z",
+    bookmark: "M7 4h10v16l-5-3.1L7 20V4Z",
+    bars: "M6 17v-5m6 5V7m6 10v-8",
+    settings: "M12 15.3a3.3 3.3 0 1 0 0-6.6 3.3 3.3 0 0 0 0 6.6Zm0-12.1 1.3 2.2 2.6.5.8 2.5 2.1 1.5-1 2.4 1 2.4-2.1 1.5-.8 2.5-2.6.5-1.3 2.2-1.3-2.2-2.6-.5-.8-2.5-2.1-1.5 1-2.4-1-2.4 2.1-1.5.8-2.5 2.6-.5L12 3.2Z",
+    search: "M11 18a7 7 0 1 1 4.9-2l4.1 4.1",
+    bell: "M18 16H6l1.2-1.8V10a4.8 4.8 0 0 1 9.6 0v4.2L18 16Zm-4 2a2 2 0 0 1-4 0",
+    star: "m12 3 2.7 5.6 6.1.9-4.4 4.3 1 6.1-5.4-2.9-5.4 2.9 1-6.1-4.4-4.3 6.1-.9L12 3Z",
+    save: "M7 4h10v16l-5-3.1L7 20V4Z",
+    like: "M7.5 10.2 11 4.5c.7-1.1 2.5-.6 2.5.8v3h4.3c1.3 0 2.2 1.2 1.9 2.4l-1.3 6.2a3 3 0 0 1-3 2.4H7.5v-9.1Z",
+    shield: "M12 3.5 19 6v5.5c0 4.1-2.6 7.7-7 9-4.4-1.3-7-4.9-7-9V6l7-2.5Z",
+    globe: "M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18Zm-8-9h16M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21c-2.2-2.5-3.3-5.5-3.3-9S9.8 5.5 12 3Z",
+    more: "M6 12h.1M12 12h.1M18 12h.1",
+  };
+
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d={paths[type]} fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function DeepCutReviewsDemoArtifact() {
+  return (
+    <div className="deepcut-review-demo" aria-label="DeepCut reviews product demo">
+      <div className="deepcut-review-city" aria-hidden="true" />
+      <div className="deepcut-review-app">
+        <header className="deepcut-review-topbar">
+          <div className="deepcut-review-brand">
+            <span className="deepcut-review-logo">
+              <DeepCutLogoGlyph />
+            </span>
+            <strong>DeepCut</strong>
+          </div>
+          <nav className="deepcut-review-nav" aria-label="DeepCut demo navigation">
+            <span>Explore</span>
+            <span>Library</span>
+            <span>Saved</span>
+            <span className="is-active">Reviews</span>
+          </nav>
+          <div className="deepcut-review-search">
+            <DeepCutIcon type="search" />
+            <span>Search videos, creators, topics...</span>
+            <kbd>⌘K</kbd>
+          </div>
+          <button type="button" aria-label="Notifications">
+            <DeepCutIcon type="bell" />
+          </button>
+          <span className="deepcut-review-avatar">
+            <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=120&q=80" alt="" />
+            <i />
+          </span>
+        </header>
+
+        <div className="deepcut-review-shell">
+          <aside className="deepcut-review-rail" aria-label="Demo sections">
+            {["home", "compass", "bookmark", "bars", "settings"].map((icon) => (
+              <span key={icon} className={icon === "bars" ? "is-active" : ""}>
+                <DeepCutIcon type={icon} />
+              </span>
+            ))}
+          </aside>
+
+          <section className="deepcut-review-main">
+            <div className="deepcut-review-player">
+              <img src={getAssetPath("/covers/restaurant-night.png")} alt="" />
+              <video src="https://assets.mixkit.co/videos/4451/4451-360.mp4" autoPlay muted loop playsInline preload="metadata" />
+              <div className="deepcut-review-controls">
+                <span className="deepcut-review-progress">
+                  <i />
+                </span>
+                <div>
+                  <b>Ⅱ</b>
+                  <b>▶</b>
+                  <b>▰</b>
+                  <span>3:42 / 1:28:47</span>
+                  <em>cc</em>
+                  <DeepCutIcon type="settings" />
+                  <strong>⛶</strong>
+                </div>
+              </div>
+            </div>
+
+            <div className="deepcut-review-title-row">
+              <div>
+                <h3>Tokyo at Night: Food, Streets &amp; Hidden Gems</h3>
+                <p>Paolo fromTOKYO <i /> · 1.3M views · 8 months ago · 1:28:47</p>
+              </div>
+              <div className="deepcut-review-actions">
+                <span className="is-saved">
+                  <DeepCutIcon type="save" />
+                  Saved
+                </span>
+                <span>
+                  <DeepCutIcon type="like" />
+                  1.2K
+                </span>
+                <span>
+                  <DeepCutIcon type="more" />
+                </span>
+              </div>
+            </div>
+
+            <div className="deepcut-review-body-grid">
+              <div>
+                <div className="deepcut-review-creator">
+                  <img src="https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=120&q=80" alt="" />
+                  <div>
+                    <strong>Paolo fromTOKYO</strong>
+                    <span>487K subscribers</span>
+                  </div>
+                  <button type="button">Follow</button>
+                </div>
+                <p className="deepcut-review-description">
+                  A cinematic night walk through backstreets of Tokyo. Small restaurants, quiet corners, and real local rhythm—no tourist traps.
+                </p>
+              </div>
+
+              <div className="deepcut-review-score">
+                <div>
+                  <strong>9.1</strong>
+                  <span>★★★★★</span>
+                  <p>Worth the long watch</p>
+                </div>
+                <ul>
+                  {[92, 68, 42, 11, 4].map((value, index) => (
+                    <li key={value}>
+                      <span>{5 - index} ★</span>
+                      <i style={{ "--rating-width": `${value}%` }} />
+                    </li>
+                  ))}
+                </ul>
+                <small>1,342 ratings</small>
+              </div>
+            </div>
+
+            <div className="deepcut-review-meta">
+              {["Travel", "Japan", "Night Walks", "Documentary"].map((item) => (
+                <span key={item}>
+                  <DeepCutIcon type="globe" />
+                  {item}
+                </span>
+              ))}
+              <span className="is-trust">
+                <DeepCutIcon type="shield" />
+                Source confidence <b>High</b>
+              </span>
+              <span>
+                <DeepCutIcon type="bookmark" />
+                12 sources
+              </span>
+            </div>
+          </section>
+
+          <aside className="deepcut-review-panel">
+            <div className="deepcut-review-panel-head">
+              <div>
+                <h3>Reviews</h3>
+                <p>Community takes on this cut</p>
+              </div>
+              <button type="button">
+                <DeepCutIcon type="star" />
+                Rate this cut
+              </button>
+            </div>
+            {deepCutReviewCards.map((review) => (
+              <article className="deepcut-review-card" key={review.name}>
+                <div>
+                  <img src={review.avatar} alt="" />
+                  <span>
+                    <strong>{review.name}</strong>
+                    <small>{review.age}</small>
+                  </span>
+                </div>
+                <b>{review.rating}</b>
+                <p>{review.body}</p>
+                <footer>
+                  <span>♡ Helpful&nbsp; {review.helpful}</span>
+                  <span>Reply</span>
+                  <span>...</span>
+                </footer>
+              </article>
+            ))}
+            <button className="deepcut-review-more" type="button">More reviews⌄</button>
+          </aside>
+
+          <section className="deepcut-review-related" aria-label="More cuts you might like">
+            <h3>More cuts you might like</h3>
+            <div>
+              {deepCutRelatedCuts.map((cut) => (
+                <article key={cut.title}>
+                  <img src={cut.image} alt="" />
+                  <span>{cut.duration}</span>
+                  <div>
+                    <h4>{cut.title}</h4>
+                    <p>{cut.creator} <i /></p>
+                    <b>☆ {cut.score}</b>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <button type="button" aria-label="Next related cuts">›</button>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 const problemCards = [
   {
     title: "Fragmented signals",
@@ -78,7 +525,28 @@ const jpmorganProductPreview = {
   imageAlt: "Sanitized sponsor intelligence workspace.",
 };
 
-const beforeSignals = ["Scattered company data", "Sponsor notes", "Banker feedback", "Excel", "Decks", "Emails", "Relationship history", "One-off rationale"];
+const beforeWorkflowPanels = [
+  {
+    title: "CRM",
+    rows: ["Apex Polymers", "BluePeak Materials", "Coastal Additives"],
+  },
+  {
+    title: "Excel",
+    rows: ["Revenue / EBITDA", "Owner notes diverge", "Manual updates"],
+  },
+  {
+    title: "Files",
+    rows: ["Idea book.xlsx", "Market map.pdf", "Tracker.xlsx"],
+  },
+  {
+    title: "Email",
+    rows: ["Idea book review", "12 recipients", "PDF attached"],
+  },
+  {
+    title: "Notes",
+    rows: ["CEO call next week", "Expansion project"],
+  },
+];
 
 const workflowSnapshotSteps = ["Company Screening", "Prioritization", "Sponsor Matching", "Idea Generation", "Ideabook Output"];
 
@@ -330,6 +798,7 @@ export default function ProjectCaseOverlay({
   const projectNavTimerRef = useRef(null);
   const pendingProjectDirectionRef = useRef(null);
   const viewedSectionsRef = useRef(new Set());
+  const enrichmentFlowVideoRef = useRef(null);
   const [isIndexOpen, setIsIndexOpen] = useState(false);
   const [expandedImage, setExpandedImage] = useState(null);
   const [projectNavPhase, setProjectNavPhase] = useState("");
@@ -338,14 +807,26 @@ export default function ProjectCaseOverlay({
   const [activeAiProofArtifactIndex, setActiveAiProofArtifactIndex] = useState(0);
   const [workflowReveal, setWorkflowReveal] = useState(50);
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
+  const [isShortcutMode, setIsShortcutMode] = useState(false);
+  const [isMacLikePlatform] = useState(detectMacLikePlatform);
   const isFullControlActive = isFull || isExpanding;
   const isProjectNavigating = projectNavPhase.startsWith("exit");
   const projectDetail = project.detail ?? defaultProjectDetail;
   const isCaseWip = Boolean(project.isWip);
+  const isAuroraWipCase = project.id === "jpmorgan-lobby";
   const isDeepCutNightGuide = project.customThumbnail === "deepcut-night-guide";
   const projectHighlights = project.highlights ?? heroHighlights;
   const activeAiOperatingArtifact = aiOperatingArtifacts[activeAiOperatingArtifactIndex];
   const activeAiProofArtifact = aiProofArtifacts[activeAiProofArtifactIndex];
+  const shortcutModifierLabel = isMacLikePlatform ? "Cmd" : "Ctrl";
+  const previewShortcutLabel = `${shortcutModifierLabel}+P`;
+  const fullShortcutLabel = `${shortcutModifierLabel}+F`;
+  const previousShortcutLabel = `${shortcutModifierLabel}+\u2190`;
+  const nextShortcutLabel = `${shortcutModifierLabel}+\u2192`;
+  const previewShortcutKey = "P";
+  const fullShortcutKey = "F";
+  const previousShortcutKey = "\u2190";
+  const nextShortcutKey = "\u2192";
   const goToPreviousAiOperatingArtifact = useCallback(() => {
     setActiveAiOperatingArtifactIndex((current) => (current - 1 + aiOperatingArtifacts.length) % aiOperatingArtifacts.length);
   }, []);
@@ -374,20 +855,33 @@ export default function ProjectCaseOverlay({
     setDocumentCursorMode(getCursorModeFromPointer(event));
   }, [getCursorModeFromPointer]);
   const caseSections = useMemo(
-    () =>
-      isCaseWip
-        ? [
-            { id: "case-intro", label: "Hero" },
-            { id: "case-wip", label: "WIP" },
-          ]
-        : [
-            { id: "case-intro", label: "Hero" },
-            { id: "case-overview", label: "Overview" },
-            { id: "case-operating", label: "AI model" },
-            { id: "case-value", label: "Value" },
-            { id: "case-impact", label: "Impact" },
-          ],
-    [isCaseWip]
+    () => {
+      if (isDeepCutNightGuide) {
+        return [
+          { id: "case-intro", label: "Hero" },
+          { id: "case-ai-rationale", label: "AI" },
+          { id: "case-overview", label: "Thesis" },
+          { id: "case-operating", label: "Artifacts" },
+          { id: "case-coming-next", label: "Takeaway" },
+        ];
+      }
+
+      if (isCaseWip) {
+        return [
+          { id: "case-intro", label: "Hero" },
+          { id: "case-wip", label: "WIP" },
+        ];
+      }
+
+      return [
+        { id: "case-intro", label: "Hero" },
+        { id: "case-overview", label: "Overview" },
+        { id: "case-operating", label: "AI model" },
+        { id: "case-value", label: "Value" },
+        { id: "case-impact", label: "Impact" },
+      ];
+    },
+    [isCaseWip, isDeepCutNightGuide]
   );
   const syncMenuActiveItem = useCallback((sectionId = activeSectionIdRef.current) => {
     sectionItemsRef.current.forEach((item) => {
@@ -562,6 +1056,40 @@ export default function ProjectCaseOverlay({
 
     return () => window.clearTimeout(fallbackTimer);
   }, [isExpanding, isShrinking]);
+
+  useEffect(() => {
+    const video = enrichmentFlowVideoRef.current;
+    if (!video) {
+      return undefined;
+    }
+
+    video.playbackRate = 1.1;
+    video.pause();
+
+    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
+    if (prefersReducedMotion || typeof IntersectionObserver === "undefined") {
+      return undefined;
+    }
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry?.isIntersecting) {
+          video.play().catch(() => {});
+          return;
+        }
+
+        video.pause();
+      },
+      { root: scrollRef.current, rootMargin: "180px 0px", threshold: 0.22 }
+    );
+
+    observer.observe(video);
+
+    return () => {
+      observer.disconnect();
+      video.pause();
+    };
+  }, [project.id]);
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -806,7 +1334,7 @@ export default function ProjectCaseOverlay({
     setIsIndexOpen(false);
     setExpandedImage(null);
     setActiveProductPreviewIndex(0);
-    setWorkflowReveal(38);
+    setWorkflowReveal(50);
     viewedSectionsRef.current = new Set();
     activeSectionIdRef.current = "";
     activeSectionIndexRef.current = 0;
@@ -1030,6 +1558,34 @@ export default function ProjectCaseOverlay({
     });
   }, []);
 
+  const setExpandedDeepCutArtifact = useCallback((nextIndex) => {
+    const normalizedIndex = ((nextIndex % deepCutCaseArtifacts.length) + deepCutCaseArtifacts.length) % deepCutCaseArtifacts.length;
+    const artifact = deepCutCaseArtifacts[normalizedIndex];
+
+    setExpandedImage({
+      type: "deepcut-artifact",
+      artifactIndex: normalizedIndex,
+      image: getAssetPath(artifact.image),
+      imageAlt: artifact.alt,
+      title: artifact.title,
+      caption: artifact.body,
+    });
+  }, []);
+
+  const setExpandedAuroraArtifact = useCallback((nextIndex) => {
+    const normalizedIndex = ((nextIndex % auroraCaseArtifacts.length) + auroraCaseArtifacts.length) % auroraCaseArtifacts.length;
+    const artifact = auroraCaseArtifacts[normalizedIndex];
+
+    setExpandedImage({
+      type: "aurora-artifact",
+      artifactIndex: normalizedIndex,
+      image: getAssetPath(artifact.image),
+      imageAlt: artifact.alt,
+      title: artifact.title,
+      caption: artifact.body,
+    });
+  }, []);
+
   const goToPreviousExpandedImage = useCallback(() => {
     if (expandedImage?.type === "ai-artifact") {
       const fallbackIndex = expandedImage.source === "operating" ? activeAiOperatingArtifactIndex : activeAiProofArtifactIndex;
@@ -1039,8 +1595,18 @@ export default function ProjectCaseOverlay({
 
     if (expandedImage?.type === "product-overview") {
       setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) - 1);
+      return;
     }
-  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedProductPreview]);
+
+    if (expandedImage?.type === "deepcut-artifact") {
+      setExpandedDeepCutArtifact((expandedImage.artifactIndex ?? 0) - 1);
+      return;
+    }
+
+    if (expandedImage?.type === "aurora-artifact") {
+      setExpandedAuroraArtifact((expandedImage.artifactIndex ?? 0) - 1);
+    }
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedProductPreview]);
 
   const goToNextExpandedImage = useCallback(() => {
     if (expandedImage?.type === "ai-artifact") {
@@ -1051,8 +1617,18 @@ export default function ProjectCaseOverlay({
 
     if (expandedImage?.type === "product-overview") {
       setExpandedProductPreview((expandedImage.productIndex ?? activeProductPreviewIndex) + 1);
+      return;
     }
-  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedProductPreview]);
+
+    if (expandedImage?.type === "deepcut-artifact") {
+      setExpandedDeepCutArtifact((expandedImage.artifactIndex ?? 0) + 1);
+      return;
+    }
+
+    if (expandedImage?.type === "aurora-artifact") {
+      setExpandedAuroraArtifact((expandedImage.artifactIndex ?? 0) + 1);
+    }
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedProductPreview]);
 
   const handleAiOperatingArtifactStageClick = useCallback((event) => {
     const mode = getCursorModeFromPointer(event);
@@ -1095,13 +1671,66 @@ export default function ProjectCaseOverlay({
   };
 
   useEffect(() => {
-    if (!expandedImage) {
-      return undefined;
-    }
+    const syncShortcutMode = (event) => {
+      const modifierPressed = isMacLikePlatform ? event.metaKey : event.ctrlKey;
+      setIsShortcutMode(modifierPressed);
+      return modifierPressed;
+    };
 
     const handleKeyDown = (event) => {
+      const isPrimaryModifierPressed = syncShortcutMode(event);
+
+      if (isEditableShortcutTarget(event.target)) {
+        return;
+      }
+
       if (event.key === "Escape") {
-        setExpandedImage(null);
+        if (expandedImage) {
+          setExpandedImage(null);
+          return;
+        }
+
+        if (!isExpanding && !isShrinking && !isClosing) {
+          onClose();
+        }
+        return;
+      }
+
+      const isPrimaryShortcut = isPrimaryModifierPressed && !event.altKey && !event.shiftKey;
+
+      if (isPrimaryShortcut && event.key.toLowerCase() === "f") {
+        event.preventDefault();
+        if (!isFull && !isExpanding && !isShrinking && !isClosing) {
+          onOpenFull();
+        }
+        return;
+      }
+
+      if (isPrimaryShortcut && event.key.toLowerCase() === "p") {
+        event.preventDefault();
+        if (isFull && !isExpanding && !isShrinking && !isClosing) {
+          onOpenPreview();
+        }
+        return;
+      }
+
+      if (isPrimaryShortcut && event.key === "ArrowLeft") {
+        event.preventDefault();
+        if (hasPreviousProject && !isProjectNavigating) {
+          handleProjectNavigation("prev", "keyboard_shortcut");
+        }
+        return;
+      }
+
+      if (isPrimaryShortcut && event.key === "ArrowRight") {
+        event.preventDefault();
+        if (hasNextProject && !isProjectNavigating) {
+          handleProjectNavigation("next", "keyboard_shortcut");
+        }
+        return;
+      }
+
+      if (!expandedImage) {
         return;
       }
 
@@ -1115,51 +1744,73 @@ export default function ProjectCaseOverlay({
       }
     };
 
+    const handleKeyUp = (event) => {
+      syncShortcutMode(event);
+    };
+
+    const handleWindowBlur = () => {
+      setIsShortcutMode(false);
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        setIsShortcutMode(false);
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [expandedImage, goToNextExpandedImage, goToPreviousExpandedImage]);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleWindowBlur);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleWindowBlur);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [
+    expandedImage,
+    goToNextExpandedImage,
+    goToPreviousExpandedImage,
+    handleProjectNavigation,
+    hasNextProject,
+    hasPreviousProject,
+    isMacLikePlatform,
+    isClosing,
+    isExpanding,
+    isFull,
+    isProjectNavigating,
+    isShrinking,
+    onClose,
+    onOpenFull,
+    onOpenPreview,
+  ]);
 
   const workflowRevealNumber = Number(workflowReveal);
   const aiWorkflowRevealNumber = Number(aiWorkflowReveal);
 
   if (project.id === "deepcut-ai-night-guide") {
-    const deepCutOverviewCards = [
+    const deepCutDeviceStory = [
       {
-        title: "AI video search",
-        body: "Users can ask for videos by mood, creator, source, topic, or intent instead of browsing an endless feed.",
+        title: "PC",
+        device: "pc",
+        body: "Browse, compare, and understand what is worth time.",
       },
       {
-        title: "Ratings and saves",
-        body: "DeepCut behaves like an IMDb-style layer for long-form videos, making quality, taste, and watch intent visible.",
+        title: "Mobile",
+        device: "mobile",
+        body: "Check the score, save the cut, or choose a watch option.",
       },
       {
-        title: "Source intelligence",
-        body: "The product aggregates signals from YouTube, Bilibili, transcripts, subtitles, creator notes, and review activity.",
-      },
-      {
-        title: "Responsive discovery",
-        body: "The landing experience proves the system works across desktop research and mobile save-for-later behavior.",
-      },
-    ];
-
-    const deepCutFlowCards = [
-      {
-        title: "Find",
-        body: "Search for a long-form video with natural language and context-aware filters.",
-      },
-      {
-        title: "Decide",
-        body: "Review AI rationale, ratings, source confidence, and the best chapter before pressing play.",
-      },
-      {
-        title: "Keep",
-        body: "Like, save, and return to a personal library of videos that are worth the time investment.",
+        title: "TV",
+        device: "tv",
+        body: "Start confidently from the strongest moment.",
       },
     ];
 
     return (
       <div
-        className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}`}
+        className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}${isShortcutMode ? " is-shortcut-mode" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
@@ -1180,6 +1831,7 @@ export default function ProjectCaseOverlay({
             >
               <span aria-hidden="true">←</span>
               <span>Back</span>
+              <ShortcutHint label="Esc" isVisible={isShortcutMode} />
             </button>
 
             <div className={`case-overlay-actions${isFullControlActive ? " is-full-selected" : " is-preview-selected"}`}>
@@ -1190,7 +1842,7 @@ export default function ProjectCaseOverlay({
                 disabled={isExpanding || isShrinking || !isFull}
                 aria-current={!isFullControlActive ? "page" : undefined}
               >
-                Preview
+                <ButtonShortcutContent label="Preview" shortcut={previewShortcutLabel} keyLabel={previewShortcutKey} isShortcutVisible={isShortcutMode} />
               </button>
               <button
                 className={`case-overlay-expand${isFullControlActive ? " is-active" : ""}`}
@@ -1199,12 +1851,12 @@ export default function ProjectCaseOverlay({
                 disabled={isExpanding || isShrinking || isFull}
                 aria-current={isFullControlActive ? "page" : undefined}
               >
-                Full
+                <ButtonShortcutContent label="Full" shortcut={fullShortcutLabel} keyLabel={fullShortcutKey} isShortcutVisible={isShortcutMode} />
               </button>
             </div>
           </header>
 
-          <div className="case-overlay-scroll">
+          <div className="case-overlay-scroll" ref={scrollRef}>
             <div className="case-overlay-content">
               <section className="project-detail-hero" id="case-intro" aria-labelledby={`${project.id}-overlay-title`}>
                 <p className="project-detail-kicker">
@@ -1246,17 +1898,54 @@ export default function ProjectCaseOverlay({
                 </article>
               </section>
 
+              <section className="case-study-section deepcut-ai-rationale-section" id="case-ai-rationale" aria-labelledby={`${project.id}-ai-rationale`}>
+                <CaseSectionHeader
+                  label="AI rationale"
+                  title="The AI feature only appears when it can answer a real user need."
+                  id={`${project.id}-ai-rationale`}
+                >
+                  The strongest AI moment is not generation. It is decision support: when the user asks for a video worth watching tonight, DeepCut explains the recommendation using human reviews, pacing, best-start timestamps, and source confidence.
+                </CaseSectionHeader>
+                <button
+                  className="deepcut-story-image-button deepcut-lead-artifact"
+                  type="button"
+                  onClick={() => setExpandedDeepCutArtifact(0)}
+                  onPointerDown={(event) => {
+                    if (event.button !== 0) {
+                      return;
+                    }
+
+                    event.preventDefault();
+                    clearDocumentCursorMode();
+                    setExpandedDeepCutArtifact(0);
+                  }}
+                  onPointerEnter={() => setDocumentCursorMode("expand")}
+                  onPointerLeave={clearDocumentCursorMode}
+                  onPointerMove={() => setDocumentCursorMode("expand")}
+                  aria-label={`Expand ${deepCutCaseArtifacts[0].title}`}
+                >
+                  <img src={getAssetPath(deepCutCaseArtifacts[0].image)} alt={deepCutCaseArtifacts[0].alt} loading="lazy" decoding="async" />
+                </button>
+              </section>
+
               <section className="case-study-section" id="case-overview" aria-labelledby={`${project.id}-overview`}>
                 <CaseSectionHeader
                   label="Product narrative"
-                  title="An AI-native discovery layer for videos that deserve a longer watch."
+                  title="IMDb-style confidence for long-form YouTube and Bilibili."
                   id={`${project.id}-overview`}
                 >
-                  DeepCut sells the value of deciding before committing: find the right video, understand why it is worth watching, then save it into a library.
+                  Long-form online video asks for real time, but discovery still treats it like a quick feed. DeepCut gives these videos a place to be rated, compared, reviewed, saved, and watched with intent.
                 </CaseSectionHeader>
-                <section className="project-detail-meta" aria-label="DeepCut product pillars">
-                  {deepCutOverviewCards.map((card) => (
-                    <article className="project-detail-info-block" key={card.title}>
+                <div className="deepcut-case-thesis" aria-label="DeepCut thesis">
+                  <span>Market gap</span>
+                  <p>Movies have IMDb. Anime has dedicated rating communities. Long-form YouTube and Bilibili still rely on thumbnails, comments, and guesswork.</p>
+                </div>
+                <section className="deepcut-device-story" aria-label="DeepCut cross-device journey">
+                  {deepCutDeviceStory.map((card) => (
+                    <article key={card.title}>
+                      <span className={`deepcut-device-icon is-${card.device}`} aria-hidden="true">
+                        <i />
+                      </span>
                       <h2>{card.title}</h2>
                       <p>{card.body}</p>
                     </article>
@@ -1266,43 +1955,205 @@ export default function ProjectCaseOverlay({
 
               <section className="case-study-section" id="case-operating" aria-labelledby={`${project.id}-flow`}>
                 <CaseSectionHeader
-                  label="Interaction model"
-                  title="The platform turns discovery into a clear watch decision."
+                  label="Case story"
+                  title="One product, three viewing contexts."
                   id={`${project.id}-flow`}
                 >
-                  The AI Night Guide is one expression of a larger platform system: search, compare, source-check, rate, save, and return.
+                  The case study is designed as a visual walkthrough: desktop for discovery, mobile for decision-making, and TV for the final watch.
                 </CaseSectionHeader>
-                <section className="project-detail-meta" aria-label="DeepCut interaction flow">
-                  {deepCutFlowCards.map((card) => (
-                    <article className="project-detail-info-block" key={card.title}>
-                      <h2>{card.title}</h2>
-                      <p>{card.body}</p>
+                <section className="deepcut-story-gallery" aria-label="DeepCut case study artifacts">
+                  {deepCutCaseArtifacts.slice(1).map((frame, index) => {
+                    const artifactIndex = index + 1;
+
+                    return (
+                    <article className={`deepcut-story-frame is-${frame.layout}`} key={frame.title}>
+                      <button
+                        className={`deepcut-story-image-button is-${frame.layout}`}
+                        type="button"
+                        onClick={() => setExpandedDeepCutArtifact(artifactIndex)}
+                        onPointerDown={(event) => {
+                          if (event.button !== 0) {
+                            return;
+                          }
+
+                          event.preventDefault();
+                          clearDocumentCursorMode();
+                          setExpandedDeepCutArtifact(artifactIndex);
+                        }}
+                        onPointerEnter={() => setDocumentCursorMode("expand")}
+                        onPointerLeave={clearDocumentCursorMode}
+                        onPointerMove={() => setDocumentCursorMode("expand")}
+                        aria-label={`Expand ${frame.title}`}
+                      >
+                        <img src={getAssetPath(frame.image)} alt={frame.alt} loading="lazy" decoding="async" />
+                      </button>
+                      <div className="deepcut-story-caption">
+                        <span>{frame.label}</span>
+                        <h2>{frame.title}</h2>
+                        <p>{frame.body}</p>
+                        <div className="deepcut-story-metrics" aria-label={`${frame.title} highlights`}>
+                          {frame.metrics.map((metric) => (
+                            <b key={metric}>{metric}</b>
+                          ))}
+                        </div>
+                      </div>
                     </article>
-                  ))}
+                    );
+                  })}
                 </section>
               </section>
 
               <section className="case-study-section case-wip-section" id="case-coming-next" aria-labelledby={`${project.id}-coming-next`}>
                 <CaseSectionHeader
-                  label="Coming next"
-                  title="More content on the way."
+                  label="Build status"
+                  title="Currently building toward a web beta and future mobile release."
                   id={`${project.id}-coming-next`}
                 >
-                  The product story will keep expanding with deeper source intelligence, AI ranking logic, and saved-watch flows.
+                  The case study shows the product direction while the platform is still being built: web access first, with a future App Store path once the review, save, and AI decision flows are ready.
                 </CaseSectionHeader>
                 <div className="case-wip-card">
                   <span aria-hidden="true" />
                   <div>
-                    <h3>New DeepCut modules</h3>
+                    <h3>Launch intent</h3>
                     <p>
-                      Search modes, rating layers, save states, and source scraping views are still being prepared for the next release.
+                      DeepCut is an IMDb-style review and AI decision layer for long-form YouTube and Bilibili, designed to become available on the web and eventually as a mobile app.
                     </p>
                   </div>
                 </div>
               </section>
             </div>
           </div>
+          <div className="case-overlay-scrollbar" ref={scrollbarRef} onPointerDown={handleScrollbarPointerDown} aria-hidden="true">
+            <span ref={scrollbarThumbRef} />
+          </div>
+          <nav
+            ref={sectionNavRef}
+            className={`case-section-nav${isIndexOpen ? " is-open" : ""}`}
+            aria-label="Case study sections"
+          >
+            <div className="case-section-nav-main">
+              <button
+                className="case-section-nav-trigger"
+                type="button"
+                onClick={() => setIsIndexOpen((current) => !current)}
+                aria-expanded={isIndexOpen}
+              >
+                <span className="case-section-nav-mark" aria-hidden="true">
+                  <img src={getAssetPath("/logo-mark-transparent.png?v=3")} alt="" />
+                </span>
+                <span className="case-section-nav-title" aria-hidden="true">
+                  <span className="case-section-nav-title-label" ref={sectionLabelRef}>
+                    Hero
+                  </span>
+                </span>
+                <span className="sr-only">Case study sections</span>
+                <span className="case-section-nav-chevron" aria-hidden="true" />
+                <span className="case-section-nav-progress" ref={progressRef} aria-hidden="true" />
+              </button>
+
+              <div className="case-section-nav-menu">
+                {caseSections.map((section) => (
+                  <button
+                    className={`case-section-nav-item${section.id === "case-intro" ? " is-active" : ""}`}
+                    type="button"
+                    key={section.id}
+                    data-section-id={section.id}
+                    onClick={() => handleSectionSelect(section.id)}
+                  >
+                    {section.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {hasPreviousProject || hasNextProject ? (
+              <div className="case-project-nav-controls" aria-label="Project navigation">
+                {hasPreviousProject ? (
+                  <button
+                    className="case-project-nav-button"
+                    type="button"
+                    onClick={() => handleProjectNavigation("prev", "project_nav")}
+                    disabled={isProjectNavigating}
+                    aria-label="Previous project"
+                  >
+                    <ButtonShortcutContent label="Prev" shortcut={previousShortcutLabel} keyLabel={previousShortcutKey} shortcutPosition="before" isShortcutVisible={isShortcutMode} />
+                  </button>
+                ) : null}
+                {hasNextProject ? (
+                  <button
+                    className="case-project-nav-button"
+                    type="button"
+                    onClick={() => handleProjectNavigation("next", "project_nav")}
+                    disabled={isProjectNavigating}
+                    aria-label="Next project"
+                  >
+                    <ButtonShortcutContent label="Next" shortcut={nextShortcutLabel} keyLabel={nextShortcutKey} isShortcutVisible={isShortcutMode} />
+                  </button>
+                ) : null}
+              </div>
+            ) : null}
+          </nav>
         </section>
+        {expandedImage ? (
+          <div className="case-image-lightbox" role="dialog" aria-modal="true" aria-label={`${expandedImage.title} expanded image`}>
+            <button
+              className="case-image-lightbox-backdrop"
+              type="button"
+              onClick={() => {
+                clearDocumentCursorMode();
+                setExpandedImage(null);
+              }}
+              aria-label="Close expanded image"
+            />
+            <div className="case-image-lightbox-panel">
+              <div className="case-image-lightbox-header">
+                <div>
+                  <p>Product image</p>
+                  <h2>{expandedImage.title}</h2>
+                </div>
+                <button
+                  className="case-image-lightbox-close"
+                  type="button"
+                  onClick={() => {
+                    clearDocumentCursorMode();
+                    setExpandedImage(null);
+                  }}
+                >
+                  Close
+                </button>
+              </div>
+              <div className="case-image-lightbox-frame">
+                <img
+                  src={expandedImage.image}
+                  sizes="min(1500px, 96vw)"
+                  alt={expandedImage.imageAlt}
+                  decoding="async"
+                />
+                {expandedImage.type === "deepcut-artifact" ? (
+                  <div className="case-image-lightbox-hit-zones" aria-label="Expanded image navigation">
+                    <button
+                      className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-left"
+                      type="button"
+                      onClick={goToPreviousExpandedImage}
+                      onPointerEnter={() => setDocumentCursorMode("arrow-left")}
+                      onPointerLeave={clearDocumentCursorMode}
+                      aria-label="Previous DeepCut artifact"
+                    />
+                    <button
+                      className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-right"
+                      type="button"
+                      onClick={goToNextExpandedImage}
+                      onPointerEnter={() => setDocumentCursorMode("arrow-right")}
+                      onPointerLeave={clearDocumentCursorMode}
+                      aria-label="Next DeepCut artifact"
+                    />
+                  </div>
+                ) : null}
+              </div>
+              <p className="case-image-lightbox-caption">{expandedImage.caption}</p>
+            </div>
+          </div>
+        ) : null}
       </div>
     );
   }
@@ -1330,6 +2181,7 @@ export default function ProjectCaseOverlay({
           >
             <span aria-hidden="true">←</span>
             <span>Back</span>
+            <ShortcutHint label="Esc" isVisible={isShortcutMode} />
           </button>
 
           <div className={`case-overlay-actions${isFullControlActive ? " is-full-selected" : " is-preview-selected"}`}>
@@ -1340,7 +2192,7 @@ export default function ProjectCaseOverlay({
               disabled={isExpanding || isShrinking || !isFull}
               aria-current={!isFullControlActive ? "page" : undefined}
             >
-              Preview
+              <ButtonShortcutContent label="Preview" shortcut={previewShortcutLabel} keyLabel={previewShortcutKey} isShortcutVisible={isShortcutMode} />
             </button>
             <button
               className={`case-overlay-expand${isFullControlActive ? " is-active" : ""}`}
@@ -1349,7 +2201,7 @@ export default function ProjectCaseOverlay({
               disabled={isExpanding || isShrinking || isFull}
               aria-current={isFullControlActive ? "page" : undefined}
             >
-              Full
+              <ButtonShortcutContent label="Full" shortcut={fullShortcutLabel} keyLabel={fullShortcutKey} isShortcutVisible={isShortcutMode} />
             </button>
           </div>
         </header>
@@ -1443,6 +2295,49 @@ export default function ProjectCaseOverlay({
                 >
                   {project.wipBody ?? "The hero and project context are live now while the deeper narrative is being finalized."}
                 </CaseSectionHeader>
+                {isAuroraWipCase ? (
+                  <div className="aurora-wip-artifacts" aria-label="Aurora work in progress artifacts">
+                    <div className="aurora-wip-artifacts-intro">
+                      <span>Sanitized WIP artifacts</span>
+                      <p>
+                        Two product moments are available now while the full case study is still being shaped: one for evidence-backed data extraction, and one for the Booking Express NEXT deal homepage.
+                      </p>
+                    </div>
+                    <div className="aurora-wip-artifact-grid">
+                      {auroraCaseArtifacts.map((artifact, index) => (
+                        <article className={`aurora-wip-artifact-card is-${artifact.kind}`} key={artifact.title}>
+                          <button
+                            className="aurora-wip-artifact-preview"
+                            type="button"
+                            onClick={() => setExpandedAuroraArtifact(index)}
+                            aria-label={`Expand ${artifact.eyebrow} artifact`}
+                          >
+                            <span className="aurora-wip-browser-bar" aria-hidden="true">
+                              <span />
+                              <span />
+                              <span />
+                            </span>
+                            <span className="aurora-wip-artifact-image-shell">
+                              <img
+                                src={getAssetPath(artifact.image)}
+                                alt={artifact.alt}
+                                width={artifact.width}
+                                height={artifact.height}
+                                loading="lazy"
+                                decoding="async"
+                              />
+                            </span>
+                          </button>
+                          <div className="aurora-wip-artifact-copy">
+                            <span>{artifact.label} / {artifact.eyebrow}</span>
+                            <h3>{artifact.title}</h3>
+                            <p>{artifact.body}</p>
+                          </div>
+                        </article>
+                      ))}
+                    </div>
+                  </div>
+                ) : null}
                 <div className="case-wip-card case-wip-bridge-card">
                   <span className="case-wip-card-orb" aria-hidden="true" />
                   <div className="case-wip-copy">
@@ -1521,6 +2416,28 @@ export default function ProjectCaseOverlay({
               >
                 One surface for sponsor context, generated ideas, and banker review.
               </CaseSectionHeader>
+              <div className="case-enrichment-flow">
+                <div className="case-enrichment-flow-copy">
+                  <span>AI enrichment in use</span>
+                  <h3>Select companies, run enrichment, and review sourced answers.</h3>
+                  <p>
+                    Users can choose companies from the screening table, run AI enrichment against public and company sources, then review generated answers with confidence and source context.
+                  </p>
+                </div>
+                <div className="case-enrichment-video-shell" aria-label="AI enrichment flow product recording">
+                  <video
+                    ref={enrichmentFlowVideoRef}
+                    className="case-enrichment-video"
+                    src={getAssetPath("/jpmc-ai-enrichment-flow.mp4")}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    preload="metadata"
+                    aria-label="Screen recording of the AI enrichment flow selecting companies, running enrichment, and reviewing generated answers."
+                  />
+                </div>
+              </div>
               <div
                 className="case-product-preview-stage"
                 aria-label="Interactive sanitized sponsor workspace preview"
@@ -1609,10 +2526,18 @@ export default function ProjectCaseOverlay({
                     <div className="case-compare-content">
                       <p>Before</p>
                       <h3>Fragmented workflow</h3>
-                      <div className="case-signal-cloud">
-                        {beforeSignals.map((signal) => (
-                          <span key={signal}>{signal}</span>
-                        ))}
+                      <div className="case-before-artifact">
+                        <div className="case-before-native-artifact" aria-hidden="true">
+                          {beforeWorkflowPanels.map((panel) => (
+                            <section key={panel.title}>
+                              <strong>{panel.title}</strong>
+                              {panel.rows.map((row) => (
+                                <span key={row}>{row}</span>
+                              ))}
+                            </section>
+                          ))}
+                          <em>Context gets lost.</em>
+                        </div>
                       </div>
                     </div>
                   </article>
@@ -1760,7 +2685,9 @@ export default function ProjectCaseOverlay({
               onClick={() => setIsIndexOpen((current) => !current)}
               aria-expanded={isIndexOpen}
             >
-              <span className="case-section-nav-mark" aria-hidden="true" />
+              <span className="case-section-nav-mark" aria-hidden="true">
+                <img src={getAssetPath("/logo-mark-transparent.png?v=3")} alt="" />
+              </span>
               <span className="case-section-nav-title" aria-hidden="true">
                 <span className="case-section-nav-title-label" ref={sectionLabelRef}>
                   Hero
@@ -1790,12 +2717,12 @@ export default function ProjectCaseOverlay({
             <div className="case-project-nav-controls" aria-label="Project navigation">
               {hasPreviousProject ? (
                 <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("prev", "project_nav")} disabled={isProjectNavigating} aria-label="Previous project">
-                  <span>Prev</span>
+                  <ButtonShortcutContent label="Prev" shortcut={previousShortcutLabel} keyLabel={previousShortcutKey} shortcutPosition="before" isShortcutVisible={isShortcutMode} />
                 </button>
               ) : null}
               {hasNextProject ? (
                 <button className="case-project-nav-button" type="button" onClick={() => handleProjectNavigation("next", "project_nav")} disabled={isProjectNavigating} aria-label="Next project">
-                  <span>Next</span>
+                  <ButtonShortcutContent label="Next" shortcut={nextShortcutLabel} keyLabel={nextShortcutKey} isShortcutVisible={isShortcutMode} />
                 </button>
               ) : null}
             </div>
@@ -1854,6 +2781,44 @@ export default function ProjectCaseOverlay({
                     onPointerEnter={() => setDocumentCursorMode("arrow-right")}
                     onPointerLeave={clearDocumentCursorMode}
                     aria-label="Next product image"
+                  />
+                </div>
+              ) : expandedImage.type === "deepcut-artifact" ? (
+                <div className="case-image-lightbox-hit-zones" aria-label="Expanded image navigation">
+                  <button
+                    className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-left"
+                    type="button"
+                    onClick={goToPreviousExpandedImage}
+                    onPointerEnter={() => setDocumentCursorMode("arrow-left")}
+                    onPointerLeave={clearDocumentCursorMode}
+                    aria-label="Previous DeepCut artifact"
+                  />
+                  <button
+                    className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-right"
+                    type="button"
+                    onClick={goToNextExpandedImage}
+                    onPointerEnter={() => setDocumentCursorMode("arrow-right")}
+                    onPointerLeave={clearDocumentCursorMode}
+                    aria-label="Next DeepCut artifact"
+                  />
+                </div>
+              ) : expandedImage.type === "aurora-artifact" ? (
+                <div className="case-image-lightbox-hit-zones" aria-label="Expanded image navigation">
+                  <button
+                    className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-left"
+                    type="button"
+                    onClick={goToPreviousExpandedImage}
+                    onPointerEnter={() => setDocumentCursorMode("arrow-left")}
+                    onPointerLeave={clearDocumentCursorMode}
+                    aria-label="Previous Aurora artifact"
+                  />
+                  <button
+                    className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-right"
+                    type="button"
+                    onClick={goToNextExpandedImage}
+                    onPointerEnter={() => setDocumentCursorMode("arrow-right")}
+                    onPointerLeave={clearDocumentCursorMode}
+                    aria-label="Next Aurora artifact"
                   />
                 </div>
               ) : null}

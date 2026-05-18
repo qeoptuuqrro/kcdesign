@@ -5,6 +5,7 @@ const CURSOR_MODE_ATTR = "data-cursor-mode";
 const EXPAND_CURSOR_MODE = "expand";
 const ARROW_LEFT_CURSOR_MODE = "arrow-left";
 const ARROW_RIGHT_CURSOR_MODE = "arrow-right";
+const WIP_CURSOR_MODE = "wip";
 
 function lerp(current, target, amount) {
   return current + (target - current) * amount;
@@ -63,13 +64,15 @@ export default function FluidCursor() {
       const isExpandable = cursorMode === EXPAND_CURSOR_MODE;
       const isArrowLeft = cursorMode === ARROW_LEFT_CURSOR_MODE;
       const isArrowRight = cursorMode === ARROW_RIGHT_CURSOR_MODE;
-      const isCustomCursor = isExpandable || isArrowLeft || isArrowRight;
+      const isWip = cursorMode === WIP_CURSOR_MODE;
+      const isCustomCursor = isExpandable || isArrowLeft || isArrowRight || isWip;
       const isClickable = Boolean(clickableElement || isCustomCursor);
       pointerRef.current.targetSize = isClickable ? 58 : 24;
       pointerRef.current.isCustomCursor = isCustomCursor;
       cursorRef.current?.classList.toggle("is-expand", isExpandable);
       cursorRef.current?.classList.toggle("is-arrow-left", isArrowLeft);
       cursorRef.current?.classList.toggle("is-arrow-right", isArrowRight);
+      cursorRef.current?.classList.toggle("is-wip", isWip);
     };
 
     const onPointerMove = (event) => {
@@ -80,7 +83,7 @@ export default function FluidCursor() {
     };
 
     const onPointerLeave = () => {
-      cursorRef.current?.classList.remove("is-expand", "is-arrow-left", "is-arrow-right");
+      cursorRef.current?.classList.remove("is-expand", "is-arrow-left", "is-arrow-right", "is-wip");
       setIsHidden(true);
     };
     const onPointerEnter = () => setIsHidden(false);
@@ -162,6 +165,7 @@ export default function FluidCursor() {
       <svg className="fluid-cursor-arrow-icon fluid-cursor-arrow-right-icon" viewBox="0 0 18 18" focusable="false">
         <path d="M6.6 3.9 11.7 9l-5.1 5.1" />
       </svg>
+      <span className="fluid-cursor-wip-label">WIP</span>
     </div>
   );
 }
