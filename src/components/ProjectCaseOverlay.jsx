@@ -528,23 +528,19 @@ const jpmorganProductPreview = {
 const beforeWorkflowPanels = [
   {
     title: "CRM",
-    rows: ["Apex Polymers", "BluePeak Materials", "Coastal Additives"],
+    rows: ["Apex Polymers", "BluePeak Materials"],
   },
   {
     title: "Excel",
-    rows: ["Revenue / EBITDA", "Owner notes diverge", "Manual updates"],
+    rows: ["Revenue / EBITDA", "Manual updates"],
   },
   {
     title: "Files",
-    rows: ["Idea book.xlsx", "Market map.pdf", "Tracker.xlsx"],
+    rows: ["Idea book.xlsx", "Market map.pdf"],
   },
   {
     title: "Email",
-    rows: ["Idea book review", "12 recipients", "PDF attached"],
-  },
-  {
-    title: "Notes",
-    rows: ["CEO call next week", "Expansion project"],
+    rows: ["Review thread", "PDF attached"],
   },
 ];
 
