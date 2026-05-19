@@ -9,6 +9,7 @@ import HeroStatement from "./components/HeroStatement";
 import Navbar from "./components/Navbar";
 import ProjectCaseOverlay from "./components/ProjectCaseOverlay";
 import PlatformScrollbar from "./components/PlatformScrollbar";
+import SiteFooter from "./components/SiteFooter";
 import { getAnalyticsEventName, setAnalyticsTag, trackEvent } from "./utils/analytics";
 
 const menuItems = [
@@ -45,6 +46,7 @@ export default function App() {
   const [projectView, setProjectView] = useState(null);
   const [isClosingProject, setIsClosingProject] = useState(false);
   const activeMenuIdRef = useRef("home");
+  const pendingScrollTargetRef = useRef(null);
 
   const setSyncedActiveMenuId = (nextActiveMenuId) => {
     activeMenuIdRef.current = nextActiveMenuId;
@@ -125,6 +127,22 @@ export default function App() {
       window.removeEventListener("resize", requestSync);
     };
   }, [pageView, projectView]);
+
+  useEffect(() => {
+    const pendingTarget = pendingScrollTargetRef.current;
+    if (!pendingTarget || pageView === "about") {
+      return;
+    }
+
+    pendingScrollTargetRef.current = null;
+    window.requestAnimationFrame(() => {
+      document.querySelector(pendingTarget)?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+        inline: "nearest",
+      });
+    });
+  }, [pageView]);
 
   useEffect(() => {
     document.body.style.overflow =
@@ -349,14 +367,21 @@ export default function App() {
     event?.preventDefault();
     window.history.pushState(null, "", href);
 
+    if (id === "about") {
+      pendingScrollTargetRef.current = null;
+      window.requestAnimationFrame(() => window.scrollTo({ top: 0, behavior: "smooth" }));
+      return;
+    }
+
+    pendingScrollTargetRef.current = href;
     window.requestAnimationFrame(() => {
       const target = document.querySelector(href);
-      if (id === "about") {
-        window.scrollTo({ top: 0, behavior: "smooth" });
+      if (!target) {
         return;
       }
 
-      target?.scrollIntoView({
+      pendingScrollTargetRef.current = null;
+      target.scrollIntoView({
         behavior: "smooth",
         block: "start",
         inline: "nearest",
@@ -364,17 +389,34 @@ export default function App() {
     });
   };
 
+  const shellClassName = [
+    "landing-shell",
+    pageView === "about" ? "is-about-page" : "",
+    pageView === "home" ? "is-home-page" : "",
+    activeMenuId === "work" && pageView === "home" ? "is-work-active" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <div className={`landing-shell${pageView === "about" ? " is-about-page" : ""}`} id="home">
+    <div className={shellClassName} id="home">
       <div className="page-frame">
         <Navbar items={menuItems} activeId={activeMenuId} onSelect={handleMenuSelect} />
         {pageView === "about" ? (
-          <AboutPage onWorkSelect={(event) => handleMenuSelect("work", "#work", event)} />
+          <div className="landing-view landing-view-about" key="about">
+            <AboutPage onWorkSelect={(event) => handleMenuSelect("work", "#work", event)} />
+          </div>
         ) : (
-          <>
+          <div className="landing-view landing-view-home" key="home">
             <HeroStatement onAboutSelect={(event) => handleMenuSelect("about", "#about", event)} />
             <ProjectShowcase onProjectSelect={handleProjectSelect} />
-          </>
+            <SiteFooter
+              className="home-footer"
+              centerHref="#about"
+              centerLabel="about me"
+              onCenterSelect={(event) => handleMenuSelect("about", "#about", event)}
+            />
+          </div>
         )}
       </div>
       {selectedProject &&

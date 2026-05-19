@@ -1,133 +1,150 @@
 import { useEffect, useRef } from "react";
-import { getAssetPath } from "../utils/paths";
+import SiteFooter from "./SiteFooter";
 
-const timelineItems = [
+const experienceItems = [
   {
-    year: "Now",
-    title: "J.P. Morgan",
-    description: "AI-native origination systems, recommendation rationale, review surfaces, and production-near prototypes.",
+    company: "J.P. Morgan",
+    year: "2025+",
+    description: "AI-native origination, lending workflow systems, recommendation rationale, and human-in-the-loop product experiences.",
   },
   {
+    company: "Incedo",
     year: "2024",
-    title: "Incedo",
-    description: "Research-to-strategy work for financial-services teams, turning ambiguity into client-ready product direction.",
+    description: "Financial-services product strategy, research synthesis, and client-ready workflows for complex enterprise teams.",
   },
   {
+    company: "American Credit Acceptance",
     year: "2023",
-    title: "American Credit Acceptance",
-    description: "Financial product surfaces across employee tools, mobile flows, and operational decision-making.",
+    description: "Internal financial-product surfaces across employee tools, mobile flows, and operational decision-making.",
   },
   {
+    company: "Bandwidth",
     year: "2022",
-    title: "Bandwidth",
     description: "B2B SaaS workflows, enterprise dashboards, and the discipline of making dense tools easier to scan.",
   },
 ];
 
 export default function AboutPage({ onWorkSelect }) {
-  const writingRef = useRef(null);
+  const aboutRef = useRef(null);
 
   useEffect(() => {
-    const writingNode = writingRef.current;
-    if (!writingNode) {
+    const aboutElement = aboutRef.current;
+    if (!aboutElement) {
       return undefined;
     }
 
-    const paragraphs = Array.from(writingNode.querySelectorAll("p"));
-    let frameId = 0;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let rafId = 0;
 
-    const updateParagraphLight = () => {
-      frameId = 0;
-      const viewportCenter = window.innerHeight * 0.48;
-      const falloff = window.innerHeight * 0.52;
+    const updateScrollAtmosphere = () => {
+      rafId = 0;
 
-      paragraphs.forEach((paragraph) => {
-        const rect = paragraph.getBoundingClientRect();
-        const paragraphCenter = rect.top + rect.height / 2;
-        const distance = Math.abs(paragraphCenter - viewportCenter);
-        const light = Math.max(0, Math.min(1, 1 - distance / falloff));
-        paragraph.style.setProperty("--about-copy-light", light.toFixed(3));
-      });
-    };
-
-    const requestUpdate = () => {
-      if (frameId) {
+      const experienceElement = aboutElement.querySelector(".about-experience");
+      if (!experienceElement) {
         return;
       }
 
-      frameId = window.requestAnimationFrame(updateParagraphLight);
+      const viewportHeight = window.innerHeight || 1;
+      const experienceTop = experienceElement.getBoundingClientRect().top;
+      const start = viewportHeight * 0.92;
+      const end = viewportHeight * 0.18;
+      const rawProgress = (start - experienceTop) / (start - end);
+      const progress = Math.min(Math.max(rawProgress, 0), 1);
+      const easedProgress = 1 - Math.pow(1 - progress, 3);
+
+      if (reducedMotion.matches) {
+        aboutElement.style.setProperty("--about-scroll-progress", "1");
+        aboutElement.style.setProperty("--about-halo-rise", "-12vh");
+        aboutElement.style.setProperty("--about-stage-rise", "-5vh");
+        aboutElement.style.setProperty("--about-lower-glow-opacity", "0.72");
+        aboutElement.style.setProperty("--about-experience-rise", "0px");
+        aboutElement.style.setProperty("--about-experience-opacity", "1");
+        aboutElement.style.setProperty("--about-footer-rise", "0px");
+        aboutElement.style.setProperty("--about-footer-opacity", "1");
+        return;
+      }
+
+      aboutElement.style.setProperty("--about-scroll-progress", easedProgress.toFixed(4));
+      aboutElement.style.setProperty("--about-halo-rise", `${(-18 * easedProgress).toFixed(2)}vh`);
+      aboutElement.style.setProperty("--about-stage-rise", `${(-7.5 * easedProgress).toFixed(2)}vh`);
+      aboutElement.style.setProperty("--about-lower-glow-opacity", (0.22 + easedProgress * 0.56).toFixed(3));
+      aboutElement.style.setProperty("--about-experience-rise", `${(34 * (1 - easedProgress)).toFixed(2)}px`);
+      aboutElement.style.setProperty("--about-experience-opacity", (0.84 + easedProgress * 0.16).toFixed(3));
+      aboutElement.style.setProperty("--about-footer-rise", `${(22 * (1 - easedProgress)).toFixed(2)}px`);
+      aboutElement.style.setProperty("--about-footer-opacity", (0.68 + easedProgress * 0.32).toFixed(3));
     };
 
-    updateParagraphLight();
+    const requestUpdate = () => {
+      if (rafId) {
+        return;
+      }
+
+      rafId = window.requestAnimationFrame(updateScrollAtmosphere);
+    };
+
+    updateScrollAtmosphere();
     window.addEventListener("scroll", requestUpdate, { passive: true });
     window.addEventListener("resize", requestUpdate);
+    reducedMotion.addEventListener?.("change", requestUpdate);
 
     return () => {
-      if (frameId) {
-        window.cancelAnimationFrame(frameId);
+      if (rafId) {
+        window.cancelAnimationFrame(rafId);
       }
+
       window.removeEventListener("scroll", requestUpdate);
       window.removeEventListener("resize", requestUpdate);
+      reducedMotion.removeEventListener?.("change", requestUpdate);
     };
   }, []);
 
   return (
-    <main className="about-page" aria-labelledby="about-title">
-      <section className="about-hero" aria-label="About Kris">
-        <div className="about-hero-copy">
-          <p className="about-label">About</p>
-          <h1 id="about-title">
-            I’m Kris Chen, a product designer building <em>AI-native systems</em>.
-          </h1>
-          <p className="about-hero-note">New York · J.P. Morgan · product strategy, interaction systems, and production-near prototypes.</p>
+    <main
+      className="about-page"
+      aria-labelledby="about-title"
+      ref={aboutRef}
+      style={{
+        "--about-scroll-progress": 0,
+        "--about-halo-rise": "0vh",
+        "--about-stage-rise": "0vh",
+        "--about-lower-glow-opacity": 0.22,
+        "--about-experience-rise": "34px",
+        "--about-experience-opacity": 0.84,
+        "--about-footer-rise": "22px",
+        "--about-footer-opacity": 0.68,
+      }}
+    >
+      <section className="about-essay" aria-label="About Kris">
+        <div className="about-essay-copy">
+          <p className="about-kicker">Kris is a product designer @ J.P. Morgan</p>
+          <h1 id="about-title">Designer, builder, and quiet observer of how people and intelligent systems learn from each other.</h1>
+          <p>
+            I design digital experiences where complex work becomes easier to understand: AI recommendations people can trust, workflows teams can operate, and prototypes that make future systems feel close enough to evaluate.
+          </p>
+          <p>
+            My work sits between product strategy, interaction design, and code-backed prototyping. I care about the moments when an interface stops showing technology and starts helping someone make a clearer decision.
+          </p>
+          <p>
+            Outside of designing and vibe-coding, I am probably looking for a beautiful cafe, collecting tiny interface details, or making one more elderflower gin cocktail than originally planned.
+          </p>
         </div>
-
-        <figure className="about-photo-frame">
-          <img src={getAssetPath("/about-photo.jpg")} alt="Kris Chen smiling in a cafe" />
-        </figure>
       </section>
 
-      <section className="about-writing" aria-label="Personal introduction" ref={writingRef}>
-        <p>I work where product strategy, interaction systems, and code-backed prototypes start to overlap.</p>
-        <p>
-          Most of my work is about making complicated tools feel composed: AI recommendations people can trust, workflows teams can operate, and
-          prototypes that make a direction feel real before it is fully built.
-        </p>
-        <p>
-          I care about restraint, speed, and precision. The best interface, to me, is the one that quietly helps people make a better decision.
-        </p>
-      </section>
-
-      <section className="about-timeline" aria-labelledby="about-timeline-title">
-        <div className="about-section-title">
-          <p className="about-label">Timeline</p>
-          <h2 id="about-timeline-title">A path through enterprise tools, financial products, and AI systems.</h2>
-        </div>
-
-        <div className="about-timeline-list">
-          {timelineItems.map((item) => (
-            <article className="about-timeline-row" key={`${item.year}-${item.title}`}>
-              <span>{item.year}</span>
-              <div>
-                <h3>{item.title}</h3>
+      <section className="about-experience" aria-label="Experience">
+        <div className="about-experience-shell">
+          <p className="about-experience-label">Selected experience</p>
+          <div className="about-experience-list">
+            {experienceItems.map((item) => (
+              <article className="about-experience-row" key={`${item.company}-${item.year}`}>
+                <h2>{item.company}</h2>
+                <span>{item.year}</span>
                 <p>{item.description}</p>
-              </div>
-            </article>
-          ))}
+              </article>
+            ))}
+          </div>
         </div>
-      </section>
 
-      <section className="about-cta" aria-label="Contact Kris">
-        <p>Currently designing AI-native product systems at J.P. Morgan.</p>
-        <div className="about-cta-actions">
-          <a href="mailto:junhaochen718@gmail.com">Email</a>
-          <a href="https://www.linkedin.com/in/kris-chen-4b4948224/" target="_blank" rel="noreferrer">
-            LinkedIn
-          </a>
-          <a href="#work" onClick={(event) => onWorkSelect?.(event)}>
-            Selected work
-          </a>
-        </div>
+        <SiteFooter className="about-footer" onCenterSelect={onWorkSelect} />
       </section>
     </main>
   );
