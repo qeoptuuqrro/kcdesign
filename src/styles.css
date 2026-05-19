@@ -2867,10 +2867,10 @@ a {
   width: 37.5%;
   pointer-events: none;
   background:
-    radial-gradient(ellipse at 5% 6%, rgba(78, 235, 191, 0.24), transparent 25%),
-    radial-gradient(ellipse at 4% 95%, rgba(42, 214, 171, 0.2), transparent 28%),
-    radial-gradient(ellipse at 32% 45%, rgba(255, 176, 92, 0.12), transparent 27%),
-    linear-gradient(90deg, rgba(2, 6, 8, 1) 0%, rgba(2, 6, 8, 0.99) 54%, rgba(2, 6, 8, 0.84) 78%, rgba(2, 6, 8, 0.08) 100%);
+    radial-gradient(ellipse 85% 72% at -30% 12%, rgba(78, 235, 191, 0.18), transparent 68%),
+    radial-gradient(ellipse 78% 62% at -24% 96%, rgba(67, 224, 180, 0.13), transparent 72%),
+    linear-gradient(128deg, rgba(10, 30, 28, 0.66), transparent 42%),
+    linear-gradient(90deg, rgba(2, 6, 8, 1) 0%, rgba(2, 6, 8, 0.99) 56%, rgba(2, 6, 8, 0.86) 80%, rgba(2, 6, 8, 0.08) 100%);
 }
 
 .deepcut-reference-left-aurora {
@@ -2881,12 +2881,11 @@ a {
   pointer-events: none;
   overflow: hidden;
   background:
-    linear-gradient(145deg, rgba(83, 246, 197, 0.16), transparent 29%),
-    radial-gradient(ellipse at 12% 17%, rgba(111, 255, 210, 0.2), transparent 22%),
-    radial-gradient(ellipse at 18% 84%, rgba(255, 173, 92, 0.14), transparent 26%),
-    linear-gradient(180deg, rgba(255, 255, 255, 0.045), transparent 20%, transparent 76%, rgba(93, 236, 197, 0.06));
+    linear-gradient(142deg, rgba(91, 238, 199, 0.13), transparent 38%),
+    radial-gradient(ellipse 64% 74% at 6% 44%, rgba(89, 226, 190, 0.12), transparent 72%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.032), transparent 24%, transparent 78%, rgba(93, 236, 197, 0.04));
   mix-blend-mode: screen;
-  opacity: 0.78;
+  opacity: 0.56;
   animation: deepcutLeftAuroraBreath 11s ease-in-out infinite;
 }
 
@@ -2898,29 +2897,29 @@ a {
   width: 52%;
   height: 54%;
   border-radius: 24px;
-  border: 1px solid rgba(119, 255, 210, 0.1);
-  border-right-color: rgba(255, 185, 105, 0.075);
+  border: 1px solid rgba(119, 255, 210, 0.06);
+  border-right-color: rgba(255, 185, 105, 0.04);
   background:
-    linear-gradient(90deg, rgba(112, 255, 210, 0.095), transparent 1px) 0 0 / 28px 100%,
-    linear-gradient(180deg, rgba(255, 255, 255, 0.055), transparent 1px) 0 0 / 100% 30px;
+    linear-gradient(90deg, rgba(112, 255, 210, 0.045), transparent 1px) 0 0 / 32px 100%,
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), transparent 1px) 0 0 / 100% 34px;
   -webkit-mask-image: linear-gradient(180deg, transparent, #000 16%, #000 76%, transparent);
   mask-image: linear-gradient(180deg, transparent, #000 16%, #000 76%, transparent);
-  opacity: 0.8;
+  opacity: 0.62;
 }
 
 .deepcut-reference-left-aurora::after {
   content: "";
   position: absolute;
-  left: -16%;
-  bottom: -19%;
-  width: 62%;
-  height: 42%;
+  left: -36%;
+  bottom: -32%;
+  width: 86%;
+  height: 56%;
   border-radius: 999px;
   background:
-    radial-gradient(circle at 48% 52%, rgba(75, 238, 190, 0.24), transparent 58%),
-    radial-gradient(circle at 72% 34%, rgba(255, 182, 99, 0.12), transparent 40%);
-  filter: blur(18px);
-  opacity: 0.72;
+    radial-gradient(ellipse at 62% 42%, rgba(75, 238, 190, 0.12), transparent 68%),
+    radial-gradient(ellipse at 72% 34%, rgba(255, 182, 99, 0.055), transparent 54%);
+  filter: blur(30px);
+  opacity: 0.58;
 }
 
 .deepcut-reference-left-aurora span {
@@ -2929,8 +2928,8 @@ a {
   width: 54%;
   height: 1px;
   border-radius: 999px;
-  background: linear-gradient(90deg, transparent, rgba(110, 255, 213, 0.42), rgba(255, 184, 104, 0.2), transparent);
-  opacity: 0.68;
+  background: linear-gradient(90deg, transparent, rgba(110, 255, 213, 0.2), rgba(255, 184, 104, 0.08), transparent);
+  opacity: 0.46;
   transform-origin: left center;
   animation: deepcutLeftLineDrift 8s ease-in-out infinite;
 }
@@ -3171,25 +3170,25 @@ a {
 @keyframes deepcutLeftAuroraBreath {
   0%,
   100% {
-    opacity: 0.64;
+    opacity: 0.44;
     transform: translate3d(0, 0, 0) scale(1);
   }
 
   50% {
-    opacity: 0.9;
-    transform: translate3d(0.6%, -0.4%, 0) scale(1.018);
+    opacity: 0.66;
+    transform: translate3d(0.35%, -0.25%, 0) scale(1.012);
   }
 }
 
 @keyframes deepcutLeftLineDrift {
   0%,
   100% {
-    opacity: 0.26;
+    opacity: 0.18;
     transform: scaleX(0.62);
   }
 
   50% {
-    opacity: 0.78;
+    opacity: 0.46;
     transform: scaleX(1);
   }
 }
