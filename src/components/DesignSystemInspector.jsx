@@ -1,12 +1,41 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getAnalyticsEventName, trackEvent } from "../utils/analytics";
+import { getAssetPath } from "../utils/paths";
 
 const tokenGroups = [
-  { title: "Layout", match: ["width", "height", "gap", "padding", "radius"] },
-  { title: "Color", match: ["bg", "text", "active"] },
-  { title: "Material", match: ["glass", "blur", "shadow", "scrollbar"] },
-  { title: "Component", match: ["hero", "landing", "collections", "project", "case", "glass", "menu", "dot"] },
+  {
+    title: "Canvas",
+    summary: "Viewport, shell, page rhythm",
+    match: ["content", "page", "header", "section", "landing", "case-preview"],
+  },
+  {
+    title: "Color",
+    summary: "Surface, text, state color",
+    match: ["bg", "text", "active", "selected", "accent"],
+  },
+  {
+    title: "Glass",
+    summary: "Blur, shadow, translucent controls",
+    match: ["glass", "blur", "shadow", "scrollbar"],
+  },
+  {
+    title: "Shape",
+    summary: "Radius, dots, preview shells",
+    match: ["radius", "dot", "menu", "preview"],
+  },
+  {
+    title: "Type",
+    summary: "Font families and text behavior",
+    match: ["font", "mono", "editorial"],
+  },
+  {
+    title: "Component",
+    summary: "Hero, project, collection primitives",
+    match: ["hero", "collections", "project", "showcase"],
+  },
 ];
+
+const TOKEN_ROW_LIMIT = 6;
 
 const componentRegistry = [
   {
@@ -130,6 +159,39 @@ const spacingSamples = [
   },
 ];
 
+const systemPrimitiveCards = [
+  {
+    label: "Color System",
+    title: "Dark cinematic base with restrained cool accents.",
+    tokens: ["--site-bg", "--text-muted", "--text-active", "--menu-active-bg"],
+  },
+  {
+    label: "Typography",
+    title: "Satoshi for interface clarity, mono for system truth, editorial where needed.",
+    tokens: ["--font-sans", "--font-mono", "--font-editorial"],
+  },
+  {
+    label: "Glass Layer",
+    title: "Controls share a blur, selected state, and shadow language.",
+    tokens: ["--glass-control-bg", "--glass-control-blur", "--glass-control-shadow", "--glass-selected-bg"],
+  },
+  {
+    label: "Viewport Logic",
+    title: "Case-preview dimensions become the DS dialog’s own gallery frame.",
+    tokens: ["--case-preview-width", "--case-preview-height", "--case-preview-radius", "--case-preview-margin"],
+  },
+  {
+    label: "Spacing Logic",
+    title: "Project and hero rhythm is encoded as reusable layout variables.",
+    tokens: ["--section-stack-gap", "--hero-to-showcase-gap", "--project-showcase-copy-gap", "--project-showcase-bullet-gap"],
+  },
+  {
+    label: "Artifact Scale",
+    title: "Media, thumbnails, and dialogs zoom down without losing hierarchy.",
+    tokens: ["--landing-media-width", "--landing-media-height", "--project-showcase-width", "--case-content-width"],
+  },
+];
+
 const styleFields = [
   "fontFamily",
   "fontSize",
@@ -165,14 +227,6 @@ function getCssVariables() {
     );
 }
 
-function getClassInventory() {
-  const names = new Set();
-  document.querySelectorAll("[class]").forEach((node) => {
-    node.classList.forEach((className) => names.add(className));
-  });
-  return Array.from(names).sort();
-}
-
 function readComputedStyle(selector) {
   const node = document.querySelector(selector);
   if (!node) {
@@ -190,14 +244,28 @@ function groupTokens(tokens) {
   const groups = tokenGroups.map((group) => {
     const matches = tokens.filter((token) => {
       const normalized = token.name.replace("--", "");
-      return group.match.some((part) => normalized.includes(part));
+      return !used.has(token.name) && group.match.some((part) => normalized.includes(part));
     });
     matches.forEach((token) => used.add(token.name));
-    return { ...group, tokens: matches };
+    return {
+      ...group,
+      totalCount: matches.length,
+      tokens: matches.slice(0, TOKEN_ROW_LIMIT),
+    };
   });
 
   const otherTokens = tokens.filter((token) => !used.has(token.name));
-  return otherTokens.length ? [...groups, { title: "Other", tokens: otherTokens }] : groups;
+  const visibleGroups = groups.filter((group) => group.tokens.length > 0);
+
+  if (otherTokens.length) {
+    const fallbackGroup = visibleGroups.find((group) => group.title === "Glass") ?? visibleGroups[visibleGroups.length - 1];
+    if (fallbackGroup) {
+      fallbackGroup.totalCount += otherTokens.length;
+      fallbackGroup.tokens = [...fallbackGroup.tokens, ...otherTokens].slice(0, TOKEN_ROW_LIMIT);
+    }
+  }
+
+  return visibleGroups;
 }
 
 function getTokenType(token) {
@@ -441,7 +509,27 @@ function ComponentPreview({ type, tokens = [] }) {
   }
 
   if (type === "landingMedia") {
-    return <div className="ds-preview-media" />;
+    return (
+      <div className="ds-preview-media">
+        <img src={getAssetPath("/NewAurora.jpeg")} alt="Aurora product thumbnail used as a landing-media scale reference." loading="lazy" />
+        <span>Landing media shell</span>
+      </div>
+    );
+  }
+
+  if (type === "thumbnailExamples") {
+    return (
+      <div className="ds-preview-thumbnails">
+        <figure>
+          <img src={getAssetPath("/optimized/deepcut-thumbnail-reference.png")} alt="DeepCut thumbnail reference." loading="lazy" />
+          <figcaption>DeepCut thumbnail</figcaption>
+        </figure>
+        <figure>
+          <img src={getAssetPath("/figma-artifact-wide-a.png")} alt="Figma artifact thumbnail example." loading="lazy" />
+          <figcaption>Artifact thumbnail</figcaption>
+        </figure>
+      </div>
+    );
   }
 
   if (type === "collectionsIntro") {
@@ -502,11 +590,84 @@ function ColorSwatch({ token }) {
   );
 }
 
+function ShortcutHint({ label, isVisible = false }) {
+  return (
+    <span className={`project-detail-shortcut-group${isVisible ? " is-visible" : ""}`} aria-hidden="true">
+      <kbd className="project-detail-shortcut">{label}</kbd>
+    </span>
+  );
+}
+
+function detectMacLikePlatform() {
+  if (typeof window === "undefined") {
+    return true;
+  }
+
+  const platformSignals = [
+    window.navigator.userAgentData?.platform,
+    window.navigator.platform,
+    window.navigator.userAgent,
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  return /mac|iphone|ipad|ipod/i.test(platformSignals);
+}
+
+function SystemPrimitiveCard({ card, tokens }) {
+  return (
+    <article className="ds-primitive-card">
+      <span className="ds-primitive-kicker">{card.label}</span>
+      <h4>{card.title}</h4>
+      <div className="ds-primitive-token-row">
+        {card.tokens.map((tokenName) => {
+          const token = tokens.find((item) => item.name === tokenName);
+          return (
+            <span key={tokenName}>
+              <strong>{tokenName}</strong>
+              <em>{token?.value || "in use"}</em>
+            </span>
+          );
+        })}
+      </div>
+    </article>
+  );
+}
+
+function TokenGroupCard({ group }) {
+  const hiddenCount = Math.max(0, group.totalCount - group.tokens.length);
+
+  return (
+    <article className="ds-token-group">
+      <div className="ds-token-group-header">
+        <div>
+          <h4 className="ds-group-title">{group.title}</h4>
+          <p>{group.summary}</p>
+        </div>
+        <span>{group.totalCount}</span>
+      </div>
+      <div className="ds-token-list">
+        {group.tokens.map((token) => (
+          <div className="ds-token-row" key={token.name}>
+            <TokenPreview token={token} />
+            <span className="ds-token-name">{token.name}</span>
+            <span className="ds-token-value">{token.value}</span>
+          </div>
+        ))}
+        {hiddenCount ? <div className="ds-token-overflow">+{hiddenCount} related tokens curated behind the system</div> : null}
+      </div>
+    </article>
+  );
+}
+
 export default function DesignSystemInspector() {
+  const triggerRef = useRef(null);
   const [isOpen, setIsOpen] = useState(false);
+  const [isTriggerHoverSuppressed, setIsTriggerHoverSuppressed] = useState(false);
+  const [isShortcutMode, setIsShortcutMode] = useState(false);
+  const [isMacLikePlatform] = useState(detectMacLikePlatform);
   const [snapshot, setSnapshot] = useState({
     tokens: [],
-    classes: [],
     typography: [],
     components: [],
   });
@@ -526,11 +687,14 @@ export default function DesignSystemInspector() {
 
   const openDesignSystem = useCallback((source = "ds_button") => {
     trackDesignSystemEvent("design_system_open", source);
+    setIsTriggerHoverSuppressed(false);
     setIsOpen(true);
   }, [trackDesignSystemEvent]);
 
   const closeDesignSystem = useCallback((source = "close_button") => {
     trackDesignSystemEvent("design_system_close", source);
+    setIsTriggerHoverSuppressed(true);
+    triggerRef.current?.blur();
     setIsOpen(false);
   }, [trackDesignSystemEvent]);
 
@@ -547,7 +711,6 @@ export default function DesignSystemInspector() {
 
     setSnapshot({
       tokens: getCssVariables(),
-      classes: getClassInventory(),
       typography,
       components,
     });
@@ -558,13 +721,30 @@ export default function DesignSystemInspector() {
   }, []);
 
   useEffect(() => {
+    const syncShortcutMode = (event) => {
+      const modifierPressed = isMacLikePlatform ? event.metaKey : event.ctrlKey;
+      setIsShortcutMode(modifierPressed);
+      return modifierPressed;
+    };
+
     const handleShortcut = (event) => {
+      const isPrimaryModifierPressed = syncShortcutMode(event);
       const target = event.target;
       const isTyping =
         target instanceof HTMLElement &&
         (target.isContentEditable || ["INPUT", "TEXTAREA", "SELECT"].includes(target.tagName));
 
-      if (isTyping || !event.metaKey || event.key.toLowerCase() !== "d") {
+      if (isTyping) {
+        return;
+      }
+
+      if (event.key === "Escape" && isOpen) {
+        event.preventDefault();
+        closeDesignSystem("keyboard_escape");
+        return;
+      }
+
+      if (!isPrimaryModifierPressed || event.altKey || event.shiftKey || event.key.toLowerCase() !== "d") {
         return;
       }
 
@@ -576,9 +756,21 @@ export default function DesignSystemInspector() {
       });
     };
 
+    const handleKeyUp = (event) => {
+      syncShortcutMode(event);
+    };
+
+    const handleBlur = () => setIsShortcutMode(false);
+
     window.addEventListener("keydown", handleShortcut);
-    return () => window.removeEventListener("keydown", handleShortcut);
-  }, [trackDesignSystemEvent]);
+    window.addEventListener("keyup", handleKeyUp);
+    window.addEventListener("blur", handleBlur);
+    return () => {
+      window.removeEventListener("keydown", handleShortcut);
+      window.removeEventListener("keyup", handleKeyUp);
+      window.removeEventListener("blur", handleBlur);
+    };
+  }, [closeDesignSystem, isMacLikePlatform, isOpen, trackDesignSystemEvent]);
 
   useEffect(() => {
     if (!isOpen) {
@@ -595,29 +787,50 @@ export default function DesignSystemInspector() {
     () => snapshot.tokens.filter((token) => getTokenType(token) === "color"),
     [snapshot.tokens],
   );
+  const shortcutModifierLabel = isMacLikePlatform ? "Cmd" : "Ctrl";
 
   return (
     <>
-      <button className="ds-trigger" type="button" onClick={() => openDesignSystem("ds_button")}>
-        DS
+      <button
+        ref={triggerRef}
+        className={`ds-trigger${isOpen ? " is-open" : ""}${isTriggerHoverSuppressed ? " is-hover-suppressed" : ""}`}
+        type="button"
+        onClick={() => openDesignSystem("ds_button")}
+        onPointerLeave={() => setIsTriggerHoverSuppressed(false)}
+        aria-label="Open design system craft layer"
+        aria-expanded={isOpen}
+        aria-controls="design-system-inspector"
+      >
+        <span className="ds-trigger-mark" aria-hidden="true">
+          <i />
+          <i />
+          <i />
+          <i />
+        </span>
+        <span className="ds-trigger-copy">
+          <span className="ds-trigger-label">System</span>
+          <span className="ds-trigger-meta">Tokens / Type / Spacing</span>
+        </span>
       </button>
 
       {isOpen ? (
-        <div className="ds-overlay" role="dialog" aria-modal="true" aria-label="Design system">
+        <div className={`ds-overlay${isShortcutMode ? " is-shortcut-mode" : ""}`} id="design-system-inspector" role="dialog" aria-modal="true" aria-label="Design system">
           <div className="ds-backdrop" onClick={() => closeDesignSystem("backdrop")} />
           <section className="ds-panel">
             <header className="ds-panel-header">
-              <div>
+              <button className="ds-close ds-back" type="button" onClick={() => closeDesignSystem("back_button")} aria-label="Back from design system">
+                <span aria-hidden="true">←</span>
+                <span>Back</span>
+                <ShortcutHint label={isShortcutMode ? "Esc" : `${shortcutModifierLabel}+D`} isVisible={isShortcutMode} />
+              </button>
+              <div className="ds-panel-title-block">
                 <p className="ds-kicker">Live Reference</p>
                 <h2 className="ds-title">Design System Stack</h2>
+                <p className="ds-panel-subtitle">A transparent look inside the tokens, spacing, and interface decisions shaping this portfolio.</p>
               </div>
-              <div className="ds-panel-actions">
-                <button className="ds-action" type="button" onClick={refreshSnapshot}>
-                  Refresh
-                </button>
-                <button className="ds-close" type="button" onClick={() => closeDesignSystem("close_button")} aria-label="Close design system">
-                  Close
-                </button>
+              <div className="ds-panel-status" aria-hidden="true">
+                <span />
+                Live system
               </div>
             </header>
 
@@ -652,6 +865,20 @@ export default function DesignSystemInspector() {
               <section className="ds-section">
                 <div className="ds-section-heading">
                   <div>
+                    <h3 className="ds-section-title">System Primitives</h3>
+                    <p className="ds-section-subtitle">The AI-buildable rules behind the visual craft: color, type, glass, spacing, scale, and viewport behavior.</p>
+                  </div>
+                </div>
+                <div className="ds-primitive-grid">
+                  {systemPrimitiveCards.map((card) => (
+                    <SystemPrimitiveCard key={card.label} card={card} tokens={snapshot.tokens} />
+                  ))}
+                </div>
+              </section>
+
+              <section className="ds-section">
+                <div className="ds-section-heading">
+                  <div>
                     <h3 className="ds-section-title">Spacing In Context</h3>
                     <p className="ds-section-subtitle">Every gap is shown on the component where you would actually use it.</p>
                   </div>
@@ -672,18 +899,7 @@ export default function DesignSystemInspector() {
                 </div>
                 <div className="ds-token-groups">
                   {groupedTokens.map((group) => (
-                    <div className="ds-token-group" key={group.title}>
-                      <h4 className="ds-group-title">{group.title}</h4>
-                      <div className="ds-token-list">
-                        {group.tokens.map((token) => (
-                          <div className="ds-token-row" key={token.name}>
-                            <TokenPreview token={token} />
-                            <span className="ds-token-name">{token.name}</span>
-                            <span className="ds-token-value">{token.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
+                    <TokenGroupCard group={group} key={group.title} />
                   ))}
                 </div>
               </section>
@@ -770,35 +986,21 @@ export default function DesignSystemInspector() {
                     </div>
                   </article>
                   <article className="ds-atlas-card">
-                    <ComponentPreview type="projectShowcase" tokens={snapshot.tokens} />
+                    <ComponentPreview type="landingMedia" tokens={snapshot.tokens} />
                     <div className="ds-atlas-tags">
-                      <span>{getTokenValue(snapshot.tokens, "--project-showcase-width")} media</span>
-                      <span>80px lockup</span>
-                      <span>{getTokenValue(snapshot.tokens, "--project-showcase-bullet-gap")} bullet gap</span>
+                      <span>{getTokenValue(snapshot.tokens, "--landing-media-width")} media</span>
+                      <span>visual fill</span>
+                      <span>rounded shell</span>
                     </div>
                   </article>
                   <article className="ds-atlas-card">
-                    <ComponentPreview type="collectionsIntro" tokens={snapshot.tokens} />
+                    <ComponentPreview type="thumbnailExamples" tokens={snapshot.tokens} />
                     <div className="ds-atlas-tags">
-                      <span>14px label</span>
-                      <span>{getTokenValue(snapshot.tokens, "--collections-intro-gap")} icon gap</span>
-                      <span>scroll cue</span>
+                      <span>second picture examples</span>
+                      <span>thumbnail system</span>
+                      <span>artifact crops</span>
                     </div>
                   </article>
-                </div>
-              </section>
-
-              <section className="ds-section">
-                <div className="ds-section-heading">
-                  <div>
-                    <h3 className="ds-section-title">Naming Index</h3>
-                    <p className="ds-section-subtitle">Rendered class inventory from the current page.</p>
-                  </div>
-                </div>
-                <div className="ds-class-cloud">
-                  {snapshot.classes.map((className) => (
-                    <span key={className}>.{className}</span>
-                  ))}
                 </div>
               </section>
 
@@ -809,7 +1011,7 @@ export default function DesignSystemInspector() {
                   </div>
                 </div>
                 <div className="ds-reference-note">
-                  Use the visual sections first when naming things. Use the token cards only when you need exact CSS values. Press Command + D to open or close this panel.
+                  Use the visual sections first when naming things. Use the token cards only when you need exact CSS values. Press {shortcutModifierLabel}+D to open or close this panel.
                 </div>
               </section>
             </div>

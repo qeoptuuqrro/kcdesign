@@ -3,11 +3,13 @@ import { getAssetPath } from "../../utils/paths";
 
 const deepcutThumbnailReference = "/optimized/deepcut-thumbnail-reference.png";
 const deepcutLockedLogo = "/optimized/deepcut-logo-locked.png";
+const deepcutMacbookTopRail = "/optimized/deepcut-macbook-top-rail.png";
 const deepcutTvPreviewVideo = "https://assets.mixkit.co/videos/4451/4451-720.mp4";
 
 export function DeepCutNightGuideThumbnail() {
   const referenceImage = getAssetPath(deepcutThumbnailReference);
   const lockedLogo = getAssetPath(deepcutLockedLogo);
+  const macbookTopRail = getAssetPath(deepcutMacbookTopRail);
 
   return (
     <div className="deepcut-case-thumb is-reference" aria-hidden="true">
@@ -47,16 +49,19 @@ export function DeepCutNightGuideThumbnail() {
       <img className="deepcut-reference-tv-frame is-right" src={referenceImage} alt="" decoding="async" />
       <img className="deepcut-reference-tv-frame is-bottom" src={referenceImage} alt="" decoding="async" />
       <div className="deepcut-reference-left-scrim" />
-      <img className="deepcut-reference-brand-lockup" src={lockedLogo} alt="" decoding="async" />
-      <div className="deepcut-reference-copy">
-        <p>AI video discovery</p>
-        <h3>Find videos<br />worth your time</h3>
-        <span>AI searches across YouTube, Bilibili, and more to surface long-form videos you'll actually want to watch.</span>
-        <div>
-          <em>Ratings + saves</em>
-          <em>Bilibili + YouTube</em>
-        </div>
+      <div className="deepcut-reference-left-aurora" aria-hidden="true">
+        <span />
+        <span />
       </div>
+      <div className="deepcut-reference-city-light" aria-hidden="true" />
+      <div className="deepcut-reference-ambient-panel" aria-hidden="true">
+        <span />
+        <span />
+        <span />
+      </div>
+      <img className="deepcut-reference-brand-lockup" src={lockedLogo} alt="" decoding="async" />
+      <img className="deepcut-reference-laptop-rail" src={macbookTopRail} alt="" decoding="async" />
+      <div className="deepcut-reference-laptop-rail-gloss" aria-hidden="true" />
       <img className="deepcut-reference-foreground is-laptop" src={referenceImage} alt="" decoding="async" />
       <img className="deepcut-reference-foreground is-phone" src={referenceImage} alt="" decoding="async" />
     </div>

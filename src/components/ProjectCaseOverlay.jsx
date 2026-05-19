@@ -56,6 +56,8 @@ const isEditableShortcutTarget = (target) => {
   return Boolean(target.closest("input, textarea, select, [contenteditable='true']"));
 };
 
+const FULL_VIEW_HINT_STORAGE_KEY = "portfolio-full-view-discovered-v5";
+
 const detectMacLikePlatform = () => {
   if (typeof window === "undefined") {
     return true;
@@ -812,6 +814,7 @@ export default function ProjectCaseOverlay({
   const [workflowReveal, setWorkflowReveal] = useState(50);
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
   const [isShortcutMode, setIsShortcutMode] = useState(false);
+  const [showFullViewHint, setShowFullViewHint] = useState(false);
   const [isMacLikePlatform] = useState(detectMacLikePlatform);
   const isFullControlActive = isFull || isExpanding;
   const isProjectNavigating = projectNavPhase.startsWith("exit");
@@ -1060,6 +1063,44 @@ export default function ProjectCaseOverlay({
 
     return () => window.clearTimeout(fallbackTimer);
   }, [isExpanding, isShrinking]);
+
+  useEffect(() => {
+    if (isFull || isExpanding) {
+      try {
+        window.sessionStorage.setItem(FULL_VIEW_HINT_STORAGE_KEY, "true");
+      } catch {
+        // Ignore storage failures; the hint should never block the case study.
+      }
+      setShowFullViewHint(false);
+      return undefined;
+    }
+
+    if (isShrinking || isClosing) {
+      setShowFullViewHint(false);
+      return undefined;
+    }
+
+    try {
+      if (window.sessionStorage.getItem(FULL_VIEW_HINT_STORAGE_KEY) === "true") {
+        setShowFullViewHint(false);
+        return undefined;
+      }
+    } catch {
+      // If storage is unavailable, still show the one-time hint for this mount.
+    }
+
+    const startTimer = window.setTimeout(() => {
+      setShowFullViewHint(true);
+    }, 120);
+    const endTimer = window.setTimeout(() => {
+      setShowFullViewHint(false);
+    }, 1880);
+
+    return () => {
+      window.clearTimeout(startTimer);
+      window.clearTimeout(endTimer);
+    };
+  }, [isClosing, isExpanding, isFull, isShrinking, project.id]);
 
   useEffect(() => {
     const video = enrichmentFlowVideoRef.current;
@@ -1814,7 +1855,7 @@ export default function ProjectCaseOverlay({
 
     return (
       <div
-        className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}${isShortcutMode ? " is-shortcut-mode" : ""}`}
+        className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}${isShortcutMode ? " is-shortcut-mode" : ""}${showFullViewHint && !isFullControlActive ? " is-full-view-hinting" : ""}`}
         role="dialog"
         aria-modal="true"
         aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
@@ -2166,7 +2207,7 @@ export default function ProjectCaseOverlay({
 
   return (
     <div
-      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${isCaseWip ? " is-wip-case" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}`}
+      className={`case-overlay${isExpanding ? " is-expanding" : ""}${isFull ? " is-full" : ""}${isShrinking ? " is-shrinking" : ""}${isClosing ? " is-closing" : ""}${isCaseWip ? " is-wip-case" : ""}${projectNavPhase ? ` is-project-${projectNavPhase}` : ""}${isShortcutMode ? " is-shortcut-mode" : ""}${showFullViewHint && !isFullControlActive ? " is-full-view-hinting" : ""}`}
       role="dialog"
       aria-modal="true"
       aria-label={`${project.eyebrow} case study ${isFull ? "full view" : "preview"}`}
@@ -2420,16 +2461,9 @@ export default function ProjectCaseOverlay({
                 title="A sponsor intelligence workspace for AI-native origination."
                 id={`${project.id}-overview`}
               >
-                One surface for sponsor context, generated ideas, and banker review.
+                Sponsor context, AI-generated ideas, and banker review in one sourced workspace.
               </CaseSectionHeader>
               <div className="case-enrichment-flow">
-                <div className="case-enrichment-flow-copy">
-                  <span>AI enrichment in use</span>
-                  <h3>Select companies, run enrichment, and review sourced answers.</h3>
-                  <p>
-                    Users can choose companies from the screening table, run AI enrichment against public and company sources, then review generated answers with confidence and source context.
-                  </p>
-                </div>
                 <div className="case-enrichment-video-shell" aria-label="AI enrichment flow product recording">
                   <video
                     ref={enrichmentFlowVideoRef}
@@ -2509,8 +2543,11 @@ export default function ProjectCaseOverlay({
                         setActiveProductPreviewIndex(index);
                       }}
                     >
-                    <h3>{card.title}</h3>
-                    <p>{card.body}</p>
+                      <span className="case-product-callout-index">{String(index + 1).padStart(2, "0")}</span>
+                      <span className="case-product-callout-copy">
+                        <h3>{card.title}</h3>
+                        <p>{card.body}</p>
+                      </span>
                     </button>
                   ))}
                 </div>

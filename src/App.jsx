@@ -414,6 +414,7 @@ export default function App() {
               className="home-footer"
               centerHref="#about"
               centerLabel="about me"
+              encourageCenter
               onCenterSelect={(event) => handleMenuSelect("about", "#about", event)}
             />
           </div>
