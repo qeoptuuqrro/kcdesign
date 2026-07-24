@@ -535,6 +535,48 @@ const jpmorganProductPreview = {
   imageAlt: "Sanitized sponsor intelligence workspace.",
 };
 
+const jpmorganRefreshDashboard = {
+  image: getAssetPath("/jpmc-refresh/jpmc-dashboard.webp"),
+  alt: "J.P. Morgan sponsor intelligence dashboard.",
+  width: 3000,
+  height: 2134,
+};
+
+const jpmorganRefreshFeatures = [
+  {
+    title: "Prepare for what’s next",
+    body: "A shared calendar view that helps bankers stay ahead of meetings, events, and upcoming conversations.",
+    image: getAssetPath("/jpmc-refresh/jpmc-calendar.webp"),
+    alt: "J.P. Morgan shared calendar widget.",
+    width: 1730,
+    height: 1428,
+  },
+  {
+    title: "Turn signals into action",
+    body: "A focused task widget for follow-ups, assignments, and the next steps that move work forward.",
+    image: getAssetPath("/jpmc-refresh/jpmc-todos.webp"),
+    alt: "J.P. Morgan to-do widget.",
+    width: 1702,
+    height: 1684,
+  },
+  {
+    title: "Monitor the companies that matter",
+    body: "A lightweight portfolio company view that keeps relevant activity and opportunity signals visible.",
+    image: getAssetPath("/jpmc-refresh/jpmc-portcos.webp"),
+    alt: "J.P. Morgan portfolio companies widget.",
+    width: 1912,
+    height: 1464,
+  },
+  {
+    title: "Track the market as it moves",
+    body: "A compact deal feed that helps bankers notice recent transactions and emerging areas of interest.",
+    image: getAssetPath("/jpmc-refresh/jpmc-announced-deals.webp"),
+    alt: "J.P. Morgan announced deals widget.",
+    width: 1812,
+    height: 1716,
+  },
+];
+
 const beforeWorkflowPanels = [
   {
     title: "CRM",
@@ -1440,23 +1482,6 @@ export default function ProjectCaseOverlay({
       navigate();
     }, 170);
   }, [isExpanding, isProjectNavigating, isShrinking, onNextProject, onPreviousProject, project.id, project.title]);
-
-  useEffect(() => {
-    const preloaders = productOverviewCards.map((card) => {
-      const image = new Image();
-      image.decoding = "async";
-      image.src = card.image;
-      image.decode?.().catch(() => {});
-      return image;
-    });
-
-    return () => {
-      preloaders.forEach((image) => {
-        image.onload = null;
-        image.onerror = null;
-      });
-    };
-  }, []);
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -2463,92 +2488,45 @@ export default function ProjectCaseOverlay({
               >
                 Sponsor context, AI-generated ideas, and banker review in one sourced workspace.
               </CaseSectionHeader>
-              <div className="case-enrichment-flow">
-                <div className="case-enrichment-video-shell" aria-label="AI enrichment flow product recording">
-                  <video
-                    ref={enrichmentFlowVideoRef}
-                    className="case-enrichment-video"
-                    src={getAssetPath("/jpmc-ai-enrichment-flow.mp4")}
-                    autoPlay
-                    muted
-                    loop
-                    playsInline
-                    preload="metadata"
-                    aria-label="Screen recording of the AI enrichment flow selecting companies, running enrichment, and reviewing generated answers."
-                  />
-                </div>
-              </div>
               <div
-                className="case-product-preview-stage"
-                aria-label="Interactive sanitized sponsor workspace preview"
+                className="case-jpm-refresh"
+                aria-label="J.P. Morgan product interface highlights"
+                style={{
+                  "--case-jpm-refresh-background": `url("${getAssetPath("/jpmc-refresh/jpmc-project-bg.webp")}")`,
+                }}
               >
-                {productOverviewCards.map((card, index) => (
+                <div className="case-jpm-refresh__dashboard" aria-label="J.P. Morgan dashboard overview">
                   <img
-                    className={`case-product-preview-image${index === activeProductPreviewIndex ? " is-active" : ""}`}
-                    src={card.image}
-                    sizes={jpmorganProductPreview.imageSizes}
-                    alt={index === activeProductPreviewIndex ? card.imageAlt : ""}
-                    aria-hidden={index === activeProductPreviewIndex ? undefined : "true"}
-                    loading={index === 0 ? "eager" : "lazy"}
+                    src={jpmorganRefreshDashboard.image}
+                    alt={jpmorganRefreshDashboard.alt}
+                    width={jpmorganRefreshDashboard.width}
+                    height={jpmorganRefreshDashboard.height}
+                    loading="eager"
                     decoding="async"
-                    style={{ objectPosition: card.focus, "--preview-scale": card.previewScale, "--preview-y": card.previewOffsetY ?? "0px" }}
+                    fetchPriority="high"
                     onError={handleProjectImageError}
                   />
-                ))}
-                <div className="case-product-hit-zones">
-                  <button
-                    className="case-product-hit-zone case-product-hit-zone-left"
-                    type="button"
-                    tabIndex={-1}
-                    onClick={goToPreviousProductPreview}
-                    onPointerEnter={() => setDocumentCursorMode("arrow-left")}
-                    onPointerLeave={clearDocumentCursorMode}
-                    aria-label="Previous product view"
-                  />
-                  <button
-                    className="case-product-hit-zone case-product-hit-zone-center"
-                    type="button"
-                    tabIndex={-1}
-                    onClick={openProductPreviewLightbox}
-                    onPointerEnter={() => setDocumentCursorMode("expand")}
-                    onPointerLeave={clearDocumentCursorMode}
-                    aria-label="Expand product view"
-                  />
-                  <button
-                    className="case-product-hit-zone case-product-hit-zone-right"
-                    type="button"
-                    tabIndex={-1}
-                    onClick={goToNextProductPreview}
-                    onPointerEnter={() => setDocumentCursorMode("arrow-right")}
-                    onPointerLeave={clearDocumentCursorMode}
-                    aria-label="Next product view"
-                  />
                 </div>
-                <div className="case-product-preview-fallback" aria-hidden="true">
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                  <span />
-                </div>
-                <div className="case-product-callouts">
-                  {productOverviewCards.map((card, index) => (
-                    <button
-                      className={`case-product-callout${index === activeProductPreviewIndex ? " is-active" : ""}`}
-                      type="button"
-                      key={card.title}
-                      onClick={(event) => {
-                        event.stopPropagation();
-                        setActiveProductPreviewIndex(index);
-                      }}
-                    >
-                      <span className="case-product-callout-index">{String(index + 1).padStart(2, "0")}</span>
-                      <span className="case-product-callout-copy">
-                        <h3>{card.title}</h3>
-                        <p>{card.body}</p>
-                      </span>
-                    </button>
+
+                <div className="case-jpm-refresh__features">
+                  {jpmorganRefreshFeatures.map((feature) => (
+                    <article className="case-jpm-refresh__feature" key={feature.title}>
+                      <header className="case-jpm-refresh__copy">
+                        <h3>{feature.title}</h3>
+                        <p>{feature.body}</p>
+                      </header>
+                      <div className="case-jpm-refresh__visual">
+                        <img
+                          src={feature.image}
+                          alt={feature.alt}
+                          width={feature.width}
+                          height={feature.height}
+                          loading="lazy"
+                          decoding="async"
+                          onError={handleProjectImageError}
+                        />
+                      </div>
+                    </article>
                   ))}
                 </div>
               </div>
