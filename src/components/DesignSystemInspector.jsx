@@ -106,7 +106,7 @@ const typographySamples = [
   {
     name: "Project Description",
     selector: ".project-showcase-title",
-    text: "Building human-in-the-loop agentic AI workflow experiences.",
+    text: "Designing human-in-the-loop AI workflows for complex deal setup and coordination.",
   },
   { name: "Project Bullets", selector: ".project-showcase-points", text: "Reduced origination research time by 40%." },
 ];
@@ -372,7 +372,7 @@ function SpacingScene({ type, value, secondaryValue }) {
     return (
       <div className="ds-scene-project-copy" style={{ gap: value }}>
         <p>JP Morgan</p>
-        <strong>Building human-in-the-loop agentic AI workflow experiences.</strong>
+        <strong>Designing human-in-the-loop AI workflows for complex deal setup and coordination.</strong>
         <ul>
           <li>Cut deal setup time by 40%.</li>
           <li>Accelerated handoffs by 45%.</li>
@@ -569,7 +569,7 @@ function ComponentPreview({ type, tokens = [] }) {
         <span className="ds-preview-ai-line">with <span className="ds-sparkle-mark" aria-hidden="true" /> AI</span>
       </div>
       <p>JP Morgan</p>
-      <strong>Building human-in-the-loop agentic AI workflow experiences.</strong>
+      <strong>Designing human-in-the-loop AI workflows for complex deal setup and coordination.</strong>
       <ul style={{ gap: getTokenValue(tokens, "--project-showcase-bullet-gap") || undefined }}>
         <li>Cut deal setup time by 40%.</li>
         <li>Accelerated handoffs by 45%.</li>

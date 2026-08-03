@@ -56,7 +56,7 @@ export const featuredProjects = [
   {
     id: "jpmorgan-lobby",
     eyebrow: "JP Morgan",
-    title: "Building human in-the-loop agentic AI workflow experiences for wholesale lending ops teams.",
+    title: "Designing human-in-the-loop AI workflows for complex deal setup and coordination.",
     bullets: [
       "Cut deal setup time by 40% through AI-assisted coordination.",
       "Accelerated handoffs by 45% with human-in-loop AI workflows.",
