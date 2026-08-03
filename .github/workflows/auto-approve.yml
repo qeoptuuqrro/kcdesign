@@ -1,0 +1,45 @@
+name: Auto Approve
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  pull_request_review_requested:
+  workflow_run:
+    workflows: ["Deploy to GitHub Pages"]
+    types: [in_progress]
+
+permissions:
+  pull-requests: write
+  contents: write
+  actions: write
+
+jobs:
+  auto-approve-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request' || github.event_name == 'pull_request_review_requested'
+    steps:
+      - name: Auto-approve Pull Request
+        uses: hmarr/auto-approve-action@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+  auto-merge-pr:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Enable auto-merge
+        run: |
+          gh pr merge ${{ github.event.pull_request.number }} --auto --squash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+
+  auto-approve-workflow-run:
+    if: github.event_name == 'workflow_run'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Auto approve workflow run
+        run: |
+          gh api --method POST /repos/${{ github.repository }}/actions/runs/${{ github.event.workflow_run.id }}/approve
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

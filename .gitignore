@@ -1,7 +1,4 @@
-.DS_Store
-output/
-.playwright-cli/
-dist/
 node_modules/
-*.log
-*.tsbuildinfo
+dist/
+.DS_Store
+.env.local
