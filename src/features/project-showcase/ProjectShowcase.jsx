@@ -6,6 +6,23 @@ const deepcutLockedLogo = "/optimized/deepcut-logo-locked.png";
 const deepcutMacbookTopRail = "/optimized/deepcut-macbook-top-rail.png";
 const deepcutTvPreviewVideo = "https://assets.mixkit.co/videos/4451/4451-720.mp4";
 
+export function EvergreenRtpThumbnail({ image, imageAlt }) {
+  return (
+    <div className="evergreen-rtp-thumb" aria-hidden="true">
+      <div className="evergreen-rtp-stage">
+        <img
+          className="evergreen-rtp-source"
+          src={getAssetPath(image)}
+          alt={imageAlt ?? ""}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+      <div className="evergreen-rtp-light" />
+    </div>
+  );
+}
+
 export function DeepCutNightGuideThumbnail() {
   const referenceImage = getAssetPath(deepcutThumbnailReference);
   const lockedLogo = getAssetPath(deepcutLockedLogo);
@@ -109,12 +126,13 @@ function ProjectCard({ project, onProjectSelect }) {
   };
 
   const isDeepCutNightGuide = project.customThumbnail === "deepcut-night-guide";
+  const isEvergreenRtp = project.customThumbnail === "evergreen-rtp";
   const hasJpmorganAiTreatment = project.thumbnailVariant === "jpmorgan-ai";
 
   return (
     <article className="project-showcase-card">
       <a
-        className={`project-showcase-media${project.showLockup === false || isDeepCutNightGuide ? " is-image-only" : ""}${hasJpmorganAiTreatment ? " is-jpmorgan-ai" : ""}${isDeepCutNightGuide ? " is-deepcut-night-guide" : ""}`}
+        className={`project-showcase-media${project.showLockup === false || isDeepCutNightGuide || isEvergreenRtp ? " is-image-only" : ""}${hasJpmorganAiTreatment ? " is-jpmorgan-ai" : ""}${isDeepCutNightGuide ? " is-deepcut-night-guide" : ""}${isEvergreenRtp ? " is-evergreen-rtp" : ""}`}
         href={project.href}
         aria-label={isUnavailableWip ? `${project.eyebrow} case study still in progress` : `${project.eyebrow} case study`}
         aria-disabled={isUnavailableWip ? "true" : undefined}
@@ -126,6 +144,8 @@ function ProjectCard({ project, onProjectSelect }) {
       >
         {isDeepCutNightGuide ? (
           <DeepCutNightGuideThumbnail />
+        ) : isEvergreenRtp ? (
+          <EvergreenRtpThumbnail image={project.image} imageAlt={project.imageAlt} />
         ) : (
           <>
             <img

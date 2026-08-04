@@ -18,6 +18,8 @@ const menuItems = [
   { id: "about", label: "About", href: "#about" },
 ];
 
+const availableCaseStudies = featuredProjects.filter((project) => !project.isWip);
+
 function getProjectUrl(project, view = "preview") {
   if (!project?.href?.startsWith("#")) {
     return null;
@@ -290,15 +292,15 @@ export default function App() {
   };
 
   const selectedProjectIndex = selectedProject
-    ? featuredProjects.findIndex((project) => project.id === selectedProject.id)
+    ? availableCaseStudies.findIndex((project) => project.id === selectedProject.id)
     : -1;
 
   const handleNextProject = () => {
-    if (selectedProjectIndex < 0 || selectedProjectIndex >= featuredProjects.length - 1) {
+    if (selectedProjectIndex < 0 || selectedProjectIndex >= availableCaseStudies.length - 1) {
       return;
     }
 
-    const nextProject = featuredProjects[selectedProjectIndex + 1];
+    const nextProject = availableCaseStudies[selectedProjectIndex + 1];
     setSelectedProject(nextProject);
     updateProjectUrl(nextProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", nextProject.id);
@@ -324,7 +326,7 @@ export default function App() {
       return;
     }
 
-    const previousProject = featuredProjects[selectedProjectIndex - 1];
+    const previousProject = availableCaseStudies[selectedProjectIndex - 1];
     setSelectedProject(previousProject);
     updateProjectUrl(previousProject, projectView === "full" ? "full" : "preview");
     setAnalyticsTag("project_id", previousProject.id);
@@ -435,7 +437,7 @@ export default function App() {
           onShrinkComplete={handleShrinkComplete}
           onNextProject={handleNextProject}
           onPreviousProject={handlePreviousProject}
-          hasNextProject={selectedProjectIndex >= 0 && selectedProjectIndex < featuredProjects.length - 1}
+          hasNextProject={selectedProjectIndex >= 0 && selectedProjectIndex < availableCaseStudies.length - 1}
           hasPreviousProject={selectedProjectIndex > 0}
         />
       ) : null}

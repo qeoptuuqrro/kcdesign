@@ -1,2 +1,2 @@
 export { featuredProjects } from "../content/projects";
-export { default, DeepCutNightGuideThumbnail } from "../features/project-showcase/ProjectShowcase";
+export { default, DeepCutNightGuideThumbnail, EvergreenRtpThumbnail } from "../features/project-showcase/ProjectShowcase";

@@ -9,7 +9,7 @@ export type ProjectDetail = {
 };
 
 export type FeaturedProject = {
-  id: "jpmorgan-ai" | "jpmorgan-lobby" | "deepcut-ai-night-guide";
+  id: "jpmorgan-ai" | "jpmorgan-lobby" | "deepcut-ai-night-guide" | "evergreen-finance";
   eyebrow: string;
   title: string;
   bullets: string[];
@@ -24,7 +24,7 @@ export type FeaturedProject = {
   showLockup?: boolean;
   isWip?: boolean;
   thumbnailVariant?: "jpmorgan-ai";
-  customThumbnail?: "deepcut-night-guide";
+  customThumbnail?: "deepcut-night-guide" | "evergreen-rtp";
   highlights?: string[];
   detail?: ProjectDetail;
   wipTitle?: string;
@@ -124,5 +124,20 @@ export const featuredProjects = [
     wipCardTitle: "AI Night Guide + source intelligence",
     wipCardBody:
       "The full story will expand on search, ratings, save flows, source scraping, and mobile-first discovery behavior.",
+  },
+  {
+    id: "evergreen-finance",
+    eyebrow: "Evergreen Finance",
+    title: "Designing a real-time performance system that made daily goals visible, motivating, and actionable.",
+    bullets: [
+      "Created a responsive dashboard for 1,000+ agents, bringing goals, activity, and leaderboard context into one daily workspace.",
+      "Raised agent satisfaction by 100% and efficiency by 36% within the first month of rollout to 400+ agents.",
+    ],
+    href: "#evergreen-finance",
+    image: "/optimized/evergreen-rtp-source-2200.png",
+    imageAlt: "Evergreen Finance real-time performance dashboard shown across desktop and mobile.",
+    customThumbnail: "evergreen-rtp",
+    showLockup: false,
+    isWip: true,
   },
 ] satisfies FeaturedProject[];
