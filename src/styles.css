@@ -6991,6 +6991,358 @@ a {
     rgba(255, 255, 255, 0.06);
 }
 
+.case-why-section {
+  --case-value-padding: clamp(18px, 2.2vw, 28px);
+  --case-value-border: rgba(255, 255, 255, 0.09);
+  --case-value-muted: rgba(255, 255, 255, 0.58);
+  --case-value-signal: rgba(126, 139, 255, 0.92);
+  --case-value-friction: rgba(255, 188, 174, 0.78);
+}
+
+.case-td-context {
+  margin-top: clamp(10px, 1vw, 16px);
+  padding: var(--case-value-padding) 0;
+  display: grid;
+  grid-template-columns: minmax(220px, 0.7fr) minmax(0, 1.65fr);
+  align-items: start;
+  gap: clamp(24px, 3.2vw, 52px);
+  border-top: 1px solid var(--case-value-border);
+  border-bottom: 1px solid var(--case-value-border);
+}
+
+.case-td-context__intro {
+  display: grid;
+  gap: 9px;
+}
+
+.case-td-context__intro > p,
+.case-current-flow header p,
+.case-workflow-compare__intro > p {
+  margin: 0;
+  color: var(--case-value-signal);
+  font-family: "Roboto Mono", monospace;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.case-td-context__intro h3,
+.case-current-flow header h3,
+.case-workflow-compare__intro h3 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 26px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.case-td-context__intro > span {
+  max-width: 36ch;
+  color: var(--case-value-muted);
+  font-size: 13.5px;
+  line-height: 1.5;
+}
+
+.case-td-pain-list,
+.case-current-flow__track,
+.case-workflow-column ol,
+.case-value-outcomes {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.case-td-pain-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px clamp(18px, 2.2vw, 32px);
+}
+
+.case-td-pain-list li {
+  min-width: 0;
+  padding-top: 13px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.case-td-pain-list li > span,
+.case-workflow-column > header > span,
+.case-workflow-column li > span,
+.case-workflow-column footer > span,
+.case-workflow-support span,
+.case-value-outcomes li > span {
+  color: rgba(255, 255, 255, 0.42);
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.case-td-pain-list strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.case-td-pain-list p {
+  margin: 0;
+  color: var(--case-value-muted);
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+.case-current-flow {
+  border: 1px solid var(--case-value-border);
+  border-radius: 8px;
+  padding: var(--case-value-padding);
+  display: grid;
+  gap: 24px;
+  background: rgba(255, 255, 255, 0.022);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.035);
+}
+
+.case-current-flow > header {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.case-current-flow > header > div {
+  display: grid;
+  gap: 7px;
+}
+
+.case-current-flow > header > span {
+  max-width: 30ch;
+  color: rgba(255, 255, 255, 0.44);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: right;
+}
+
+.case-current-flow__track {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.case-current-flow__track li {
+  position: relative;
+  min-width: 0;
+  min-height: 164px;
+  padding-top: 13px;
+  display: grid;
+  grid-template-rows: auto auto 1fr auto;
+  align-content: start;
+  gap: 8px;
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
+}
+
+.case-current-flow__track li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  right: -14px;
+  width: 14px;
+  height: 1px;
+  background: rgba(126, 139, 255, 0.5);
+}
+
+.case-current-flow__track li > span {
+  color: var(--case-value-signal);
+  font-family: "Roboto Mono", monospace;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.case-current-flow__track strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.case-current-flow__track p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.53);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.case-current-flow__track em {
+  width: fit-content;
+  color: var(--case-value-friction);
+  font-family: "Roboto Mono", monospace;
+  font-size: 9px;
+  font-style: normal;
+  line-height: 1.2;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.case-workflow-compare {
+  overflow: hidden;
+  border: 1px solid var(--case-value-border);
+  border-radius: 8px;
+  background: #090b0f;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+
+.case-workflow-compare__intro {
+  padding: var(--case-value-padding);
+  display: grid;
+  gap: 8px;
+  border-bottom: 1px solid var(--case-value-border);
+}
+
+.case-workflow-compare__intro h3 {
+  max-width: 34ch;
+}
+
+.case-workflow-compare__columns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.case-workflow-column {
+  min-width: 0;
+  padding: var(--case-value-padding);
+  display: grid;
+  align-content: start;
+  gap: 24px;
+}
+
+.case-workflow-column.is-after {
+  border-left: 1px solid var(--case-value-border);
+  background: rgba(90, 111, 255, 0.055);
+}
+
+.case-workflow-column > header {
+  min-height: 120px;
+  display: grid;
+  align-content: start;
+  gap: 8px;
+}
+
+.case-workflow-column.is-after > header > span,
+.case-workflow-column.is-after li > span,
+.case-workflow-support span {
+  color: var(--case-value-signal);
+}
+
+.case-workflow-column h4 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: 24px;
+  font-weight: 550;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.case-workflow-column > header p,
+.case-workflow-column li p {
+  margin: 0;
+  color: var(--case-value-muted);
+  font-size: 13px;
+  line-height: 1.48;
+}
+
+.case-workflow-column ol {
+  display: grid;
+}
+
+.case-workflow-column li {
+  min-width: 0;
+  padding: 15px 0;
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.case-workflow-column li > div {
+  min-width: 0;
+  display: grid;
+  gap: 5px;
+}
+
+.case-workflow-column li strong {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.28;
+}
+
+.case-workflow-column footer {
+  padding-top: 16px;
+  display: grid;
+  gap: 7px;
+  border-top: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.case-workflow-column footer strong {
+  max-width: 34ch;
+  color: rgba(255, 255, 255, 0.82);
+  font-size: 13px;
+  font-weight: 550;
+  line-height: 1.45;
+}
+
+.case-workflow-support {
+  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.case-workflow-support > div {
+  min-width: 0;
+  padding-top: 16px;
+  display: grid;
+  align-content: start;
+  gap: 7px;
+}
+
+.case-workflow-support p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 12px;
+  line-height: 1.48;
+}
+
+.case-value-outcomes {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  border-top: 1px solid var(--case-value-border);
+  border-bottom: 1px solid var(--case-value-border);
+}
+
+.case-value-outcomes li {
+  min-width: 0;
+  min-height: 84px;
+  padding: 16px;
+  display: grid;
+  align-content: start;
+  gap: 10px;
+  color: rgba(255, 255, 255, 0.78);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.case-value-outcomes li + li {
+  border-left: 1px solid var(--case-value-border);
+}
+
 .case-operating-section {
   --ai-signal: rgba(126, 139, 255, 0.72);
   --ai-signal-soft: rgba(126, 139, 255, 0.14);
@@ -18767,6 +19119,78 @@ a {
     margin-bottom: 20px;
   }
 
+  .case-td-context {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+
+  .case-td-context__intro h3,
+  .case-current-flow header h3,
+  .case-workflow-compare__intro h3 {
+    font-size: 22px;
+  }
+
+  .case-workflow-column h4 {
+    font-size: 21px;
+  }
+
+  .case-td-context__intro > span {
+    max-width: 58ch;
+  }
+
+  .case-current-flow > header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .case-current-flow > header > span {
+    max-width: none;
+    text-align: left;
+  }
+
+  .case-current-flow__track {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 18px;
+  }
+
+  .case-current-flow__track li {
+    min-height: 140px;
+  }
+
+  .case-current-flow__track li:not(:last-child)::after {
+    display: none;
+  }
+
+  .case-workflow-compare__columns {
+    grid-template-columns: 1fr;
+  }
+
+  .case-workflow-column.is-after {
+    border-top: 1px solid var(--case-value-border);
+    border-left: 0;
+  }
+
+  .case-workflow-column > header {
+    min-height: auto;
+  }
+
+  .case-value-outcomes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .case-value-outcomes li + li {
+    border-left: 0;
+  }
+
+  .case-value-outcomes li:nth-child(even) {
+    border-left: 1px solid var(--case-value-border);
+  }
+
+  .case-value-outcomes li:nth-child(n + 3) {
+    border-top: 1px solid var(--case-value-border);
+  }
+
   .case-workflow-shell {
     padding: 14px;
     border-radius: 20px;
@@ -19640,6 +20064,51 @@ a {
 
   .project-detail-overview h2 {
     font-size: 20px;
+  }
+
+  .case-why-section {
+    --case-value-padding: 18px;
+  }
+
+  .case-td-context__intro h3,
+  .case-current-flow header h3,
+  .case-workflow-compare__intro h3,
+  .case-workflow-column h4 {
+    font-size: 20px;
+  }
+
+  .case-td-pain-list,
+  .case-current-flow__track,
+  .case-workflow-support,
+  .case-value-outcomes {
+    grid-template-columns: 1fr;
+  }
+
+  .case-td-pain-list {
+    gap: 18px;
+  }
+
+  .case-current-flow {
+    gap: 20px;
+  }
+
+  .case-current-flow__track li {
+    min-height: auto;
+    padding-bottom: 6px;
+  }
+
+  .case-workflow-column li {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .case-value-outcomes li,
+  .case-value-outcomes li:nth-child(even),
+  .case-value-outcomes li:nth-child(n + 3) {
+    border-left: 0;
+  }
+
+  .case-value-outcomes li:nth-child(n + 2) {
+    border-top: 1px solid var(--case-value-border);
   }
 
   .case-overlay-header {

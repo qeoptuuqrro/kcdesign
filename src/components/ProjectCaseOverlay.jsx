@@ -480,18 +480,26 @@ function DeepCutReviewsDemoArtifact() {
   );
 }
 
-const problemCards = [
+const tdPainPoints = [
   {
-    title: "Fragmented signals",
-    body: "Company data, sponsor context, notes, and feedback lived across different places.",
+    label: "01 / Signals",
+    title: "Evidence lives in too many places",
+    body: "CRM activity, financials, market context, relationship notes, and prior ideas have to be assembled by hand.",
   },
   {
-    title: "High-context judgment",
-    body: "Strong ideas depended on timing, sponsor appetite, relationships, and banker intuition.",
+    label: "02 / Fit",
+    title: "Sponsor fit is rebuilt each time",
+    body: "Fund strategy, portfolio overlap, relationship history, and timing are reconstructed for every opportunity.",
   },
   {
-    title: "Low reusability",
-    body: "Valuable rationale stayed trapped in decks, spreadsheets, and one-off notes.",
+    label: "03 / Rationale",
+    title: "Judgment is difficult to reuse",
+    body: "The strongest thinking remains in decks, spreadsheets, email threads, and individual memory.",
+  },
+  {
+    label: "04 / Review",
+    title: "Every handoff resets context",
+    body: "Teams repeatedly restate why the company, why the sponsor, and why now before an idea can move forward.",
   },
 ];
 
@@ -581,30 +589,80 @@ const jpmorganRefreshFeatures = [
 
 const jpmorganRefreshArtifacts = [jpmorganRefreshDashboard, ...jpmorganRefreshFeatures];
 
-const beforeWorkflowPanels = [
+const currentTdFlow = [
   {
-    title: "CRM",
-    rows: ["Apex Polymers", "BluePeak Materials"],
+    title: "Signal appears",
+    detail: "Market move, relationship cue, or banker hypothesis",
+    friction: "Scattered inputs",
   },
   {
-    title: "Excel",
-    rows: ["Revenue / EBITDA", "Manual updates"],
+    title: "Screen company",
+    detail: "CRM records, financial filters, and prior coverage",
+    friction: "Context switching",
   },
   {
-    title: "Files",
-    rows: ["Idea book.xlsx", "Market map.pdf"],
+    title: "Research sponsor",
+    detail: "Fund strategy, portfolio fit, activity, and relationships",
+    friction: "Manual joins",
   },
   {
-    title: "Email",
-    rows: ["Review thread", "PDF attached"],
+    title: "Draft thesis",
+    detail: "Notes, spreadsheets, market maps, and deck pages",
+    friction: "Repeated synthesis",
+  },
+  {
+    title: "Review idea",
+    detail: "Live discussion, email feedback, and revision cycles",
+    friction: "Context rebuilt",
+  },
+  {
+    title: "Package output",
+    detail: "Ideabook narrative and next-step preparation",
+    friction: "Format work",
   },
 ];
 
-const workflowSnapshotSteps = ["Company Screening", "Prioritization", "Sponsor Matching", "Idea Generation", "Ideabook Output"];
+const fragmentedWorkflowSteps = [
+  {
+    label: "01 / Find",
+    title: "Gather the signal",
+    body: "Move between CRM, company data, notes, and market updates.",
+  },
+  {
+    label: "02 / Assess",
+    title: "Rebuild sponsor fit",
+    body: "Cross-check fund strategy, portfolio context, relationships, and timing.",
+  },
+  {
+    label: "03 / Synthesize",
+    title: "Write the rationale",
+    body: "Turn scattered evidence and banker intuition into a defensible thesis.",
+  },
+  {
+    label: "04 / Review",
+    title: "Repackage for the team",
+    body: "Move the idea through decks, email, feedback, and another round of edits.",
+  },
+];
 
-const aiSupportSteps = ["Screen signals", "Suggest fit", "Synthesize rationale", "Draft thesis", "Support packaging"];
+const structuredWorkflowSteps = [
+  { title: "Screen companies", body: "Bring company evidence and coverage signals into one review path." },
+  { title: "Prioritize signals", body: "Focus attention on timely, relevant opportunities." },
+  { title: "Match sponsors", body: "Make fund strategy, portfolio fit, and relationship context visible." },
+  { title: "Generate rationale", body: "Draft a sourced thesis that bankers can challenge and refine." },
+  { title: "Review and package", body: "Carry approved thinking into a reusable ideabook structure." },
+];
 
-const valueChips = ["Reduced fragmentation", "Reusable idea intelligence", "Sponsor-fit visibility", "Banker review built in"];
+const aiSupportSteps = ["Screen signals", "Suggest sponsor fit", "Synthesize evidence", "Draft rationale", "Prepare output"];
+
+const bankerOwnershipSteps = ["Set priority", "Validate sponsor fit", "Shape the thesis", "Approve outreach"];
+
+const valueOutcomes = [
+  "One reviewable evidence trail",
+  "Reusable sponsor-fit context",
+  "Rationale that survives handoffs",
+  "Banker judgment stays in control",
+];
 
 const operatingBefore = ["Figma screens", "Static handoff", "Engineering interpretation", "Rebuild", "Mismatch / rework"];
 
@@ -857,7 +915,6 @@ export default function ProjectCaseOverlay({
   const [activeProductPreviewIndex, setActiveProductPreviewIndex] = useState(0);
   const [activeAiOperatingArtifactIndex, setActiveAiOperatingArtifactIndex] = useState(0);
   const [activeAiProofArtifactIndex, setActiveAiProofArtifactIndex] = useState(0);
-  const [workflowReveal, setWorkflowReveal] = useState(50);
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
   const [isShortcutMode, setIsShortcutMode] = useState(false);
   const [showFullViewHint, setShowFullViewHint] = useState(false);
@@ -1441,7 +1498,6 @@ export default function ProjectCaseOverlay({
     setIsIndexOpen(false);
     setExpandedImage(null);
     setActiveProductPreviewIndex(0);
-    setWorkflowReveal(50);
     viewedSectionsRef.current = new Set();
     activeSectionIdRef.current = "";
     activeSectionIndexRef.current = 0;
@@ -1885,7 +1941,6 @@ export default function ProjectCaseOverlay({
     onOpenPreview,
   ]);
 
-  const workflowRevealNumber = Number(workflowReveal);
   const aiWorkflowRevealNumber = Number(aiWorkflowReveal);
 
   if (project.id === "deepcut-ai-night-guide") {
@@ -2572,84 +2627,114 @@ export default function ProjectCaseOverlay({
             </section>
 
             <section className="case-study-section case-why-section" id="case-value" aria-labelledby={`${project.id}-value`}>
-              <CaseSectionHeader label="Product value + workflow snapshot" title="Turning fragmented signals into actionable deal ideas" id={`${project.id}-value`}>
-                The work was not AI for novelty. It made complex judgment easier to reuse.
+              <CaseSectionHeader label="Product value + workflow snapshot" title="From fragmented signals to reviewable deal ideas" id={`${project.id}-value`}>
+                TDs were not short on judgment. They needed a better way to assemble evidence, preserve context, and move an idea through review.
               </CaseSectionHeader>
-              <div className="case-compare-shell" style={{ "--case-reveal": `${workflowRevealNumber}%` }}>
-                <div
-                  className={`case-compare-stage${workflowRevealNumber <= 0 ? " is-after-only" : ""}${
-                    workflowRevealNumber >= 100 ? " is-before-only" : ""
-                  }`}
-                  aria-label="Before and after workflow comparison"
-                >
-                  <article className="case-compare-layer case-compare-before">
-                    <div className="case-compare-content">
-                      <p>Before</p>
-                      <h3>Fragmented workflow</h3>
-                      <div className="case-before-artifact">
-                        <div className="case-before-native-artifact" aria-hidden="true">
-                          {beforeWorkflowPanels.map((panel) => (
-                            <section key={panel.title}>
-                              <strong>{panel.title}</strong>
-                              {panel.rows.map((row) => (
-                                <span key={row}>{row}</span>
-                              ))}
-                            </section>
-                          ))}
-                          <em>Context gets lost.</em>
-                        </div>
-                      </div>
-                    </div>
-                  </article>
-                  <article className="case-compare-layer case-compare-after">
-                    <div className="case-compare-content">
-                      <p>After</p>
-                      <h3>Structured origination workflow</h3>
-                      <div className="case-workflow-snapshot">
-                        {workflowSnapshotSteps.map((step, index) => (
-                          <span key={step}>
-                            <em>{String(index + 1).padStart(2, "0")}</em>
-                            {step}
-                          </span>
-                        ))}
-                      </div>
-                      <div className="case-ai-support-layer">
-                        <strong>AI support layer</strong>
-                        <div>
-                          {aiSupportSteps.map((step) => (
-                            <span key={step}>{step}</span>
-                          ))}
-                        </div>
-                      </div>
-                      <p className="case-human-review-note">Human review remains central.</p>
-                    </div>
-                  </article>
-                  <span className="case-compare-divider" aria-hidden="true" />
-                  <input
-                    className="case-compare-range"
-                    type="range"
-                    min="0"
-                    max="100"
-                    value={workflowReveal}
-                    onChange={(event) => setWorkflowReveal(event.target.value)}
-                    aria-label="Drag to compare fragmented and structured workflow"
-                  />
+              <section className="case-td-context" aria-labelledby={`${project.id}-td-context`}>
+                <div className="case-td-context__intro">
+                  <p>Where the workflow breaks down</p>
+                  <h3 id={`${project.id}-td-context`}>Strong judgment, scattered evidence.</h3>
+                  <span>The challenge was not generating more information. It was preserving the context behind a credible deal idea.</span>
                 </div>
-              </div>
-              <div className="case-problem-grid">
-                {problemCards.map((card) => (
-                  <article className="case-context-card" key={card.title}>
-                    <span className="case-card-index" aria-hidden="true" />
-                    <h3>{card.title}</h3>
-                    <p>{card.body}</p>
+                <ol className="case-td-pain-list">
+                  {tdPainPoints.map((point) => (
+                    <li key={point.title}>
+                      <span>{point.label}</span>
+                      <strong>{point.title}</strong>
+                      <p>{point.body}</p>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <section className="case-current-flow" aria-labelledby={`${project.id}-current-flow`}>
+                <header>
+                  <div>
+                    <p>Current TD flow</p>
+                    <h3 id={`${project.id}-current-flow`}>Context is rebuilt at every step.</h3>
+                  </div>
+                  <span>Six steps · multiple systems · one-off synthesis</span>
+                </header>
+                <ol className="case-current-flow__track">
+                  {currentTdFlow.map((step, index) => (
+                    <li key={step.title}>
+                      <span>{String(index + 1).padStart(2, "0")}</span>
+                      <strong>{step.title}</strong>
+                      <p>{step.detail}</p>
+                      <em>{step.friction}</em>
+                    </li>
+                  ))}
+                </ol>
+              </section>
+
+              <section className="case-workflow-compare" aria-labelledby={`${project.id}-workflow-compare`}>
+                <header className="case-workflow-compare__intro">
+                  <p>Before and after</p>
+                  <h3 id={`${project.id}-workflow-compare`}>The shift is from rebuilding context to reviewing a connected idea.</h3>
+                </header>
+                <div className="case-workflow-compare__columns">
+                  <article className="case-workflow-column is-before">
+                    <header>
+                      <span>Before</span>
+                      <h4>Fragmented and rebuilt each time</h4>
+                      <p>Tools hold pieces of the work, but the rationale connecting them is fragile.</p>
+                    </header>
+                    <ol>
+                      {fragmentedWorkflowSteps.map((step) => (
+                        <li key={step.title}>
+                          <span>{step.label}</span>
+                          <div>
+                            <strong>{step.title}</strong>
+                            <p>{step.body}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                    <footer>
+                      <span>Result</span>
+                      <strong>Valuable judgment stays trapped in one-off artifacts.</strong>
+                    </footer>
                   </article>
+
+                  <article className="case-workflow-column is-after">
+                    <header>
+                      <span>After</span>
+                      <h4>Structured and reviewable</h4>
+                      <p>Evidence, sponsor context, rationale, and decisions move through one visible workflow.</p>
+                    </header>
+                    <ol>
+                      {structuredWorkflowSteps.map((step, index) => (
+                        <li key={step.title}>
+                          <span>{String(index + 1).padStart(2, "0")}</span>
+                          <div>
+                            <strong>{step.title}</strong>
+                            <p>{step.body}</p>
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                    <div className="case-workflow-support">
+                      <div>
+                        <span>AI supports</span>
+                        <p>{aiSupportSteps.join(" · ")}</p>
+                      </div>
+                      <div>
+                        <span>TD owns</span>
+                        <p>{bankerOwnershipSteps.join(" · ")}</p>
+                      </div>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              <ul className="case-value-outcomes" aria-label="Workflow outcomes">
+                {valueOutcomes.map((outcome, index) => (
+                  <li key={outcome}>
+                    <span>{String(index + 1).padStart(2, "0")}</span>
+                    {outcome}
+                  </li>
                 ))}
-              </div>
-              <div className="case-value-chip-row">
-                {valueChips.map((chip) => (
-                  <span key={chip}>{chip}</span>
-                ))}
-              </div>
+              </ul>
             </section>
 
             <section className="case-study-section case-operating-section" id="case-operating" aria-labelledby={`${project.id}-operating`}>
