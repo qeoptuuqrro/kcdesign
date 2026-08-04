@@ -5,18 +5,31 @@ const deepcutThumbnailReference = "/optimized/deepcut-thumbnail-reference.png";
 const deepcutLockedLogo = "/optimized/deepcut-logo-locked.png";
 const deepcutMacbookTopRail = "/optimized/deepcut-macbook-top-rail.png";
 const deepcutTvPreviewVideo = "https://assets.mixkit.co/videos/4451/4451-720.mp4";
+const evergreenRtpDesktop = "/optimized/evergreen-rtp-desktop-hd.png";
+const evergreenRtpMobile = "/optimized/evergreen-rtp-mobile-hd.png";
 
-export function EvergreenRtpThumbnail({ image, imageAlt }) {
+export function EvergreenRtpThumbnail() {
   return (
     <div className="evergreen-rtp-thumb" aria-hidden="true">
+      <div className="evergreen-rtp-ambient" />
+      <div className="evergreen-rtp-grid" />
       <div className="evergreen-rtp-stage">
-        <img
-          className="evergreen-rtp-source"
-          src={getAssetPath(image)}
-          alt={imageAlt ?? ""}
-          loading="lazy"
-          decoding="async"
-        />
+        <div className="evergreen-rtp-screen is-desktop">
+          <img
+            src={getAssetPath(evergreenRtpDesktop)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
+        <div className="evergreen-rtp-screen is-mobile">
+          <img
+            src={getAssetPath(evergreenRtpMobile)}
+            alt=""
+            loading="lazy"
+            decoding="async"
+          />
+        </div>
       </div>
       <div className="evergreen-rtp-light" />
     </div>
@@ -145,7 +158,7 @@ function ProjectCard({ project, onProjectSelect }) {
         {isDeepCutNightGuide ? (
           <DeepCutNightGuideThumbnail />
         ) : isEvergreenRtp ? (
-          <EvergreenRtpThumbnail image={project.image} imageAlt={project.imageAlt} />
+          <EvergreenRtpThumbnail />
         ) : (
           <>
             <img

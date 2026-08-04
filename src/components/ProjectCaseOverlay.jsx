@@ -536,6 +536,8 @@ const jpmorganProductPreview = {
 };
 
 const jpmorganRefreshDashboard = {
+  title: "Sponsor intelligence workspace",
+  body: "A consolidated view of portfolio activity, relationship signals, upcoming events, and market movement.",
   image: getAssetPath("/jpmc-refresh/jpmc-dashboard.webp"),
   alt: "J.P. Morgan sponsor intelligence dashboard.",
   width: 3000,
@@ -576,6 +578,8 @@ const jpmorganRefreshFeatures = [
     height: 1716,
   },
 ];
+
+const jpmorganRefreshArtifacts = [jpmorganRefreshDashboard, ...jpmorganRefreshFeatures];
 
 const beforeWorkflowPanels = [
   {
@@ -857,6 +861,10 @@ export default function ProjectCaseOverlay({
   const [aiWorkflowReveal, setAiWorkflowReveal] = useState(50);
   const [isShortcutMode, setIsShortcutMode] = useState(false);
   const [showFullViewHint, setShowFullViewHint] = useState(false);
+  const [prefersReducedMotion, setPrefersReducedMotion] = useState(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false
+  );
+  const [isEnrichmentFlowUnavailable, setIsEnrichmentFlowUnavailable] = useState(false);
   const [isMacLikePlatform] = useState(detectMacLikePlatform);
   const isFullControlActive = isFull || isExpanding;
   const isProjectNavigating = projectNavPhase.startsWith("exit");
@@ -1145,6 +1153,19 @@ export default function ProjectCaseOverlay({
   }, [isClosing, isExpanding, isFull, isShrinking, project.id]);
 
   useEffect(() => {
+    const reducedMotionQuery = window.matchMedia?.("(prefers-reduced-motion: reduce)");
+    if (!reducedMotionQuery) {
+      return undefined;
+    }
+
+    const syncReducedMotion = () => setPrefersReducedMotion(reducedMotionQuery.matches);
+    syncReducedMotion();
+    reducedMotionQuery.addEventListener?.("change", syncReducedMotion);
+
+    return () => reducedMotionQuery.removeEventListener?.("change", syncReducedMotion);
+  }, []);
+
+  useEffect(() => {
     const video = enrichmentFlowVideoRef.current;
     if (!video) {
       return undefined;
@@ -1153,7 +1174,6 @@ export default function ProjectCaseOverlay({
     video.playbackRate = 1.1;
     video.pause();
 
-    const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches ?? false;
     if (prefersReducedMotion || typeof IntersectionObserver === "undefined") {
       return undefined;
     }
@@ -1176,7 +1196,7 @@ export default function ProjectCaseOverlay({
       observer.disconnect();
       video.pause();
     };
-  }, [project.id]);
+  }, [prefersReducedMotion, project.id]);
 
   useEffect(() => {
     const scrollElement = scrollRef.current;
@@ -1628,6 +1648,20 @@ export default function ProjectCaseOverlay({
     });
   }, []);
 
+  const setExpandedJpmorganRefreshArtifact = useCallback((nextIndex) => {
+    const normalizedIndex = ((nextIndex % jpmorganRefreshArtifacts.length) + jpmorganRefreshArtifacts.length) % jpmorganRefreshArtifacts.length;
+    const artifact = jpmorganRefreshArtifacts[normalizedIndex];
+
+    setExpandedImage({
+      type: "jpm-refresh-artifact",
+      artifactIndex: normalizedIndex,
+      image: artifact.image,
+      imageAlt: artifact.alt,
+      title: artifact.title,
+      caption: artifact.body,
+    });
+  }, []);
+
   const setExpandedDeepCutArtifact = useCallback((nextIndex) => {
     const normalizedIndex = ((nextIndex % deepCutCaseArtifacts.length) + deepCutCaseArtifacts.length) % deepCutCaseArtifacts.length;
     const artifact = deepCutCaseArtifacts[normalizedIndex];
@@ -1668,6 +1702,11 @@ export default function ProjectCaseOverlay({
       return;
     }
 
+    if (expandedImage?.type === "jpm-refresh-artifact") {
+      setExpandedJpmorganRefreshArtifact((expandedImage.artifactIndex ?? 0) - 1);
+      return;
+    }
+
     if (expandedImage?.type === "deepcut-artifact") {
       setExpandedDeepCutArtifact((expandedImage.artifactIndex ?? 0) - 1);
       return;
@@ -1676,7 +1715,7 @@ export default function ProjectCaseOverlay({
     if (expandedImage?.type === "aurora-artifact") {
       setExpandedAuroraArtifact((expandedImage.artifactIndex ?? 0) - 1);
     }
-  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedProductPreview]);
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedJpmorganRefreshArtifact, setExpandedProductPreview]);
 
   const goToNextExpandedImage = useCallback(() => {
     if (expandedImage?.type === "ai-artifact") {
@@ -1690,6 +1729,11 @@ export default function ProjectCaseOverlay({
       return;
     }
 
+    if (expandedImage?.type === "jpm-refresh-artifact") {
+      setExpandedJpmorganRefreshArtifact((expandedImage.artifactIndex ?? 0) + 1);
+      return;
+    }
+
     if (expandedImage?.type === "deepcut-artifact") {
       setExpandedDeepCutArtifact((expandedImage.artifactIndex ?? 0) + 1);
       return;
@@ -1698,7 +1742,7 @@ export default function ProjectCaseOverlay({
     if (expandedImage?.type === "aurora-artifact") {
       setExpandedAuroraArtifact((expandedImage.artifactIndex ?? 0) + 1);
     }
-  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedProductPreview]);
+  }, [activeAiOperatingArtifactIndex, activeAiProofArtifactIndex, activeProductPreviewIndex, expandedImage, setExpandedAiArtifact, setExpandedAuroraArtifact, setExpandedDeepCutArtifact, setExpandedJpmorganRefreshArtifact, setExpandedProductPreview]);
 
   const handleAiOperatingArtifactStageClick = useCallback((event) => {
     const mode = getCursorModeFromPointer(event);
@@ -1714,21 +1758,6 @@ export default function ProjectCaseOverlay({
 
     setExpandedAiArtifact(activeAiOperatingArtifactIndex, "operating");
   }, [activeAiOperatingArtifactIndex, getCursorModeFromPointer, goToNextAiOperatingArtifact, goToPreviousAiOperatingArtifact, setExpandedAiArtifact]);
-
-  const handleAiProofArtifactStageClick = useCallback((event) => {
-    const mode = getCursorModeFromPointer(event);
-
-    if (mode === "arrow-left") {
-      goToPreviousAiProofArtifact();
-      return;
-    }
-    if (mode === "arrow-right") {
-      goToNextAiProofArtifact();
-      return;
-    }
-
-    setExpandedAiArtifact(activeAiProofArtifactIndex, "proof");
-  }, [activeAiProofArtifactIndex, getCursorModeFromPointer, goToNextAiProofArtifact, goToPreviousAiProofArtifact, setExpandedAiArtifact]);
 
   const goToPreviousProductPreview = () => {
     const lastIndex = productOverviewCards.length - 1;
@@ -2495,7 +2524,12 @@ export default function ProjectCaseOverlay({
                   "--case-jpm-refresh-background": `url("${getAssetPath("/jpmc-refresh/jpmc-project-bg.webp")}")`,
                 }}
               >
-                <div className="case-jpm-refresh__dashboard" aria-label="J.P. Morgan dashboard overview">
+                <button
+                  className="case-jpm-refresh__dashboard case-jpm-refresh__media-button"
+                  type="button"
+                  onClick={() => setExpandedJpmorganRefreshArtifact(0)}
+                  aria-label={`Enlarge ${jpmorganRefreshDashboard.title}`}
+                >
                   <img
                     src={jpmorganRefreshDashboard.image}
                     alt={jpmorganRefreshDashboard.alt}
@@ -2506,16 +2540,21 @@ export default function ProjectCaseOverlay({
                     fetchPriority="high"
                     onError={handleProjectImageError}
                   />
-                </div>
+                </button>
 
                 <div className="case-jpm-refresh__features">
-                  {jpmorganRefreshFeatures.map((feature) => (
+                  {jpmorganRefreshFeatures.map((feature, index) => (
                     <article className="case-jpm-refresh__feature" key={feature.title}>
                       <header className="case-jpm-refresh__copy">
                         <h3>{feature.title}</h3>
                         <p>{feature.body}</p>
                       </header>
-                      <div className="case-jpm-refresh__visual">
+                      <button
+                        className="case-jpm-refresh__visual case-jpm-refresh__media-button"
+                        type="button"
+                        onClick={() => setExpandedJpmorganRefreshArtifact(index + 1)}
+                        aria-label={`Enlarge ${feature.title}`}
+                      >
                         <img
                           src={feature.image}
                           alt={feature.alt}
@@ -2525,7 +2564,7 @@ export default function ProjectCaseOverlay({
                           decoding="async"
                           onError={handleProjectImageError}
                         />
-                      </div>
+                      </button>
                     </article>
                   ))}
                 </div>
@@ -2618,28 +2657,46 @@ export default function ProjectCaseOverlay({
                 I created a faster, governed workflow that turned product intent into AI-explored, Salt-aligned, reviewable prototypes, with file-backed
                 platform rules and runtime behavior visible for PM, design, and engineering review.
               </CaseSectionHeader>
-              <ExecutableDirectionConsole />
-              <div className="case-ai-proof-bridge" aria-hidden="true">
-                <span>same branch</span>
-                <i />
-                <span>different proof surface</span>
-                <i />
-                <span>one review system</span>
-              </div>
+              <figure className="case-enrichment-flow">
+                <div className="case-enrichment-video-shell">
+                  {isEnrichmentFlowUnavailable ? (
+                    <div className="case-enrichment-video-fallback" role="status">
+                      Prototype demo unavailable.
+                    </div>
+                  ) : (
+                    <video
+                      ref={enrichmentFlowVideoRef}
+                      className="case-enrichment-video"
+                      muted
+                      loop
+                      playsInline
+                      preload="metadata"
+                      controls={prefersReducedMotion}
+                      aria-describedby={`${project.id}-enrichment-flow-caption`}
+                      onError={() => setIsEnrichmentFlowUnavailable(true)}
+                    >
+                      <source src={getAssetPath("/jpmc-ai-enrichment-flow.mp4")} type="video/mp4" />
+                    </video>
+                  )}
+                </div>
+                <figcaption className="case-enrichment-caption" id={`${project.id}-enrichment-flow-caption`}>
+                  <strong>AI prototyping for early concepts</strong>
+                  <span>Working interactions made emerging product ideas tangible before engineering investment.</span>
+                </figcaption>
+              </figure>
               <div className="case-ai-proof-carousel" aria-label="AI prototype proof carousel">
                 <button
                   className="case-ai-proof-carousel-stage"
                   type="button"
-                  onClick={handleAiProofArtifactStageClick}
-                  onPointerMove={handleArtifactPointerMove}
-                  onPointerLeave={clearDocumentCursorMode}
-                  aria-label={`Open ${activeAiProofArtifact.title}`}
+                  onClick={() => setExpandedAiArtifact(activeAiProofArtifactIndex, "proof")}
+                  aria-label={`Enlarge ${activeAiProofArtifact.title}`}
                 >
                   <img
                     src={activeAiProofArtifact.image}
                     alt={activeAiProofArtifact.title}
                     loading="lazy"
                     decoding="async"
+                    onError={handleProjectImageError}
                   />
                   <span className="case-ai-proof-carousel-count">
                     {String(activeAiProofArtifactIndex + 1).padStart(2, "0")} / {String(aiProofArtifacts.length).padStart(2, "0")}
@@ -2649,14 +2706,35 @@ export default function ProjectCaseOverlay({
                     <em>{activeAiProofArtifact.caption}</em>
                   </span>
                 </button>
-                <div className="case-ai-proof-carousel-controls" aria-hidden="true">
-                  <div>
+                <div className="case-ai-proof-carousel-controls" aria-label="Browse AI prototype images">
+                  <button type="button" onClick={goToPreviousAiProofArtifact} aria-label="Previous AI prototype image">
+                    <span aria-hidden="true">←</span>
+                  </button>
+                  <div className="case-ai-proof-carousel-progress">
                     {aiProofArtifacts.map((artifact, index) => (
-                      <span className={index === activeAiProofArtifactIndex ? "is-active" : ""} key={artifact.title} />
+                      <button
+                        type="button"
+                        className={index === activeAiProofArtifactIndex ? "is-active" : ""}
+                        key={artifact.title}
+                        onClick={() => setActiveAiProofArtifactIndex(index)}
+                        aria-label={`Show ${artifact.title}`}
+                        aria-current={index === activeAiProofArtifactIndex ? "true" : undefined}
+                      />
                     ))}
                   </div>
+                  <button type="button" onClick={goToNextAiProofArtifact} aria-label="Next AI prototype image">
+                    <span aria-hidden="true">→</span>
+                  </button>
                 </div>
               </div>
+              <div className="case-ai-proof-bridge" aria-hidden="true">
+                <span>same branch</span>
+                <i />
+                <span>different proof surface</span>
+                <i />
+                <span>one review system</span>
+              </div>
+              <ExecutableDirectionConsole />
             </section>
 
             <section className="case-study-section case-impact-section" id="case-impact" aria-labelledby={`${project.id}-impact`}>
@@ -2764,7 +2842,7 @@ export default function ProjectCaseOverlay({
           <div className="case-image-lightbox-panel">
             <div className="case-image-lightbox-header">
               <div>
-                <p>Product image</p>
+                <p>{expandedImage.type === "ai-artifact" ? "Prototype image" : "Product image"}</p>
                 <h2>{expandedImage.title}</h2>
               </div>
               <button
@@ -2785,7 +2863,9 @@ export default function ProjectCaseOverlay({
                 alt={expandedImage.imageAlt}
                 decoding="async"
               />
-              {expandedImage.type === "product-overview" || expandedImage.type === "ai-artifact" ? (
+              {expandedImage.type === "product-overview" ||
+              expandedImage.type === "ai-artifact" ||
+              expandedImage.type === "jpm-refresh-artifact" ? (
                 <div className="case-image-lightbox-hit-zones" aria-label="Expanded image navigation">
                   <button
                     className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-left"
@@ -2793,7 +2873,7 @@ export default function ProjectCaseOverlay({
                     onClick={goToPreviousExpandedImage}
                     onPointerEnter={() => setDocumentCursorMode("arrow-left")}
                     onPointerLeave={clearDocumentCursorMode}
-                    aria-label="Previous product image"
+                    aria-label="Previous expanded image"
                   />
                   <button
                     className="case-image-lightbox-hit-zone case-image-lightbox-hit-zone-right"
@@ -2801,7 +2881,7 @@ export default function ProjectCaseOverlay({
                     onClick={goToNextExpandedImage}
                     onPointerEnter={() => setDocumentCursorMode("arrow-right")}
                     onPointerLeave={clearDocumentCursorMode}
-                    aria-label="Next product image"
+                    aria-label="Next expanded image"
                   />
                 </div>
               ) : expandedImage.type === "deepcut-artifact" ? (
