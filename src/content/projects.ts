@@ -56,10 +56,10 @@ export const featuredProjects = [
   {
     id: "jpmorgan-lobby",
     eyebrow: "JP Morgan",
-    title: "Designing human-in-the-loop AI workflows for complex deal setup and coordination.",
+    title: "Designing AI-enabled workflows for complex, multi-role operations.",
     bullets: [
-      "Cut deal setup time by 40% through AI-assisted coordination.",
-      "Accelerated handoffs by 45% with human-in-loop AI workflows.",
+      "Cut end-to-end setup time by 40% by centralizing information and coordination.",
+      "Accelerated cross-functional handoffs by 45% through clearer ownership and workflow automation",
     ],
     image: "/optimized/jp-lobby-1200.png",
     imageSrcSet: "/optimized/jp-lobby-1200.png 1200w, /jp-lobby.png 1408w",

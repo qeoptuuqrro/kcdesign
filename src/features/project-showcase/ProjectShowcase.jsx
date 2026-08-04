@@ -5,8 +5,8 @@ const deepcutThumbnailReference = "/optimized/deepcut-thumbnail-reference.png";
 const deepcutLockedLogo = "/optimized/deepcut-logo-locked.png";
 const deepcutMacbookTopRail = "/optimized/deepcut-macbook-top-rail.png";
 const deepcutTvPreviewVideo = "https://assets.mixkit.co/videos/4451/4451-720.mp4";
-const evergreenRtpDesktop = "/optimized/evergreen-rtp-desktop-hd.png";
-const evergreenRtpMobile = "/optimized/evergreen-rtp-mobile-hd.png";
+const evergreenRtpDesktop = "/optimized/evergreen-rtp-desktop-card.png";
+const evergreenRtpMobile = "/optimized/evergreen-rtp-mobile-card.png";
 
 export function EvergreenRtpThumbnail() {
   return (
@@ -18,7 +18,7 @@ export function EvergreenRtpThumbnail() {
           <img
             src={getAssetPath(evergreenRtpDesktop)}
             alt=""
-            loading="lazy"
+            loading="eager"
             decoding="async"
           />
         </div>
@@ -26,7 +26,7 @@ export function EvergreenRtpThumbnail() {
           <img
             src={getAssetPath(evergreenRtpMobile)}
             alt=""
-            loading="lazy"
+            loading="eager"
             decoding="async"
           />
         </div>
